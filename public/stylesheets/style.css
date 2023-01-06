@@ -1,0 +1,96 @@
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body{
+  background-color:#bec0d782 ;
+  
+}
+.inputbox{
+  width: 30rem;
+  border-radius: 2rem;
+}
+.bluebox{
+  background-color: #18354A;
+  padding: 100px;
+  position: relative;
+}
+.fontcolor{
+  color: #BEC0D7;
+  
+}
+.login-btn{
+  background-color: #193D56;
+  border: 1px solid #BEC0D7;
+}
+.logo{
+  position: absolute;
+  left:-80px;
+  top: -80px;
+}
+.signuptext{
+  border-right:1px solid  ;
+}
+.pos{
+  position: absolute;
+  top: 90px;
+}
+.signupfoot{
+  position: absolute;
+  bottom: 113px;
+}
+.header{
+  background-color: #193D56;
+  color: #BEC0D7;
+  padding: 10px 10px;
+  font-size: 20px;
+  /* position: fixed; */
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.sidebar{
+  background-color: red;
+  position: fixed;
+  color: #BEC0D7;
+}
+.admin-search{
+  border-radius: 50px;
+  border: 1px solid #193d56;
+  width: 180px;
+  background-color: #ededed;
+  margin-top: 20px;
+  margin-right: 20px;
+  padding-left: 10px;
+}
+.carosilimg{
+
+  height: 540px;
+}
+/* .card {
+  background: #222;
+  border: 1px solid #dd2476;
+  color: rgba(250, 250, 250, 0.8);
+  margin-bottom: 2rem;
+}
+
+.btn {
+  border: 1px solid;
+  border-image-slice: 1;
+  background: var(--gradient) !important;
+  
+  border-image-source:  var(--gradient) !important; 
+  text-decoration: none;
+  transition: all .4s ease;
+}
+
+.btn:hover, .btn:focus {
+      /* background: var(--gradient) !important; */
+  
+  /* border: 5px solid #fff !important; 
+  box-shadow: #222 1px 0 10px;
+  text-decoration: underline; */
+  /* transform: 20px;
+} */ 
