@@ -16,7 +16,7 @@ router.get('/', function (req, res, next) {
 
 });
 router.get("/home", (req, res) => {
-  res.render('admin/admin_dashboard')
+  res.render('admin/admin_dashboard',{admin:req.session.adminloggedin})
 })
 
 router.post('/login', (req, res) => {
