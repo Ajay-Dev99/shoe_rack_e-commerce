@@ -5,7 +5,7 @@
 }
 
 body{
-  background-color:#bec0d782 ;
+  background-color:#43445282;
   
 }
 .inputbox{
@@ -16,6 +16,7 @@ body{
   background-color: #18354A;
   padding: 100px;
   position: relative;
+  border-radius: 23px;
 }
 .fontcolor{
   color: #BEC0D7;
@@ -56,15 +57,7 @@ body{
   position: fixed;
   color: #BEC0D7;
 }
-.admin-search{
-  border-radius: 50px;
-  border: 1px solid #193d56;
-  width: 180px;
-  background-color: #ededed;
-  margin-top: 20px;
-  margin-right: 20px;
-  padding-left: 10px;
-}
+
 .carosilimg{
 
   height: 540px;
