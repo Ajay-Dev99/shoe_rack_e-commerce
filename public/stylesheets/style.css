@@ -1,48 +1,57 @@
-*{
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body{
-  background-color:#43445282;
-  
+body {
+  background-color: #43445282;
+
 }
-.inputbox{
+
+.inputbox {
   width: 30rem;
   border-radius: 2rem;
 }
-.bluebox{
+
+.bluebox {
   background-color: #18354A;
   padding: 100px;
   position: relative;
   border-radius: 23px;
 }
-.fontcolor{
+
+.fontcolor {
   color: #BEC0D7;
-  
+
 }
-.login-btn{
+
+.login-btn {
   background-color: #193D56;
   border: 1px solid #BEC0D7;
 }
-.logo{
+
+.logo {
   position: absolute;
-  left:-80px;
+  left: -80px;
   top: -80px;
 }
-.signuptext{
-  border-right:1px solid  ;
+
+.signuptext {
+  border-right: 1px solid;
 }
-.pos{
+
+.pos {
   position: absolute;
   top: 90px;
 }
-.signupfoot{
+
+.signupfoot {
   position: absolute;
   bottom: 113px;
 }
-.header{
+
+.header {
   background-color: #193D56;
   color: #BEC0D7;
   padding: 10px 10px;
@@ -52,16 +61,18 @@ body{
   justify-content: space-between;
   width: 100%;
 }
-.sidebar{
+
+.sidebar {
   background-color: red;
   position: fixed;
   color: #BEC0D7;
 }
 
-.carosilimg{
+.carosilimg {
 
   height: 540px;
 }
+
 /* .card {
   background: #222;
   border: 1px solid #dd2476;
@@ -81,9 +92,9 @@ body{
 
 .btn:hover, .btn:focus {
       /* background: var(--gradient) !important; */
-  
-  /* border: 5px solid #fff !important; 
+
+/* border: 5px solid #fff !important; 
   box-shadow: #222 1px 0 10px;
   text-decoration: underline; */
-  /* transform: 20px;
-} */ 
+/* transform: 20px;
+} */

@@ -16,7 +16,7 @@ router.get('/', function (req, res, next) {
 
 });
 router.get("/home", (req, res) => {
-  res.render('admin/admin_dashboard',{admin:req.session.adminloggedin})
+  res.render('admin/admin_dashboard', { admin: req.session.adminloggedin })
 })
 
 router.post('/login', (req, res) => {
@@ -37,13 +37,34 @@ router.post('/login', (req, res) => {
 
 })
 
-router.get("/logout",(req,res)=>{
+router.get("/logout", (req, res) => {
   res.redirect("/admin")
   req.session.destroy()
 })
 
-router.get("/listusers",(req,res)=>{
-  
+
+
+//dashborad
+
+router.get("/listusers", (req, res) => {
+  admincontrol.listUsers().then((response) => {
+    res.render("admin/admin_userlist", { usersData: response })
+  })
+
+})
+
+//block user
+router.get("/blockuser/:id", (req, res) => {
+  admincontrol.blockUser(req.params.id).then((data) => {
+    console.log(data, ">>>>>>>>>>>>")
+    res.redirect("/admin/listusers")
+  })
+})
+//unblock user
+router.get("/unblockuser/:id", (req, res) => {
+  admincontrol.unblockUser(req.params.id).then((data) => {
+    res.redirect("/admin/listusers")
+  })
 })
 
 module.exports = router;

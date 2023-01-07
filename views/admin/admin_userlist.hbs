@@ -1,0 +1,54 @@
+{{>adminheader}}
+<section>
+  <div>
+    {{>adminsidebar}}
+  </div>
+  <div>
+    <section style="margin-left: 220px;  margin-top: 50px;">
+      <div class="container">
+        <div class="d-flex justify-content-end my-3">
+
+          <nav class="navbar navbar-light ">
+            <div class="container-fluid" style="z-index: 900;">
+              <form class="d-flex">
+                <input class="form-control me-2 admin-search" type="search" placeholder="Search..." aria-label="Search">
+                <i class="fa fa-search searchicon"></i>
+              </form>
+            </div>
+          </nav>
+        </div>
+        <table class="table">
+          <thead class="text-white bg-dark">
+            <tr>
+              <th scope="col">user id</th>
+              <th scope="col">Name</th>
+              <th scope="col">Email</th>
+              <th scope="col">Manage user</th>
+            </tr>
+          </thead>
+          {{#each usersData}}
+          <tbody class="bg-white">
+            {{#if this.blocked}}
+            <tr class="bg-danger">
+              {{else}}
+            <tr>
+              {{/if}}
+              <th>{{this._id}}</th>
+              <td>{{this.name}}</td>
+              <td>{{this.email}}</td>
+              <td>
+                {{#if this.blocked}}
+                <a href="/admin/unblockuser/{{this._id}}" class="btn btn-success">unblock</a>
+
+                {{else}}
+                <a href="/admin/blockuser/{{this._id}}" class="btn btn-primary">block</a>
+                {{/if}}
+              </td>
+            </tr>
+          </tbody>
+          {{/each}}
+        </table>
+      </div>
+    </section>
+  </div>
+</section>

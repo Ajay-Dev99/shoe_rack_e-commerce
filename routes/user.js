@@ -5,7 +5,7 @@ const control = require("../control/usercontrol")
 
 
 router.get('/', function (req, res, next) {
-    res.render("user/home", { user: req.session.user })
+  res.render("user/home", { user: req.session.user })
 });
 
 router.get("/signup", (req, res) => {
@@ -26,12 +26,12 @@ router.post("/signup-user", (req, res) => {
 })
 
 router.get("/login", (req, res) => {
-  if(req.session.loggedIn){
+  if (req.session.loggedIn) {
     res.redirect("/")
-  }else{
-    res.render("user/user_login", { notexisted: req.session.usernotexist,pass:req.session.passErr })
+  } else {
+    res.render("user/user_login", { notexisted: req.session.usernotexist, pass: req.session.passErr })
     req.session.usernotexist = false
-    req.session.passErr=false
+    req.session.passErr = false
   }
 
 })
@@ -42,13 +42,13 @@ router.post("/login", (req, res) => {
       req.session.usernotexist = true;
       res.redirect("/login")
     } else {
-     
+
       req.session.user = response.user
       if (response.status) {
-        req.session.loggedIn=true;
+        req.session.loggedIn = true;
         res.redirect("/")
       } else {
-        req.session.passErr=true;
+        req.session.passErr = true;
         res.redirect('/login')
       }
     }
@@ -56,18 +56,11 @@ router.post("/login", (req, res) => {
   })
 })
 
-router.get("/logout",(req,res)=>{
+router.get("/logout", (req, res) => {
   console.log("logouts")
   req.session.destroy()
   res.redirect("/")
 })
-
-
-
-
-
-
-
 
 
 
