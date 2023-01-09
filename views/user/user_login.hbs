@@ -18,6 +18,10 @@
                 <small>
                     <p id="logmail" class="text-danger pt-1">User not found</p>
                 </small>
+                {{else if block}}
+                   <small>
+                    <p id="logmail" class="text-danger pt-1">Your account is suspended!!!</p>
+                </small>
                 {{/if}}
             </div>
             <div>

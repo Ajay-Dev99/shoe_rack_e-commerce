@@ -44,10 +44,15 @@ module.exports = {
                     console.log(userdata.password, client.password)
                     bcrypt.compare(userdata.password, client.password).then((status) => {
                         if (status) {
+                            if(client.blocked){
+                                console.log("blocked")
+                                resolve({blockedstatus:true})
+                            }else{
                             response.status = true;
                             response.user = client
                             resolve(response)
                             console.log("user login succesfull")
+                        }
                         } else {
                             resolve({ status: false })
                             console.log("login failed")

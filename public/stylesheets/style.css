@@ -6,7 +6,6 @@
 
 body {
   background-color: #43445282;
-
 }
 
 .inputbox {
@@ -72,7 +71,14 @@ body {
 
   height: 540px;
 }
-
+.account_btn{
+  background-color: #898989;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
 /* .card {
   background: #222;
   border: 1px solid #dd2476;

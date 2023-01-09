@@ -17,37 +17,39 @@
             </div>
           </nav>
         </div>
-        <table class="table">
-          <thead class="text-white bg-dark">
-            <tr>
-              <th scope="col">user id</th>
-              <th scope="col">Name</th>
-              <th scope="col">Email</th>
-              <th scope="col">Manage user</th>
-            </tr>
-          </thead>
-          {{#each usersData}}
-          <tbody class="bg-white">
-            {{#if this.blocked}}
-            <tr class="bg-danger">
-              {{else}}
-            <tr>
-              {{/if}}
-              <th>{{this._id}}</th>
-              <td>{{this.name}}</td>
-              <td>{{this.email}}</td>
-              <td>
-                {{#if this.blocked}}
-                <a href="/admin/unblockuser/{{this._id}}" class="btn btn-success">unblock</a>
-
+        <div class="container">
+          <table class="table">
+            <thead class="text-white bg-dark">
+              <tr>
+                <th scope="col">user id</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Manage user</th>
+              </tr>
+            </thead>
+            {{#each usersData}}
+            <tbody class="bg-white">
+              {{#if this.blocked}}
+              <tr class="bg-danger">
                 {{else}}
-                <a href="/admin/blockuser/{{this._id}}" class="btn btn-primary">block</a>
+              <tr>
                 {{/if}}
-              </td>
-            </tr>
-          </tbody>
-          {{/each}}
-        </table>
+                <th>{{this._id}}</th>
+                <td>{{this.name}}</td>
+                <td>{{this.email}}</td>
+                <td>
+                  {{#if this.blocked}}
+                  <a href="/admin/unblockuser/{{this._id}}" class="btn btn-success">unblock</a>
+
+                  {{else}}
+                  <a href="/admin/blockuser/{{this._id}}" class="btn btn-danger">block</a>
+                  {{/if}}
+                </td>
+              </tr>
+            </tbody>
+            {{/each}}
+          </table>
+        </div>
       </div>
     </section>
   </div>

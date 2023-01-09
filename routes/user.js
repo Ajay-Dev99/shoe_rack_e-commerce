@@ -29,9 +29,10 @@ router.get("/login", (req, res) => {
   if (req.session.loggedIn) {
     res.redirect("/")
   } else {
-    res.render("user/user_login", { notexisted: req.session.usernotexist, pass: req.session.passErr })
+    res.render("user/user_login", { notexisted: req.session.usernotexist, pass: req.session.passErr,block:req.session.blocked})
     req.session.usernotexist = false
     req.session.passErr = false
+    req.session.blocked=false
   }
 
 })
@@ -41,7 +42,14 @@ router.post("/login", (req, res) => {
     if (response.usernotfound) {
       req.session.usernotexist = true;
       res.redirect("/login")
-    } else {
+    }
+    else if(response.blockedstatus){
+      console.log("done>>>>>>>>>>>>>>>>")
+      req.session.blocked=true
+      res.redirect("/login")
+    }
+    
+    else {
 
       req.session.user = response.user
       if (response.status) {
