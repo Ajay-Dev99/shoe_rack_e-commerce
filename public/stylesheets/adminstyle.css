@@ -1,7 +1,7 @@
 .admin_header {
   background-color: #193D56;
   color: #BEC0D7;
-  padding: 1px;
+  padding: 2px;
   position: fixed;
   width: 100%;
   top: 0;
@@ -43,9 +43,14 @@ aside {
 }
 
 aside .side-bar a:hover {
-  position: relative;
+  /* position: relative;
   transition: 0.1s;
-  left: 1rem;
+  left: 1rem; */
+  background-color: #cad4db;
+  
+}
+aside .side-bar a:active{
+  background-color: rgb(81, 137, 118);
 }
 
 

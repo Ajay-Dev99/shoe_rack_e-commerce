@@ -37,7 +37,7 @@ function validateForm(e) {
 
     if (password.value.length < 8) {
 
-        document.getElementById("password").innerText = "password contains minimum 8 characters"
+        document.getElementById("password").innerText = "password must contains minimum 8 characters"
         document.getElementById("password").style.display = "block"
         return false
     }

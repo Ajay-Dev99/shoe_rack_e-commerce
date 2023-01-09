@@ -56,7 +56,7 @@ router.get("/listusers",(req,res)=>{
 //block user
 router.get("/blockuser/:id",(req,res)=>{
 admincontrol.blockUser(req.params.id).then((data)=>{
-  console.log(data,">>>>>>>>>>>>")
+ 
   res.redirect("/admin/listusers")
 })
 })
@@ -72,4 +72,8 @@ router.get("/addproduct",(req,res)=>{
   res.render("admin/admin_addproduct")
 })
 
+//categories
+router.get("/categories",(req,res)=>{
+  res.render("admin/admin_categories")
+})
 module.exports = router;
