@@ -2,6 +2,13 @@ var express = require('express');
 const { response } = require('../app');
 var router = express.Router();
 const admincontrol = require("../control/admincontrol")
+const categoryimgupload= require("../utilities/imageUpload")
+const multer = require('multer')
+
+
+
+
+
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -76,4 +83,14 @@ router.get("/addproduct",(req,res)=>{
 router.get("/categories",(req,res)=>{
   res.render("admin/admin_categories")
 })
+
+//add category
+router.post("/addcategory",categoryimgupload.single('image'),(req,res)=>{
+ console.log(req.body,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+ console.log(req.file)
+  admincontrol.addCategory(req.body,req.file).then((data)=>{
+    console.log(data,";;;;;;;;;;;;;;;;;;;;;;")
+  })
+})
 module.exports = router;
+// ,categoryimgupload.single('image')

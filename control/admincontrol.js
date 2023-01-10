@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const admin = require("../models/admin")
 const user = require("../models/usermodel")
+const categorycollection = require("../models/categoriesmodel")
 const bcrypt = require("bcrypt")
 const e = require("express")
 const { response } = require("../app")
@@ -83,6 +84,28 @@ module.exports = {
             } catch (error) {
                 throw error
             }
+
+        })
+    },
+    //add category
+    addCategory:(categoryDetails,img)=>{
+        console.log(img,"??????????????????????????")
+        return new Promise(async(resolve,reject)=>{
+            try {
+                const newCategory = new categorycollection({
+                    categoryname:categoryDetails.categoryname,
+                    imageurl:img.path
+                })
+                return await newCategory.save()
+                .then((data)=>{
+                    resolve(data)
+                }).catch((error)=>{
+                    throw error;
+                })
+            } catch (error) {
+                throw error
+            }
+
 
         })
     }

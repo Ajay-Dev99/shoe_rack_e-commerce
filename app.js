@@ -9,6 +9,10 @@ const adminRouter = require('./routes/admin');
 const session=require("express-session")
 const app = express();
 const hbs=require("express-handlebars")
+const multer = require('multer')
+
+
+
 databaseConnect.dbConnect()
 
 // view engine setup
@@ -21,6 +25,9 @@ app.engine('hbs', hbs.engine({ extname: 'hbs', defaultLayout: 'layout', layoutsD
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+// app.use()
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(session({secret:"Key",cookie:{maxAge:60*60*24*1*1000}}))
