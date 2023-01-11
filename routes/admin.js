@@ -81,16 +81,38 @@ router.get("/addproduct",(req,res)=>{
 
 //categories
 router.get("/categories",(req,res)=>{
-  res.render("admin/admin_categories")
+  admincontrol.listCategory().then((categories)=>{
+    console.log(categories,">>>>>>>>>>>>>>>>>>")
+    res.render("admin/admin_categories",{categories})
+  })
+ 
 })
 
 //add category
 router.post("/addcategory",categoryimgupload.single('image'),(req,res)=>{
- console.log(req.body,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
- console.log(req.file)
-  admincontrol.addCategory(req.body,req.file).then((data)=>{
-    console.log(data,";;;;;;;;;;;;;;;;;;;;;;")
+ 
+  admincontrol.addCategory(req.body,req.file).then((data)=>{ 
+    res.redirect("/admin/categories")
+  })
+  
+})
+
+//edit category
+// router.get("/editcategory",categoryimgupload.single('image'),(req,res)=>{
+//   res.render("admin/admin_editcategory")
+// })
+
+//add product
+router.post("/add_product",categoryimgupload.single('image'),(req,res)=>{
+  console.log("done")
+  admincontrol.addproduct(req.body,req.file).then((data)=>{
+    res.redirect("/admin/addproduct")
   })
 })
+
+
+
+
+
+
 module.exports = router;
-// ,categoryimgupload.single('image')

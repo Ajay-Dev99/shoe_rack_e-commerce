@@ -7,7 +7,7 @@
 <section style="margin-left: 220px;  margin-top: 50px;">
   <div class="row container p-5">
     <div class="col-md-8 col-12">
-      <table class="table table-bordered table-hover">
+      <table class="table table-bordered ">
         <thead>
           <tr class="bg-dark text-white">
             <th scope="col">category Id</th>
@@ -16,23 +16,20 @@
             <th scope="col">Manage</th>
           </tr>
         </thead>
+        {{#each categories}}
         <tbody class="bg-light">
           <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
+            <th scope="row">{{this._id}}</th>
+            <td>{{this.categoryname}}</td>
+            <td><img src="/images/categoryimage/{{this.imageurl}}" alt="" height="80px" width="80px"></td>
             <td>
-              <a href="#" class="btn"><i class="fa fa-edit"></i></a>
-              <a href="#" class="btn"><i class="fa fa-trash"></i></a>
+              <div class="d-flex">
+             <div> <a href="/admin/editcategory" class="btn"><i class="fa fa-edit text-primary"><p class="text-dark">edit</p></i></a></div>
+              <div><a href="#" class="btn"><i class="fa fa-trash text-danger"><p class="text-dark">delete</p></i></a></div>
+              </div>
             </td>
           </tr>
-          <tr>
-            <th scope="row">2</th>
-            <td>Jacob</td>
-            <td>Thornton</td>
-            <td>@fat</td>
-          </tr>
-
+          {{/each}}
         </tbody>
       </table>
     </div>
@@ -41,15 +38,15 @@
       <form action="/admin/addcategory" method="post" enctype="multipart/form-data">
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">Category Name</label>
-          <input type="text" class="form-control" name="categoryname" aria-describedby="emailHelp" />
+          <input type="text" class="form-control" name="categoryname" aria-describedby="emailHelp" required />
 
         </div>
         <div class="mb-3">
           <label for="exampleInputPassword1" class="form-label">Add image</label>
-          <input class="form-control" type="file" name="image" />
+          <input class="form-control" type="file" name="image" required />
         </div>
         <div class="d-flex justify-content-center">
-          <button type="submit" class="btn fontcolor ">Submit</button>
+          <button type="submit" class="btn fontcolor login-btn">Submit</button>
         </div>
       </form>
     </div>

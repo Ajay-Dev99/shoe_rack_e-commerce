@@ -2,7 +2,7 @@ const multer = require("multer");
 
 //Storage Setting
 const storage = multer.diskStorage({
-    destination:'./public/images', //directory (folder) setting
+    destination:'./public/images/categoryimage', //directory (folder) setting
     filename:(req, file, cb)=>{
         cb(null, Date.now()+file.originalname) // file name setting
     }

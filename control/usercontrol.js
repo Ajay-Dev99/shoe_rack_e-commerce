@@ -4,7 +4,7 @@ const e = require("express")
 const dbConnect = require("../connection/dbconnection")
 module.exports = {
     toSingup: (userdata) => {
-        // console.log(userdata,"userdata>>>>>>>>>>>>>>>>>")
+        
 
         return new Promise(async (resolve, reject) => {
             try {

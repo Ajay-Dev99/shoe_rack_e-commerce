@@ -2,12 +2,14 @@ const mongoose = require("mongoose");
 const admin = require("../models/admin")
 const user = require("../models/usermodel")
 const categorycollection = require("../models/categoriesmodel")
+const product = require("../models/productmodel")
 const bcrypt = require("bcrypt")
 const e = require("express")
 const { response } = require("../app")
 
 module.exports = {
 
+    //adminlogin
     doadminLogin: (adminData) => {
         console.log(adminData.email, "admindata")
         return new Promise(async (resolve, reject) => {
@@ -38,6 +40,7 @@ module.exports = {
         })
     },
 
+    //listusers
     listUsers: () => {
 
         return new Promise(async (resolve, reject) => {
@@ -91,10 +94,11 @@ module.exports = {
     addCategory:(categoryDetails,img)=>{
         console.log(img,"??????????????????????????")
         return new Promise(async(resolve,reject)=>{
+            
             try {
                 const newCategory = new categorycollection({
                     categoryname:categoryDetails.categoryname,
-                    imageurl:img.path
+                    imageurl:img.filename
                 })
                 return await newCategory.save()
                 .then((data)=>{
@@ -108,7 +112,49 @@ module.exports = {
 
 
         })
-    }
+    },
 
+
+    //Listcategory
+    listCategory:()=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                await categorycollection.find({}).lean().then((categories)=>{
+                    resolve(categories)
+                }).catch((error)=>{
+                    throw error
+                })
+            } catch (error) {
+                throw error
+            }
+        })
+    },
+
+    //add product
+    addproduct:(productDetails ,img)=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+                
+                const newProduct = new product({
+                    productname:productDetails.productname,
+                    productcategory:productDetails.productcategory,
+                    productMRP:productDetails.productMRP,
+                    productSRP:productDetails.productSRP,
+                    productstock:productDetails.productstock,
+                    imageurl:img.filename,
+                    productdescription:productDetails.productdescription
+                })
+               return await newProduct.save().then((data)=>{
+                    resolve(data)
+                }).catch((error)=>{
+                    throw error
+                })
+
+            } catch (error) {
+                throw error
+            }
+        })
+
+    }
 
 }
