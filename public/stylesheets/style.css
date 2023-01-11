@@ -60,7 +60,15 @@ body {
   justify-content: space-between;
   width: 100%;
 }
-
+.user_searchbar{
+  width: 500px;
+  position: relative;
+}
+.user_searchicon{
+  position: absolute;
+  right: 22rem;
+    top: 0rem;
+}
 .sidebar {
   background-color: red;
   position: fixed;

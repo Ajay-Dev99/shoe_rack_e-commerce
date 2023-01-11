@@ -1,11 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const control = require("../control/usercontrol")
+const admincontrol = require("../control/admincontrol")
 /* GET home page. */
 
 
-router.get('/', function (req, res, next) {
-  res.render("user/home", { user: req.session.user })
+router.get('/', async function (req, res, next) {
+await admincontrol.listProduct().then((data)=>{
+  console.log(data,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+  const product = data
+  const productdata = product.map((product)=>{
+return{
+  _id:product._id,
+  name:product.productname,
+  price:product.productSRP,
+  image:product.imageurl[0].filename
+}
+  })
+  console.log(productdata,"/////////////////////////////////////////////////////////////////")
+  res.render("user/home", { user: req.session.user,productdata })
+})
+  
 });
 
 router.get("/signup", (req, res) => {

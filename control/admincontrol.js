@@ -168,7 +168,7 @@ module.exports = {
         return new Promise(async(resolve,reject)=>{
             try {
         await  product.find({}).lean().then((products)=>{
-            console.log(products)
+            
             resolve(products)
         }) .catch((error)=>{
             throw error
