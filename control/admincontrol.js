@@ -132,18 +132,23 @@ module.exports = {
 
     //add product
     addproduct:(productDetails ,img)=>{
+
         return new Promise(async(resolve,reject)=>{
             try {
-                
                 const newProduct = new product({
                     productname:productDetails.productname,
                     productcategory:productDetails.productcategory,
                     productMRP:productDetails.productMRP,
                     productSRP:productDetails.productSRP,
                     productstock:productDetails.productstock,
-                    imageurl:img.filename,
+                    imageurl:img,
                     productdescription:productDetails.productdescription
                 })
+                // for(let i=0;i<img.length;i++){
+                //     newProduct.imageurl.push({
+                //      data:img[i].toString("base64")
+                //     })
+                // }  
                return await newProduct.save().then((data)=>{
                     resolve(data)
                 }).catch((error)=>{
@@ -155,6 +160,23 @@ module.exports = {
             }
         })
 
+    },
+
+    //List product
+
+    listProduct:()=>{
+        return new Promise(async(resolve,reject)=>{
+            try {
+        await  product.find({}).lean().then((products)=>{
+            console.log(products)
+            resolve(products)
+        }) .catch((error)=>{
+            throw error
+        })    
+            } catch (error) {
+                throw error
+            }
+        })
     }
 
 }

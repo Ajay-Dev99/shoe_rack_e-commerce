@@ -35,10 +35,10 @@
                                             <div class="col-md-12">
 
                                                 <select class="select p-2" name="productcategory" style="width: 100%;" required>
-                                                    <option value="1">select category... </option>
-                                                    <option value="2">Option 1</option>
-                                                    <option value="3">Option 2</option>
-                                                    <option value="4">Option 3</option>
+                                                    <option value="">select category... </option>
+                                                    {{#each categories}}
+                                                    <option value="{{this._id}}">{{this.categoryname}}</option>
+                                                    {{/each}}
                                                 </select>
 
                                             </div>

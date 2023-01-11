@@ -1,0 +1,67 @@
+{{>adminheader}}
+<section>
+  <div>
+    {{>adminsidebar}}
+  </div>
+  <div>
+    <section style="margin-left: 220px;  margin-top: 50px;">
+      <div class="container">
+        <div class="d-flex justify-content-end my-3">
+
+          <nav class="navbar navbar-light">
+            <div class="container-fluid" style="z-index: 900px;">
+              <form class="d-flex">
+                <input class="form-control me-2 admin-search" type="search" placeholder="Search..." aria-label="Search">
+                <i class="fa fa-search searchicon"></i>
+              </form>
+            </div>
+          </nav>
+        </div>
+        <div class="container">
+          <table class="table table-bordered">
+  <thead class="text-white bg-dark">
+    <tr>
+      <th scope="col">Product id</th>
+      <th scope="col">Product name</th>
+      <th scope="col">category id:</th>
+      <th scope="col">MRP</th>
+      <th scope="col">SRP</th>
+      <th scope="col">Stock</th>
+      <th scope="col">Images</th>
+      <th scope="col">Description</th>
+      <th scope="col">Manage</th>
+    </tr>
+  </thead>
+  {{#each response}}
+  <tbody class="bg-white">
+    <tr>
+      <th scope="row">{{this._id}}</th>
+      <td>{{this.productname}}</td>
+      <td>{{this.productcategory}}</td>
+      <td>{{this.productMRP}}</td>
+      <td>{{this.productSRP}}</td>
+      <td>{{this.productstock}}</td>
+      <td>
+        {{#each imageurl }}
+        <div class="p-2">
+        <img src="/images/categoryimage/{{filename}}" alt="" height="50px" width="50px">
+        </div>
+        {{/each}}
+        </td>
+      <td>{{this.productdescription}}</td>
+      <td>
+          <div class="d-flex">
+             <div> <a href="/admin/editcategory" class="btn"><i class="fa fa-edit text-primary"><p class="text-dark">edit</p></i></a></div>
+              <div><a href="#" class="btn"><i class="fa fa-trash text-danger"><p class="text-dark">delete</p></i></a></div>
+              </div>
+      </td>
+    </tr>
+    
+  </tbody>
+  {{/each}}
+</table>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>

@@ -3,7 +3,8 @@ const { response } = require('../app');
 var router = express.Router();
 const admincontrol = require("../control/admincontrol")
 const categoryimgupload= require("../utilities/imageUpload")
-const multer = require('multer')
+const multer = require('multer');
+const { compareSync } = require('bcrypt');
 
 
 
@@ -76,7 +77,10 @@ router.get("/unblockuser/:id",(req,res)=>{
 
 //add product
 router.get("/addproduct",(req,res)=>{
-  res.render("admin/admin_addproduct")
+  admincontrol.listCategory().then((categories)=>{
+    res.render("admin/admin_addproduct",{categories}) 
+  })
+ 
 })
 
 //categories
@@ -103,11 +107,21 @@ router.post("/addcategory",categoryimgupload.single('image'),(req,res)=>{
 // })
 
 //add product
-router.post("/add_product",categoryimgupload.single('image'),(req,res)=>{
+router.post("/add_product",categoryimgupload.array('image',4),(req,res)=>{
   console.log("done")
-  admincontrol.addproduct(req.body,req.file).then((data)=>{
+  admincontrol.addproduct(req.body,req.files).then((data)=>{
     res.redirect("/admin/addproduct")
   })
+})
+
+//listproduct
+router.get("/listproducts",(req,res)=>{
+
+  admincontrol.listProduct().then((response)=>{
+    console.log(response,"::::::::::::::::::::::::::::::::")
+    res.render("admin/admin_product",{response})
+  })
+
 })
 
 
