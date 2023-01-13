@@ -92,7 +92,7 @@ module.exports = {
     },
     //add category
     addCategory:(categoryDetails,img)=>{
-        console.log(img,"??????????????????????????")
+       
         return new Promise(async(resolve,reject)=>{
             
             try {
@@ -144,11 +144,7 @@ module.exports = {
                     imageurl:img,
                     productdescription:productDetails.productdescription
                 })
-                // for(let i=0;i<img.length;i++){
-                //     newProduct.imageurl.push({
-                //      data:img[i].toString("base64")
-                //     })
-                // }  
+            
                return await newProduct.save().then((data)=>{
                     resolve(data)
                 }).catch((error)=>{

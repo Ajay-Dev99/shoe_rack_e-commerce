@@ -5,6 +5,14 @@ const admincontrol = require("../control/admincontrol")
 const categoryimgupload= require("../utilities/imageUpload")
 const multer = require('multer');
 const { compareSync } = require('bcrypt');
+const usercontrol = require('../control/usercontrol');
+const verifyLogin=(req,res,next)=>{
+  if(req.session.adminloggedin){
+   next()
+  }else{
+   res.redirect("/admin")
+  }
+ }
 
 
 
@@ -23,7 +31,7 @@ router.get('/', function (req, res, next) {
   }
 
 });
-router.get("/home", (req, res) => {
+router.get("/home", verifyLogin,(req, res) => {
   res.render('admin/admin_dashboard',{admin:req.session.adminloggedin})
 })
 
@@ -54,7 +62,7 @@ router.get("/logout",(req,res)=>{
 
 //dashborad
 
-router.get("/listusers",(req,res)=>{
+router.get("/listusers",verifyLogin,(req,res)=>{
   admincontrol.listUsers().then((response)=>{
       res.render("admin/admin_userlist",{usersData:response})
   })
@@ -123,6 +131,8 @@ router.get("/listproducts",(req,res)=>{
   })
 
 })
+
+
 
 
 

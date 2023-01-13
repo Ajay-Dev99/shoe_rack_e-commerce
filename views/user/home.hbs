@@ -1,4 +1,4 @@
-<header>
+<header style="width: 100%;">
     <nav class="navbar navbar-expand-lg navbar-light header ">
         <div class="container-fluid fs-4 d-flex">
             <div class=".img-fluid me-3">
@@ -18,48 +18,56 @@
 
 
 
-            <div class="dropdown pe-3">
-                <button class="btn dropdown-toggle " type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown"
-                    aria-expanded="false">
-                    {{#if user}}
-                    {{user.name}}
-                    {{else}}
+            <div class="d-flex justify-content-center align-items-center">
+                <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart </span></a>
 
-                    <span class="material-icons-sharp p-2 text-dark">person</span>
+                <div class="dropdown pe-3">
+                    <button class="btn dropdown-toggle text-white " type="button" id="dropdownMenuButton1"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        {{#if user}}
+                        {{user.name}}
+                        {{else}}
 
-                    {{/if}}
+                        <span class="material-icons-sharp p-2 text-dark text-white">person</span>
 
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                    {{#if user}}
-                    <li><a class="dropdown-item" href="/logout">Logout</a></li>
-                    {{else}}
-                    <li><a class="dropdown-item" href="/login">Login</a></li>
-                    {{/if}}
+                        {{/if}}
+
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                        {{#if user}}
+                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                        {{else}}
+                        <li><a class="dropdown-item" href="/login">Login</a></li>
+                        {{/if}}
 
 
-                </ul>
+                    </ul>
+                </div>
             </div>
 
         </div>
     </nav>
 </header>
 
-<section class=" container mt-4">
+
+
+<div class="container mt-4">
+    <h1>New Arrivals</h1>
     <div class="row">
         {{#each productdata}}
-        <div class="col-md-3 mt-3">
-            <div class="card p-3" style="width: 18rem;">
-                        
-
-                <img src="/images/categoryimage/{{this.image}}" class="card-img-top" alt="...">
-                <div class="card-body">
-                    <h5 class="card-title">{{this.name}}</h5>
-                    <p class="card-text">{{this.price}}</p>
-                    <a href="#" class="btn btn-primary">Go somewhere</a>
+        <div class="col-lg-3 col-sm-6 mb-4 p-3">
+            <div class=" d-flex flex-column align-items-center justify-content-center rounded product-item p-3  border bg-light">
+                <div class="product rounded">
+                    <img src="/images/categoryimage/{{this.image}}" class="card-img-top" alt="">
                 </div>
+                <div class="title pt-4 pb-1">{{this.name}}</div>
+                
+                <div class="price">₹ {{this.price}}</div>
+                <div class="d-flex align-content-center justify-content-center">
+                     <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to card</a>
+                     </div>
             </div>
         </div>
-        {{/each}}
+         {{/each}}
     </div>
-</section>
+</div>

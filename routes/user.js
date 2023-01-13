@@ -2,12 +2,17 @@ const express = require('express');
 const router = express.Router();
 const control = require("../control/usercontrol")
 const admincontrol = require("../control/admincontrol")
-/* GET home page. */
+const verifyLogin=(req,res,next)=>{
+ if(req.session.loggedIn){
+  next()
+ }else{
+  res.redirect("/login")
+ }
+}
 
 
 router.get('/', async function (req, res, next) {
 await admincontrol.listProduct().then((data)=>{
-  console.log(data,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
   const product = data
   const productdata = product.map((product)=>{
 return{
@@ -17,8 +22,8 @@ return{
   image:product.imageurl[0].filename
 }
   })
-  console.log(productdata,"/////////////////////////////////////////////////////////////////")
-  res.render("user/home", { user: req.session.user,productdata })
+ 
+  res.render("user/home", { user: req.session.user,productdata})
 })
   
 });
@@ -59,7 +64,6 @@ router.post("/login", (req, res) => {
       res.redirect("/login")
     }
     else if(response.blockedstatus){
-      console.log("done>>>>>>>>>>>>>>>>")
       req.session.blocked=true
       res.redirect("/login")
     }
@@ -86,6 +90,19 @@ router.get("/logout", (req, res) => {
 })
 
 
+//addtocart
 
+router.get("/addtocart/:id",verifyLogin,(req,res)=>{
+  console.log("done")
+  control.addtoCart(req.params.id,req.session.user._id).then((data)=>{
+    
+  })
+  res.redirect("/")
+  })
+
+  //cart
+  router.get("/cart",verifyLogin,(req,res)=>{
+    res.render("user/usercart")
+  })
 
 module.exports = router;
