@@ -6,6 +6,8 @@ const categoryimgupload= require("../utilities/imageUpload")
 const multer = require('multer');
 const { compareSync } = require('bcrypt');
 const usercontrol = require('../control/usercontrol');
+
+
 const verifyLogin=(req,res,next)=>{
   if(req.session.adminloggedin){
    next()
@@ -15,11 +17,6 @@ const verifyLogin=(req,res,next)=>{
  }
 
 
-
-
-
-
-/* GET users listing. */
 router.get('/', function (req, res, next) {
 
   if (req.session.adminloggedin) {
@@ -70,21 +67,21 @@ router.get("/listusers",verifyLogin,(req,res)=>{
 })
 
 //block user
-router.get("/blockuser/:id",(req,res)=>{
+router.get("/blockuser/:id",verifyLogin,(req,res)=>{
 admincontrol.blockUser(req.params.id).then((data)=>{
  
   res.redirect("/admin/listusers")
 })
 })
 //unblock user
-router.get("/unblockuser/:id",(req,res)=>{
+router.get("/unblockuser/:id",verifyLogin,(req,res)=>{
   admincontrol.unblockUser(req.params.id).then((data)=>{
     res.redirect("/admin/listusers")
   })
 })
 
 //add product
-router.get("/addproduct",(req,res)=>{
+router.get("/addproduct",verifyLogin,(req,res)=>{
   admincontrol.listCategory().then((categories)=>{
     res.render("admin/admin_addproduct",{categories}) 
   })
@@ -92,17 +89,15 @@ router.get("/addproduct",(req,res)=>{
 })
 
 //categories
-router.get("/categories",(req,res)=>{
+router.get("/categories",verifyLogin,(req,res)=>{
   admincontrol.listCategory().then((categories)=>{
-    console.log(categories,">>>>>>>>>>>>>>>>>>")
     res.render("admin/admin_categories",{categories})
   })
  
 })
 
 //add category
-router.post("/addcategory",categoryimgupload.single('image'),(req,res)=>{
- 
+router.post("/addcategory",verifyLogin,categoryimgupload.single('image'),(req,res)=>{
   admincontrol.addCategory(req.body,req.file).then((data)=>{ 
     res.redirect("/admin/categories")
   })
@@ -115,18 +110,15 @@ router.post("/addcategory",categoryimgupload.single('image'),(req,res)=>{
 // })
 
 //add product
-router.post("/add_product",categoryimgupload.array('image',4),(req,res)=>{
-  console.log("done")
+router.post("/add_product",verifyLogin,categoryimgupload.array('image',4),(req,res)=>{
   admincontrol.addproduct(req.body,req.files).then((data)=>{
     res.redirect("/admin/addproduct")
   })
 })
 
 //listproduct
-router.get("/listproducts",(req,res)=>{
-
+router.get("/listproducts",verifyLogin,(req,res)=>{
   admincontrol.listProduct().then((response)=>{
-    console.log(response,"::::::::::::::::::::::::::::::::")
     res.render("admin/admin_product",{response})
   })
 

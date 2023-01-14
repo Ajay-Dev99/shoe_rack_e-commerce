@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const control = require("../control/usercontrol")
-const admincontrol = require("../control/admincontrol")
+const admincontrol = require("../control/admincontrol");
+const { response } = require('../app');
 const verifyLogin=(req,res,next)=>{
  if(req.session.loggedIn){
   next()
@@ -34,7 +35,6 @@ router.get("/signup", (req, res) => {
 })
 
 router.post("/signup-user", (req, res) => {
-  console.log(req.body)
   control.toSingup(req.body).then((data) => {
     if (data.exist) {
       req.session.existed = true;
@@ -84,7 +84,6 @@ router.post("/login", (req, res) => {
 })
 
 router.get("/logout", (req, res) => {
-  console.log("logouts")
   req.session.destroy()
   res.redirect("/")
 })
@@ -93,7 +92,7 @@ router.get("/logout", (req, res) => {
 //addtocart
 
 router.get("/addtocart/:id",verifyLogin,(req,res)=>{
-  console.log("done")
+  console.log(req.session.user._id,"user///////////////////////")
   control.addtoCart(req.params.id,req.session.user._id).then((data)=>{
     
   })
@@ -102,7 +101,10 @@ router.get("/addtocart/:id",verifyLogin,(req,res)=>{
 
   //cart
   router.get("/cart",verifyLogin,(req,res)=>{
-    res.render("user/usercart")
+    control.getcartitems(req.session.user._id).then((response)=>{
+      res.render("user/usercart")
+    })
+    
   })
 
 module.exports = router;

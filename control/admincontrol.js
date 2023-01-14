@@ -11,7 +11,6 @@ module.exports = {
 
     //adminlogin
     doadminLogin: (adminData) => {
-        console.log(adminData.email, "admindata")
         return new Promise(async (resolve, reject) => {
             try {
                 let response = {}
