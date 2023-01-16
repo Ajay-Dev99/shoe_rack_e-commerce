@@ -74,8 +74,6 @@ module.exports = {
                 if (usercart) {
                     const alredyincart = await cart.findOne({ $and: [{ userId }, { products: { $elemMatch: { productId } } }] });
                     if (alredyincart) {
-
-
                         await cart.findOneAndUpdate({ $and: [{ userId }, { "products.productId": productId }] }, { $inc: { "products.$.quantity": 1 } });
                     } else {
                         const newProduct = {
@@ -116,10 +114,12 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             const usercart = await cart.findOne({ userId: userId })
             if (usercart) {
+                const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
                 resolve(productdetails, { status: true })
             } else {
                 resolve({ status: true })
             }
+
         })
     }
 }
