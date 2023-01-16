@@ -102,9 +102,19 @@ router.get("/addtocart/:id",verifyLogin,(req,res)=>{
   //cart
   router.get("/cart",verifyLogin,(req,res)=>{
     control.getcartitems(req.session.user._id).then((response)=>{
-      res.render("user/usercart")
+       console.log(response,"***********************************")
+      const userproducts=response
+       console.log(userproducts.products[0].productId,"======================")
+    res.render("user/usercart",{userproducts})
+
     })
     
+  })
+
+  //cart back button
+
+  router.get("/backhome",(req,res)=>{
+    res.redirect("/")
   })
 
 module.exports = router;

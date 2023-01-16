@@ -90,21 +90,21 @@ module.exports = {
         })
     },
     //add category
-    addCategory:(categoryDetails,img)=>{
-       
-        return new Promise(async(resolve,reject)=>{
-            
+    addCategory: (categoryDetails, img) => {
+
+        return new Promise(async (resolve, reject) => {
+
             try {
                 const newCategory = new categorycollection({
-                    categoryname:categoryDetails.categoryname,
-                    imageurl:img.filename
+                    categoryname: categoryDetails.categoryname,
+                    imageurl: img.filename
                 })
                 return await newCategory.save()
-                .then((data)=>{
-                    resolve(data)
-                }).catch((error)=>{
-                    throw error;
-                })
+                    .then((data) => {
+                        resolve(data)
+                    }).catch((error) => {
+                        throw error;
+                    })
             } catch (error) {
                 throw error
             }
@@ -115,12 +115,12 @@ module.exports = {
 
 
     //Listcategory
-    listCategory:()=>{
-        return new Promise(async(resolve,reject)=>{
+    listCategory: () => {
+        return new Promise(async (resolve, reject) => {
             try {
-                await categorycollection.find({}).lean().then((categories)=>{
+                await categorycollection.find({}).lean().then((categories) => {
                     resolve(categories)
-                }).catch((error)=>{
+                }).catch((error) => {
                     throw error
                 })
             } catch (error) {
@@ -130,23 +130,23 @@ module.exports = {
     },
 
     //add product
-    addproduct:(productDetails ,img)=>{
+    addproduct: (productDetails, img) => {
 
-        return new Promise(async(resolve,reject)=>{
+        return new Promise(async (resolve, reject) => {
             try {
                 const newProduct = new product({
-                    productname:productDetails.productname,
-                    productcategory:productDetails.productcategory,
-                    productMRP:productDetails.productMRP,
-                    productSRP:productDetails.productSRP,
-                    productstock:productDetails.productstock,
-                    imageurl:img,
-                    productdescription:productDetails.productdescription
+                    productname: productDetails.productname,
+                    productcategory: productDetails.productcategory,
+                    productMRP: productDetails.productMRP,
+                    productSRP: productDetails.productSRP,
+                    productstock: productDetails.productstock,
+                    imageurl: img,
+                    productdescription: productDetails.productdescription
                 })
-            
-               return await newProduct.save().then((data)=>{
+
+                return await newProduct.save().then((data) => {
                     resolve(data)
-                }).catch((error)=>{
+                }).catch((error) => {
                     throw error
                 })
 
@@ -159,15 +159,15 @@ module.exports = {
 
     //List product
 
-    listProduct:()=>{
-        return new Promise(async(resolve,reject)=>{
+    listProduct: () => {
+        return new Promise(async (resolve, reject) => {
             try {
-        await  product.find({}).lean().then((products)=>{
-            
-            resolve(products)
-        }) .catch((error)=>{
-            throw error
-        })    
+                await product.find({}).lean().then((products) => {
+
+                    resolve(products)
+                }).catch((error) => {
+                    throw error
+                })
             } catch (error) {
                 throw error
             }

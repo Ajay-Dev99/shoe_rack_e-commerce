@@ -68,18 +68,13 @@ module.exports = {
     //add to cart
 
     addtoCart: (productId, userId) => {
-        console.log(productId, "<<<<<<<<<productid>>>>>>>>>"),
-            console.log(userId, "<<<<<<<<<userid>>>>>>>>>>>>>")
         return new Promise(async (resolve, reject) => {
             try {
                 let usercart = await cart.findOne({ userId: userId })
-                console.log(usercart, "<<<<<<<<<<<<<<usercart>>>>>>>")
                 if (usercart) {
-
                     const alredyincart = await cart.findOne({ $and: [{ userId }, { products: { $elemMatch: { productId } } }] });
-                    console.log(alredyincart, "already in cart")
                     if (alredyincart) {
-                        value = 1
+
 
                         await cart.findOneAndUpdate({ $and: [{ userId }, { "products.productId": productId }] }, { $inc: { "products.$.quantity": 1 } });
                     } else {
@@ -120,11 +115,11 @@ module.exports = {
 
         return new Promise(async (resolve, reject) => {
             const usercart = await cart.findOne({ userId: userId })
-            console.log(usercart, ">>>>>>>>>>>>>>>>>>33")
-            if(usercart){
-                
+            if (usercart) {
+                resolve(productdetails, { status: true })
+            } else {
+                resolve({ status: true })
             }
-
         })
     }
 }

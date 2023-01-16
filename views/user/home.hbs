@@ -1,3 +1,5 @@
+<link rel="stylesheet" href="/stylesheets/userhomestyle.css">
+
 <header style="width: 100%;">
     <nav class="navbar navbar-expand-lg navbar-light header ">
         <div class="container-fluid fs-4 d-flex">
@@ -19,7 +21,7 @@
 
 
             <div class="d-flex justify-content-center align-items-center">
-                <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart </span></a>
+                <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart</span></a>
 
                 <div class="dropdown pe-3">
                     <button class="btn dropdown-toggle text-white " type="button" id="dropdownMenuButton1"
@@ -28,7 +30,7 @@
                         {{user.name}}
                         {{else}}
 
-                        <span class="material-icons-sharp p-2 text-dark text-white">person</span>
+                      <span class="material-icons-sharp p-2 text-dark text-white">person</span>
 
                         {{/if}}
 
@@ -51,23 +53,41 @@
 
 
 
-<div class="container mt-4">
+{{!-- <div class="container mt-4">
     <h1>New Arrivals</h1>
     <div class="row">
         {{#each productdata}}
         <div class="col-lg-3 col-sm-6 mb-4 p-3">
-            <div class=" d-flex flex-column align-items-center justify-content-center rounded product-item p-3  border bg-light">
+            <div
+                class=" d-flex flex-column align-items-center justify-content-center rounded product-item p-3  border bg-light">
                 <div class="product rounded">
                     <img src="/images/categoryimage/{{this.image}}" class="card-img-top" alt="">
                 </div>
                 <div class="title pt-4 pb-1">{{this.name}}</div>
-                
+
                 <div class="price">₹ {{this.price}}</div>
                 <div class="d-flex align-content-center justify-content-center">
-                     <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to card</a>
-                     </div>
+                    <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to card</a>
+                </div>
             </div>
         </div>
-         {{/each}}
+        {{/each}}
     </div>
+</div> --}}
+
+<div class="product-container">
+
+{{#each productdata}}
+    <div class="product-card p-2">
+        <img src="/images/categoryimage/{{this.image}}"
+            alt="Product Name" class="product-image">
+        <h3 class="product-name">{{this.name}}</h3>
+       
+        <div class="product-price">₹ {{this.price}}</div>
+        {{!-- <button class="add-to-cart-button">Add to Cart</button> --}}
+         <div class="d-flex align-content-center justify-content-center">
+                    <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to Cart</a>
+                </div>
+    </div>
+ {{/each}}
 </div>
