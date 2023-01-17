@@ -1,28 +1,33 @@
 <link rel="stylesheet" href="/stylesheets/userhomestyle.css">
-
 <header style="width: 100%;">
     <nav class="navbar navbar-expand-lg navbar-light header ">
         <div class="container-fluid fs-4 d-flex">
             <div class=".img-fluid me-3">
                 <img class="rounded-pill" src="/images/logoimage/download.png" alt="" height="80px" width="80px">
             </div>
-
-
             <div>
                 <form class="d-flex">
                     <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search"
                         style="width: 500px;">
-                    <button class="btn btn-outline-success" type="submit">Search</button>
+                    {{!-- <button class="btn btn-outline-success" type="submit">Search</button> --}}
                 </form>
             </div>
 
-
-
-
-
             <div class="d-flex justify-content-center align-items-center">
-                <div class="pt-2">
-                <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart</span></a>
+                <div class="pt-2 me-2">
+                {{!-- <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart</span></a> --}}
+                             <a href="/cart/" class="position-relative">
+              <span class="material-icons-sharp text-white">shopping_cart
+              </span>
+              <span class="position-absolute   translate-middle badge rounded-pill bg-danger p-1" id="cart-count">
+                {{#if usercart}}
+               <small> {{usercart}} </small>
+                {{else}}
+                0 
+                {{/if}}
+                </span>
+             
+            </a>  
     </div>
                 <div class="dropdown pe-3">
                     <button class="btn dropdown-toggle text-white " type="button" id="dropdownMenuButton1"
@@ -51,31 +56,6 @@
         </div>
     </nav>
 </header>
-
-
-
-{{!-- <div class="container mt-4">
-    <h1>New Arrivals</h1>
-    <div class="row">
-        {{#each productdata}}
-        <div class="col-lg-3 col-sm-6 mb-4 p-3">
-            <div
-                class=" d-flex flex-column align-items-center justify-content-center rounded product-item p-3  border bg-light">
-                <div class="product rounded">
-                    <img src="/images/categoryimage/{{this.image}}" class="card-img-top" alt="">
-                </div>
-                <div class="title pt-4 pb-1">{{this.name}}</div>
-
-                <div class="price">₹ {{this.price}}</div>
-                <div class="d-flex align-content-center justify-content-center">
-                    <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to card</a>
-                </div>
-            </div>
-        </div>
-        {{/each}}
-    </div>
-</div> --}}
-
 <div class="product-container">
 
 {{#each productdata}}
@@ -87,8 +67,31 @@
         <div class="product-price">₹ {{this.price}}</div>
         {{!-- <button class="add-to-cart-button">Add to Cart</button> --}}
          <div class="d-flex align-content-center justify-content-center">
-                    <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to cart</a>
+                    {{!-- <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to cart</a> --}}
+                    <button onclick="addTocart('{{this._id}}')" class="btn btn-primary"  >Add to cart</button>
                 </div>
     </div>
  {{/each}}
 </div>
+<script>
+function addTocart(proId) {
+    console.log(proId,"????")
+    $.ajax({
+        url: "/addtocart/" + proId,
+        method: "get",
+        success: (response) => {
+            console.log(response,"sdfsssssssssss")
+            if(response.status){
+                console.log(response)
+                
+                let count=document.getElementById("cart-count").innerHTML;
+               
+                count=parseInt(count)+1
+                document.getElementById("cart-count").innerHTML=count
+               
+            }
+        }
+
+    })
+}
+</script>

@@ -2,7 +2,9 @@
 
 
 const loginform = document.getElementById("loginform");
-loginform.addEventListener("submit", validateLogin)
+if(loginform){
+    loginform.addEventListener("submit", validateLogin)
+}
 
 function validateLogin(e) {
 

@@ -81,6 +81,7 @@ module.exports = {
                             quantity: 1
                         }
                         await cart.findOneAndUpdate({ userId: userId }, { $inc: { totalquantity: 1 }, $push: { products: newProduct } })
+                        resolve()
                     }
 
                 } else {
@@ -95,7 +96,7 @@ module.exports = {
                         totalquantity: 1
                     })
                     await newcart.save().then((data) => {
-                        resolve()
+                        resolve(data)
                     }).catch((error) => {
                         throw error
                     })
@@ -115,9 +116,9 @@ module.exports = {
             const usercart = await cart.findOne({ userId: userId })
             if (usercart) {
                 const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
-                resolve(productdetails, { status: true })
+                resolve(productdetails, { cartexist: true })
             } else {
-                resolve({ status: true })
+                resolve({ cartexist: false })
             }
 
         })

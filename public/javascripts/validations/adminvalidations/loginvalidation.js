@@ -1,6 +1,8 @@
 const adminlogin = document.getElementById("adminlogin")
+if(adminlogin){
+    adminlogin.addEventListener("submit", logvalidation)
 
-adminlogin.addEventListener("submit", logvalidation)
+}
 
 function logvalidation(e) {
 

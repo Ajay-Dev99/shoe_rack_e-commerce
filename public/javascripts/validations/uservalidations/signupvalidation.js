@@ -1,7 +1,10 @@
 
 
 const form = document.getElementById("signup")
-form.addEventListener("submit", validateForm)
+if(form){
+    form.addEventListener("submit", validateForm)
+
+}
 
 function validateForm(e) {
 
