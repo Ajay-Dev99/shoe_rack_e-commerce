@@ -11,8 +11,29 @@ const verifyLogin = (req, res, next) => {
   }
 }
 
+const cartCount = (req, res, next) => {
+  if (req.session.loggedIn) {
+    control.getcartitems(req.session.user._id).then((data) => {
+      if(data.cartexist){
+        res.usercart = data.productdetails.totalquantity  
+        next();
+      }
+      else{
+        res.usercart=0;
+        next();
+      }
+     
+    })
+  } else {
+    let usercart = 0;
+    res.usercart = usercart
+    next();
+  }
 
-router.get('/', async function (req, res, next) {
+}
+
+router.get('/', cartCount, async function (req, res,) {
+
   await admincontrol.listProduct().then((data) => {
     const product = data
     const productdata = product.map((product) => {
@@ -23,20 +44,8 @@ router.get('/', async function (req, res, next) {
         image: product.imageurl[0].filename
       }
     })
-    // let usercart;
-    if( req.session.loggedIn){
-      control.getcartitems(req.session.user._id).then((data)=>{
-     let   usercart=data.totalquantity
-    
-     res.render("user/home", { user: req.session.user, productdata,usercart})  
-      })
-    }else{
-      res.render("user/home", { user: req.session.user, productdata})
-    }
-    
+    res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
   })
-
-
 })
 
 
@@ -104,23 +113,35 @@ router.get("/logout", (req, res) => {
 //addtocart
 
 router.get("/addtocart/:id", verifyLogin, (req, res) => {
-console.log("api called")
   control.addtoCart(req.params.id, req.session.user._id).then((data) => {
-    res.json({status:true})
+    res.json({ status: true })
   })
-  // res.redirect("/")
 })
 
 //cart
-router.get("/cart", verifyLogin, (req, res) => {
-  control.getcartitems(req.session.user._id).then((response) => { 
-    const userproducts = response
-    res.render("user/usercart", { userproducts })
+router.get("/cart", verifyLogin, cartCount, (req, res) => {
+  control.getcartitems(req.session.user._id).then((response) => {
+    if(response.cartexist){
+      const userproducts = response.productdetails
+      res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart })
+    }else{
+      res.render("user/cartempty",{user: req.session.user, usercart: res.usercart})
+    }
+   
 
   })
 
 })
 
+//cart increment
+
+router.post("/change-product-quantity",(req,res)=>{
+  console.log("done")
+  console.log(req.body)
+  control.changeproductquantity(req.body).then((data)=>{
+    console.log(data)
+  })
+})
 
 
 module.exports = router;

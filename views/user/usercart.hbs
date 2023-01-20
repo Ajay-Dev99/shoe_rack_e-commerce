@@ -1,23 +1,7 @@
 
 <link rel="stylesheet" href="/stylesheets/cartstyle.css">
-<div class="container">
-  <div class="navbar">
-    <div class="logo">
-      <a href="index.html"><img src="https://i.ibb.co/kDVwgwp/logo.png" alt="RedStore" width="125px" /></a>
-    </div>
-    <nav>
-      <ul id="MenuItems">
-        <li><a href="/">Home</a></li>
-        <li><a href="product.html">Products</a></li>
-        <li><a href="#">About</a></li>
-        <li><a href="#">Contact</a></li>
-        <li><a href="account.html">Account</a></li>
-      </ul>
-    </nav>
-    <a href="cart.html"><img src="https://i.ibb.co/PNjjx3y/cart.png" alt="" width="30px" height="30px" /></a>
-    <img src="https://i.ibb.co/6XbqwjD/menu.png" alt="" class="menu-icon" onclick="menutoggle()" />
-  </div>
-</div>
+<link rel="stylesheet" href="/stylesheets/style.css">
+{{>userheader}}
 
 <!-- cart items details -->
 
@@ -42,9 +26,12 @@
           </div>
         </div>
       </td>
-      <td><input type="number" value="{{this.quantity}}" /> </td>
+      <td>
+       <button class="px-2 rounded text-white" style="background-color: #193D56;" onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',-1)">-</button>
+        <input type="text" class="rounded text-dark text-center" disabled value="{{this.quantity}}" /> 
+        <button class="px-2 rounded text-white" style="background-color: #193D56;" onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',1)">+</button>
+        </td>
       <td>₹{{this.productId.productSRP}}</td>
-   
     </tr>
      {{/each}}
     
@@ -115,7 +102,7 @@
 </div>
 
 <script>
-  var MenuItems = document.getElementById('MenuItems');
+  const MenuItems = document.getElementById('MenuItems');
   MenuItems.style.maxHeight = '0px';
 
   function menutoggle() {
@@ -125,4 +112,22 @@
       MenuItems.style.maxHeight = '0px';
     }
   }
+</script>
+
+<script>
+  function changeQuantity(cartId,proId,count){
+    $.ajax({
+      url:'/change-product-quantity',
+      data:{
+        cart:cartId,
+        product:proId,
+        count:count
+      },
+      method:'post',
+      success:(response)=>{
+        alert(response)
+      }
+    })
+  }
+
 </script>

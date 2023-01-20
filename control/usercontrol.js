@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt")
 const e = require("express")
 const dbConnect = require("../connection/dbconnection")
 const cart = require("../models/cartmodel")
+const { default: mongoose } = require("mongoose")
 module.exports = {
     toSingup: (userdata) => {
 
@@ -111,16 +112,33 @@ module.exports = {
     //display cart items
 
     getcartitems: (userId) => {
-
         return new Promise(async (resolve, reject) => {
             const usercart = await cart.findOne({ userId: userId })
             if (usercart) {
                 const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
-                resolve(productdetails, { cartexist: true })
+                resolve({productdetails,  cartexist: true })
             } else {
                 resolve({ cartexist: false })
             }
 
         })
-    }
+    },
+
+    //addproduct quantity
+
+    changeproductquantity:async(details)=>{
+        console.log(details,"details")
+        return new Promise(async(resolve,reject)=>{
+          const cartid=details.cart
+          console.log(cartid)
+          const productId=details.product
+          const count=parseInt(details.count)
+          const j=await  cart.findOneAndUpdate({ _id:cartid,products:{$elemMatch:{productId:productId}}},{$inc:{"products.$.quantity":count}});
+          console.log("kkkkk",j);
+            }).then(()=>{
+                resolve()
+            })
+        }
+
+    
 }
