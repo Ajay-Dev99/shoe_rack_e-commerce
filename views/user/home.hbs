@@ -20,17 +20,17 @@
 
 <script>
 function addTocart(proId) {
-    console.log(proId,"????")
+    
     $.ajax({
         url: "/addtocart/" + proId,
         method: "get",
         success: (response) => {
            
             if(response.status){
-                console.log(response)
                 let count=document.getElementById("cart-count").innerHTML;
                 count=parseInt(count)+1
                 document.getElementById("cart-count").innerHTML=count
+               swal("product added to cart!", "success!", "success");
                
             }
         }

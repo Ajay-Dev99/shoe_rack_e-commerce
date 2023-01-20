@@ -121,12 +121,10 @@ router.get("/addtocart/:id", verifyLogin, (req, res) => {
 //cart
 router.get("/cart", verifyLogin, cartCount, (req, res) => {
   control.getcartitems(req.session.user._id).then((response) => {
-    if(response.cartexist){
+    
       const userproducts = response.productdetails
       res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart })
-    }else{
-      res.render("user/cartempty",{user: req.session.user, usercart: res.usercart})
-    }
+   
    
 
   })
@@ -136,12 +134,13 @@ router.get("/cart", verifyLogin, cartCount, (req, res) => {
 //cart increment
 
 router.post("/change-product-quantity",(req,res)=>{
-  console.log("done")
-  console.log(req.body)
-  control.changeproductquantity(req.body).then((data)=>{
-    console.log(data)
+  control.changeproductquantity(req.body).then((response)=>{
+      res.json(response)
   })
 })
+
+//Remove cart items
+
 
 
 module.exports = router;

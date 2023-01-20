@@ -1,8 +1,10 @@
 
 <link rel="stylesheet" href="/stylesheets/cartstyle.css">
 <link rel="stylesheet" href="/stylesheets/style.css">
+<link rel="stylesheet" href="/stylesheets/cartempty.css">
 {{>userheader}}
 
+{{#if userproducts}}
 <!-- cart items details -->
 
 <div class="small-container cart-page">
@@ -22,13 +24,14 @@
             <p>{{this.productId.productname}}</p>
             <small>Price ₹{{this.productId.productSRP}}</small>
             <br />
-            <a href="#">Remove</a>
+            <a href="/removecartitem/{{this.productId._id}}">Remove</a>
           </div>
         </div>
       </td>
       <td>
        <button class="px-2 rounded text-white" style="background-color: #193D56;" onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',-1)">-</button>
-        <input type="text" class="rounded text-dark text-center" disabled value="{{this.quantity}}" /> 
+        {{!-- <input type="text" class="rounded text-dark text-center" id="{{this.productId._id}}" disabled value="{{this.quantity}}" />  --}}
+        <span class="rounded text-dark text-center px-3 border" id="{{this.productId._id}}">{{this.quantity}}</span>
         <button class="px-2 rounded text-white" style="background-color: #193D56;" onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',1)">+</button>
         </td>
       <td>₹{{this.productId.productSRP}}</td>
@@ -55,7 +58,6 @@
   </div>
 </div>
 
-<!-- Footer -->
 <div class="footer">
   <div class="container">
     <div class="row">
@@ -100,6 +102,43 @@
     <p class="copyright">Copyright &copy; 2021 - Shoe Rack</p>
   </div>
 </div>
+{{else}}
+
+<div class="container-fluid  mt-100">
+				 <div class="row">
+				 
+					<div class="col-md-12">
+					
+							<div class="card">
+						<div class="card-header">
+						<h5>Cart</h5>
+						</div>
+						<div class="card-body cart">
+								<div class="col-sm-12 empty-cart-cls text-center">
+									<img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
+									<h3><strong>Your Cart is Empty</strong></h3>
+									<h4>Add something to make me happy :)</h4>
+									<a href="/" class="btn btn-primary cart-btn-transform m-3" data-abc="true">continue shopping</a>
+									
+								
+								</div>
+						</div>
+				</div>
+						
+					
+					</div>
+				 
+				 </div>
+				
+				</div>
+
+
+
+
+
+{{/if}}
+<!-- Footer -->
+
 
 <script>
   const MenuItems = document.getElementById('MenuItems');
@@ -116,16 +155,26 @@
 
 <script>
   function changeQuantity(cartId,proId,count){
+  let quantity=parseInt(document.getElementById(proId).innerHTML)
     $.ajax({
       url:'/change-product-quantity',
       data:{
         cart:cartId,
         product:proId,
-        count:count
+        count:count,
+        quantity:quantity
+       
       },
       method:'post',
-      success:(response)=>{
-        alert(response)
+      success:(response)=>{  
+      if(response.removeProduct){
+        swal("Product removed from the cart").then(()=>{
+           location.reload()
+        })
+       
+      }else{
+        document.getElementById(proId).innerHTML=quantity+count
+      }
       }
     })
   }

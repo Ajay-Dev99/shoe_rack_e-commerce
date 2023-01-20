@@ -4,6 +4,7 @@ const e = require("express")
 const dbConnect = require("../connection/dbconnection")
 const cart = require("../models/cartmodel")
 const { default: mongoose } = require("mongoose")
+const { response } = require("../app")
 module.exports = {
     toSingup: (userdata) => {
 
@@ -116,7 +117,13 @@ module.exports = {
             const usercart = await cart.findOne({ userId: userId })
             if (usercart) {
                 const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
-                resolve({productdetails,  cartexist: true })
+                const totalquantity = parseInt(productdetails.totalquantity)
+                if (totalquantity >= 1) {
+                    resolve({ productdetails, cartexist: true })
+                } else {
+                    resolve({ cartexist: false })
+                }
+
             } else {
                 resolve({ cartexist: false })
             }
@@ -126,19 +133,28 @@ module.exports = {
 
     //addproduct quantity
 
-    changeproductquantity:async(details)=>{
-        console.log(details,"details")
-        return new Promise(async(resolve,reject)=>{
-          const cartid=details.cart
-          console.log(cartid)
-          const productId=details.product
-          const count=parseInt(details.count)
-          const j=await  cart.findOneAndUpdate({ _id:cartid,products:{$elemMatch:{productId:productId}}},{$inc:{"products.$.quantity":count}});
-          console.log("kkkkk",j);
-            }).then(()=>{
-                resolve()
-            })
-        }
+    changeproductquantity: async (details) => {
+        const quantity = details.quantity;
+        const cartid = details.cart
+        const productId = details.product
+        const count = parseInt(details.count)
+        return new Promise(async (resolve, reject) => {
+            if (quantity == 1 && count == -1) {
+                await cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, {
+                    $pull: { products: { productId: productId } },
+                    $inc: { totalquantity: count }
+                }, {}).then((response) => {
+                    resolve({ removeProduct: true });
+                })
 
-    
+            } else {
+
+                await cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, { $inc: { "products.$.quantity": count } }).then((response) => {
+                    resolve(response)
+                })
+            }
+        })
+    }
+
+
 }
