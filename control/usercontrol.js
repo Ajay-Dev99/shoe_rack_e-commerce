@@ -154,6 +154,32 @@ module.exports = {
                 })
             }
         })
+    },
+
+    //Remove product from cart
+
+    removeCartitem:(details)=>{
+        const cartid = details.cart
+        const productId = details.product
+        return new Promise((resolve,reject)=>{
+            cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, {
+                $pull: { products: { productId: productId } },
+                $inc: { totalquantity: -1 }
+            }).then((data)=>{
+               resolve({removeProduct:true})
+            })
+        })
+    },
+
+    //total price of the cart items
+
+    totalPrice:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+
+            const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
+            console.log(productdetails.products[0].productId.productSRP,";;;;;;;;")
+            resolve(productdetails)
+        })
     }
 
 

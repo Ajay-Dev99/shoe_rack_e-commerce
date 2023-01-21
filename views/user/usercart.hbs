@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="/stylesheets/cartstyle.css">
 <link rel="stylesheet" href="/stylesheets/style.css">
 <link rel="stylesheet" href="/stylesheets/cartempty.css">
@@ -14,9 +13,9 @@
       <th>Quantity</th>
       <th>Subtotal</th>
     </tr>
-{{#each userproducts.products}}
+    {{#each userproducts.products}}
     <tr>
-      
+
       <td>
         <div class="cart-info">
           <img src="/images/categoryimage/{{this.productId.imageurl.[0].filename}}" alt="" />
@@ -24,20 +23,25 @@
             <p>{{this.productId.productname}}</p>
             <small>Price ₹{{this.productId.productSRP}}</small>
             <br />
-            <a href="/removecartitem/{{this.productId._id}}">Remove</a>
+            {{!-- <a href="/removecartitem/{{this.productId._id}}">Remove</a> --}}
+            <button class="btn text-danger my-2"
+              onclick="removeitem('{{../userproducts._id}}','{{this.productId._id}}')"> Remove</button>
           </div>
         </div>
       </td>
       <td>
-       <button class="px-2 rounded text-white" style="background-color: #193D56;" onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',-1)">-</button>
-        {{!-- <input type="text" class="rounded text-dark text-center" id="{{this.productId._id}}" disabled value="{{this.quantity}}" />  --}}
+        <button class="px-2 rounded text-white" style="background-color: #193D56;"
+          onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',-1)">-</button>
+        {{!-- <input type="text" class="rounded text-dark text-center" id="{{this.productId._id}}" disabled
+          value="{{this.quantity}}" /> --}}
         <span class="rounded text-dark text-center px-3 border" id="{{this.productId._id}}">{{this.quantity}}</span>
-        <button class="px-2 rounded text-white" style="background-color: #193D56;" onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',1)">+</button>
-        </td>
+        <button class="px-2 rounded text-white" style="background-color: #193D56;"
+          onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',1)">+</button>
+      </td>
       <td>₹{{this.productId.productSRP}}</td>
     </tr>
-     {{/each}}
-    
+    {{/each}}
+
   </table>
 
   <div class="total-price">
@@ -105,32 +109,32 @@
 {{else}}
 
 <div class="container-fluid  mt-100">
-				 <div class="row">
-				 
-					<div class="col-md-12">
-					
-							<div class="card">
-						<div class="card-header">
-						<h5>Cart</h5>
-						</div>
-						<div class="card-body cart">
-								<div class="col-sm-12 empty-cart-cls text-center">
-									<img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
-									<h3><strong>Your Cart is Empty</strong></h3>
-									<h4>Add something to make me happy :)</h4>
-									<a href="/" class="btn btn-primary cart-btn-transform m-3" data-abc="true">continue shopping</a>
-									
-								
-								</div>
-						</div>
-				</div>
-						
-					
-					</div>
-				 
-				 </div>
-				
-				</div>
+  <div class="row">
+
+    <div class="col-md-12">
+
+      <div class="card">
+        <div class="card-header">
+          <h5>Cart</h5>
+        </div>
+        <div class="card-body cart">
+          <div class="col-sm-12 empty-cart-cls text-center">
+            <img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
+            <h3><strong>Your Cart is Empty</strong></h3>
+            <h4>Add something to make me happy :)</h4>
+            <a href="/" class="btn btn-primary cart-btn-transform m-3" data-abc="true">continue shopping</a>
+
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
 
 
 
@@ -154,29 +158,62 @@
 </script>
 
 <script>
-  function changeQuantity(cartId,proId,count){
-  let quantity=parseInt(document.getElementById(proId).innerHTML)
+  function changeQuantity(cartId, proId, count) {
+    let quantity = parseInt(document.getElementById(proId).innerHTML)
     $.ajax({
-      url:'/change-product-quantity',
-      data:{
-        cart:cartId,
-        product:proId,
-        count:count,
-        quantity:quantity
-       
+      url: '/change-product-quantity',
+      data: {
+        cart: cartId,
+        product: proId,
+        count: count,
+        quantity: quantity
+
       },
-      method:'post',
-      success:(response)=>{  
-      if(response.removeProduct){
-        swal("Product removed from the cart").then(()=>{
-           location.reload()
-        })
-       
-      }else{
-        document.getElementById(proId).innerHTML=quantity+count
-      }
+      method: 'post',
+      success: (response) => {
+        if (response.removeProduct) {
+          swal("Product removed from the cart").then(() => {
+            location.reload()
+          })
+
+        } else {
+          document.getElementById(proId).innerHTML = quantity + count
+        }
       }
     })
   }
 
+</script>
+
+<script>
+  function removeitem(cartId, proId) {
+    swal({
+      title: "Are you sure?",
+      text: "The Product will be deleted from the cart!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+      .then((willDelete) => {
+        if (willDelete) {
+          $.ajax({
+            url: '/removecartitem',
+            data: {
+              cart: cartId,
+              product: proId
+            },
+            method: 'post',
+            success: (response) => {
+              if (response.removeProduct) {
+
+        location.reload()
+              }
+            }
+          })
+        } else {
+          swal("Cancelled!");
+        }
+      }).then(() => {
+      })
+  }
 </script>

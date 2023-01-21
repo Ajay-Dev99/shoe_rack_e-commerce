@@ -119,14 +119,16 @@ router.get("/addtocart/:id", verifyLogin, (req, res) => {
 })
 
 //cart
-router.get("/cart", verifyLogin, cartCount, (req, res) => {
+router.get("/cart", verifyLogin, cartCount, async(req, res) => {
+  let demo=await control.totalPrice(req.session.user._id).then((response)=>{
+    console.log("response",response)
+  })
+  console.log(demo,"demo")
   control.getcartitems(req.session.user._id).then((response) => {
     
       const userproducts = response.productdetails
       res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart })
    
-   
-
   })
 
 })
@@ -141,6 +143,12 @@ router.post("/change-product-quantity",(req,res)=>{
 
 //Remove cart items
 
+router.post("/removecartitem",(req,res)=>{
+  console.log("done999")
+  control.removeCartitem(req.body).then((response)=>{
+   res.json(response)
+  })
+})
 
 
 module.exports = router;
