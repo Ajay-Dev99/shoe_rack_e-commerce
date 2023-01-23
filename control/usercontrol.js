@@ -5,6 +5,7 @@ const dbConnect = require("../connection/dbconnection")
 const cart = require("../models/cartmodel")
 const { default: mongoose } = require("mongoose")
 const { response } = require("../app")
+const product = require("../models/productmodel")
 module.exports = {
     toSingup: (userdata) => {
 
@@ -116,7 +117,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             const userid = new mongoose.Types.ObjectId(userId)
             const usercart = await cart.findOne({ userId: userid })
-           
+
             if (usercart) {
                 const productDetails = await cart.aggregate([
                     { $match: { userId: userid } },
@@ -161,25 +162,26 @@ module.exports = {
 
                         }
                     },
-                   
+
                     {
                         $project: {
                             totalquantity: 1,
                             productId: 1,
                             quantity: 1,
                             cartproduct: 1,
-                            subtotal:1
+                            subtotal: 1
                         }
                     },
                 ])
-                const productdetails=productDetails
-                let totalquantity;
-                if(productdetails.length !=0){
-                    
-                     totalquantity = parseInt(productdetails[0].totalquantity)
+                const productdetails = productDetails
+                console.log(productdetails, "productdetails")
 
+                let totalquantity;
+                if (productdetails.length != 0) {
+
+                    totalquantity = parseInt(productdetails[0].totalquantity)
                 }
-                
+
 
                 if (totalquantity >= 1) {
                     resolve({ productdetails, cartexist: true })
@@ -245,13 +247,13 @@ module.exports = {
         })
     },
 
-     //find sum of total price
+    //find sum of total price
 
-     totalAmount:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
-            const userid=new mongoose.Types.ObjectId(userId)
-            const usercart=await cart.findOne({userId:userid})
-            if(usercart){
+    totalAmount: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const userid = new mongoose.Types.ObjectId(userId)
+            const usercart = await cart.findOne({ userId: userid })
+            if (usercart) {
 
                 const totalAmount = await cart.aggregate([
                     { $match: { userId: userid } },
@@ -296,38 +298,48 @@ module.exports = {
 
                         }
                     },
-                   
+
                     {
                         $project: {
-                            subtotal:1
+                            subtotal: 1
                         }
-                    },{
+                    }, {
                         $group: {
-                        _id: null,
-                        total: { $sum: "$subtotal" }
+                            _id: null,
+                            total: { $sum: "$subtotal" }
                         }
-                   },{
-                    $project:{
-                        _id:0,
-                        total:1
+                    }, {
+                        $project: {
+                            _id: 0,
+                            total: 1
+                        }
                     }
-                   }
                 ])
-                if(totalAmount.length!=0){
-
-                console.log(totalAmount[0].total,"totalamount")
-                resolve(totalAmount[0].total)
+                let total;
+                if (totalAmount.length != 0) {
+                    total = totalAmount[0].total
+                    // console.log(totalAmount[0].total,"totalamount")
 
                 }
+                resolve(total)
             }
         })
 
-     }
+    },
+
+    //singleproduct view
+
+    productView:(proId)=>{
+        return new Promise(async(resolve,reject)=>{
+            const productDetails=await product.findOne({_id:proId})
+            console.log(productDetails,"????????????")
+            resolve(productDetails)
+        })
+    }
 
 
 
 }
 
-  
 
-   
+

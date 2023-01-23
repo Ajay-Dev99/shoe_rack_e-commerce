@@ -48,7 +48,7 @@ router.get('/',cartCount, async function (req, res,) {
         image: product.imageurl[0].filename
       }
     })
-    res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
+    res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart})
   })
 })
 
@@ -127,7 +127,6 @@ router.get("/cart", verifyLogin, cartCount,async(req, res) => {
   control.getcartitems(req.session.user._id).then( async(response) => {
       const userproducts = response.productdetails
     const totalAmount=await control.totalAmount(req.session.user._id)
-    console.log(totalAmount,">>>>>>>")
       res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart,totalAmount})
    
   })
@@ -151,5 +150,19 @@ router.post("/removecartitem",(req,res)=>{
   })
 })
 
+//single product view
+
+ router.get("/productview/:id",cartCount,(req,res)=>{
+  control.productView(req.params.id).then((response)=>{
+    console.log(response,"response????????????");
+    const productdetails=response
+    res.render("user/productview",{user: req.session.user,usercart: res.usercart,productdetails})
+  })
+ })
+
+//checkout
+router.get("/placeorder",(req,res)=>{
+  res.render("user/orderpage")
+})
 
 module.exports = router;

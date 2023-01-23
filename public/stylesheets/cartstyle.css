@@ -7,9 +7,7 @@
     box-sizing: border-box;
   }
   
-  body {
-    font-family: "Poppins", sans-serif;
-  }
+  
   
   .navbar {
     display: flex;
@@ -69,16 +67,7 @@
     font-size: 50px;
     line-height: 60px;
     margin: 25px 0;
-  }
-  
-  
-  
-  .btn:hover {
-    background: #563434;
-  }
-  
-  
-  
+  } 
   .header .row {
     margin-top: 70px;
   }

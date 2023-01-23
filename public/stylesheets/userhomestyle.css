@@ -28,7 +28,7 @@
   
   .product-name {
     font-size: 1.25rem;
-    font-weight: bold;
+    font-weight: unset;
     margin: 10px 0;
     text-align: center;
   }
@@ -40,10 +40,13 @@
   }
   
   .product-price {
+    display: flex;
     font-size: 1.125rem;
     font-weight: bold;
     margin: 10px 0;
     color: orange;
+    align-items: center;
+    justify-content: center;
   }
   
   .add-to-cart-button {

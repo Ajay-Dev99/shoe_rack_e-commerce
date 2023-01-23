@@ -47,8 +47,15 @@
   <div class="total-price">
     <table>
       <tr>
-        <td>Subtotal</td>
-        <td>₹{{totalAmount}}</td>
+        <td><h3>Subtotal</h3></td>
+        <td><h3>₹<span id="subtotal">{{totalAmount}}</span></h3></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td>
+             <a href="/placeorder" class="btn btn-success text-center"><h5>Place order</h5></a>
+           {{!-- <button type="button" class="btn btn-success text-center"><h5>Place order</h5></button> --}}
+          </td> 
       </tr>
     
     </table>
@@ -171,8 +178,11 @@
         } else {
           document.getElementById(proId).innerHTML = quantity + count
           const amount=parseInt(document.getElementById(proId+"total").innerHTML)
-          console.log(amount*(quantity+count),"amount")
+          {{!-- console.log(amount*(quantity+count),"amount") --}}
           document.getElementById(proId+"count").innerHTML=amount*(quantity+count)
+          const subtotal=parseInt(document.getElementById(proId+"total").innerHTML)
+          document.getElementById("subtotal").innerHTML=parseInt(document.getElementById("subtotal").innerHTML)+(subtotal*count)
+
         }
       }
     })

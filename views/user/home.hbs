@@ -1,40 +1,96 @@
 <link rel="stylesheet" href="/stylesheets/userhomestyle.css">
-{{>userheader}}
-<div class="product-container">
+<link rel="stylesheet" href="/stylesheets/cartstyle.css">
 
-{{#each productdata}}
-    <div class="product-card p-2">
-        <img src="/images/categoryimage/{{this.image}}"
-            alt="Product Name" class="product-image">
-        <h3 class="product-name">{{this.name}}</h3>
-       
-        <div class="product-price">₹ {{this.price}}</div>
-        {{!-- <button class="add-to-cart-button">Add to Cart</button> --}}
-         <div class="d-flex align-content-center justify-content-center">
-                    {{!-- <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to cart</a> --}}
-                    <button onclick="addTocart('{{this._id}}')" class="btn btn-primary"  >Add to cart</button>
-                </div>
-    </div>
- {{/each}}
+{{>userheader}}
+
+
+
+
+<div class="product-container" style="background-color: #e3e3e3;">
+    {{#each productdata}}
+    <a href="/productview/{{this._id}}" class="text-decoration-none text-dark">
+        <div class="product-card p-2">
+            <img src="/images/categoryimage/{{this.image}}" alt="Product Name" class="product-image">
+    
+            <h3 class="product-name">{{this.name}}</h3>
+
+            <div class="product-price">₹ {{this.price}}</div>
+     </a>
+            {{!-- <button class="add-to-cart-button">Add to Cart</button> --}}
+            <div class="d-flex align-content-center justify-content-center">
+                {{!-- <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to cart</a> --}}
+                <button onclick="addTocart('{{this._id}}')" class="btn btn-primary">Add to cart</button>
+            </div>
+        </div>
+   
+    {{/each}}
 </div>
 
-<script>
-function addTocart(proId) {
-    
-    $.ajax({
-        url: "/addtocart/" + proId,
-        method: "get",
-        success: (response) => {
-           
-            if(response.status){
-                let count=document.getElementById("cart-count").innerHTML;
-                count=parseInt(count)+1
-                document.getElementById("cart-count").innerHTML=count
-               swal("product added to cart!", "success!", "success");
-               
-            }
-        }
+<div class="footer">
+  <div class="container">
+    <div class="row">
+      <div class="footer-col-1">
+        <h3>Download Our App</h3>
+        <p>Download App for Android and iso mobile phone.</p>
+        <div class="app-logo">
+          <img src="https://i.ibb.co/KbPTYYQ/play-store.png" alt="" />
+          <img src="https://i.ibb.co/hVM4X2p/app-store.png" alt="" />
+        </div>
+      </div>
 
-    })
-}
+      <div class="footer-col-2">
+        <img src="/images/logoimage/download.png" alt="" />
+        <p>
+          Our Purpose Is To Sustainably Make the Pleasure and Benefits of
+          Sports Accessible to the Many.
+        </p>
+      </div>
+
+      <div class="footer-col-3">
+        <h3>Useful Links</h3>
+        <ul>
+          <li>Coupons</li>
+          <li>Blog Post</li>
+          <li>Return Policy</li>
+          <li>Join Affiliate</li>
+        </ul>
+      </div>
+
+      <div class="footer-col-4">
+        <h3>Follow us</h3>
+        <ul>
+          <li>Facebook</li>
+          <li>Twitter</li>
+          <li>Instagram</li>
+          <li>YouTube</li>
+        </ul>
+      </div>
+    </div>
+    <hr />
+    <p class="copyright">Copyright &copy; 2021 - Shoe Rack</p>
+  </div>
+</div>
+
+
+
+
+<script>
+    function addTocart(proId) {
+
+        $.ajax({
+            url: "/addtocart/" + proId,
+            method: "get",
+            success: (response) => {
+
+                if (response.status) {
+                    let count = document.getElementById("cart-count").innerHTML;
+                    count = parseInt(count) + 1
+                    document.getElementById("cart-count").innerHTML = count
+                    swal("product added to cart!", "success!", "success");
+
+                }
+            }
+
+        })
+    }
 </script>
