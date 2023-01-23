@@ -13,9 +13,13 @@ const verifyLogin = (req, res, next) => {
 
 const cartCount = (req, res, next) => {
   if (req.session.loggedIn) {
-    control.getcartitems(req.session.user._id).then((data) => {
+    control.getcartitems(req.session.user._id).then((data) => { 
       if(data.cartexist){
-        res.usercart = data.productdetails.totalquantity  
+       
+        if(data.length !=0){
+         res.usercart = data.productdetails[0].totalquantity 
+        }
+        
         next();
       }
       else{
@@ -32,7 +36,7 @@ const cartCount = (req, res, next) => {
 
 }
 
-router.get('/', cartCount, async function (req, res,) {
+router.get('/',cartCount, async function (req, res,) {
 
   await admincontrol.listProduct().then((data) => {
     const product = data
@@ -119,15 +123,12 @@ router.get("/addtocart/:id", verifyLogin, (req, res) => {
 })
 
 //cart
-router.get("/cart", verifyLogin, cartCount, async(req, res) => {
-  let demo=await control.totalPrice(req.session.user._id).then((response)=>{
-    console.log("response",response)
-  })
-  console.log(demo,"demo")
-  control.getcartitems(req.session.user._id).then((response) => {
-    
+router.get("/cart", verifyLogin, cartCount,async(req, res) => {
+  control.getcartitems(req.session.user._id).then( async(response) => {
       const userproducts = response.productdetails
-      res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart })
+    const totalAmount=await control.totalAmount(req.session.user._id)
+    console.log(totalAmount,">>>>>>>")
+      res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart,totalAmount})
    
   })
 
@@ -144,7 +145,7 @@ router.post("/change-product-quantity",(req,res)=>{
 //Remove cart items
 
 router.post("/removecartitem",(req,res)=>{
-  console.log("done999")
+  console.log("done999",req.body)
   control.removeCartitem(req.body).then((response)=>{
    res.json(response)
   })

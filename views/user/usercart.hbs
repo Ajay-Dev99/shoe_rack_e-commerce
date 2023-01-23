@@ -11,34 +11,34 @@
     <tr>
       <th>Product</th>
       <th>Quantity</th>
-      <th>Subtotal</th>
+      <th>Total Price</th>
     </tr>
-    {{#each userproducts.products}}
+    {{#each userproducts}}
     <tr>
 
       <td>
         <div class="cart-info">
-          <img src="/images/categoryimage/{{this.productId.imageurl.[0].filename}}" alt="" />
+          <img src="/images/categoryimage/{{this.cartproduct.imageurl.[0].filename}}" alt="" />
           <div>
-            <p>{{this.productId.productname}}</p>
-            <small>Price ₹{{this.productId.productSRP}}</small>
+            <p>{{this.cartproduct.productname}}</p>
+            <small>Price ₹<span id='{{this.cartproduct._id}}total'>{{this.cartproduct.productSRP}}</span></small>
             <br />
             {{!-- <a href="/removecartitem/{{this.productId._id}}">Remove</a> --}}
             <button class="btn text-danger my-2"
-              onclick="removeitem('{{../userproducts._id}}','{{this.productId._id}}')"> Remove</button>
+              onclick="removeitem('{{this._id}}','{{this.cartproduct._id}}')"> Remove</button>
           </div>
         </div>
       </td>
       <td>
         <button class="px-2 rounded text-white" style="background-color: #193D56;"
-          onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',-1)">-</button>
+          onclick="changeQuantity('{{this._id}}','{{this.cartproduct._id}}',-1)">-</button>
         {{!-- <input type="text" class="rounded text-dark text-center" id="{{this.productId._id}}" disabled
           value="{{this.quantity}}" /> --}}
-        <span class="rounded text-dark text-center px-3 border" id="{{this.productId._id}}">{{this.quantity}}</span>
+        <span class="rounded text-dark text-center px-3 border" id="{{this.cartproduct._id}}">{{this.quantity}}</span>
         <button class="px-2 rounded text-white" style="background-color: #193D56;"
-          onclick="changeQuantity('{{../userproducts._id}}','{{this.productId._id}}',1)">+</button>
+          onclick="changeQuantity('{{this._id}}','{{this.cartproduct._id}}',1)">+</button>
       </td>
-      <td>₹{{this.productId.productSRP}}</td>
+      <td >₹<span id='{{this.cartproduct._id}}count'>{{this.subtotal}}</span></td>
     </tr>
     {{/each}}
 
@@ -48,16 +48,9 @@
     <table>
       <tr>
         <td>Subtotal</td>
-        <td>₹3500.00</td>
+        <td>₹{{totalAmount}}</td>
       </tr>
-      <tr>
-        <td>Tax</td>
-        <td>₹15.00</td>
-      </tr>
-      <tr>
-        <td>Total</td>
-        <td>₹3515.00</td>
-      </tr>
+    
     </table>
   </div>
 </div>
@@ -114,9 +107,7 @@
     <div class="col-md-12">
 
       <div class="card">
-        <div class="card-header">
-          <h5>Cart</h5>
-        </div>
+      
         <div class="card-body cart">
           <div class="col-sm-12 empty-cart-cls text-center">
             <img src="https://i.imgur.com/dCdflKN.png" width="130" height="130" class="img-fluid mb-4 mr-3">
@@ -146,7 +137,7 @@
 
 <script>
   const MenuItems = document.getElementById('MenuItems');
-  MenuItems.style.maxHeight = '0px';
+   {{!-- MenuItems.style.maxHeight = '0px'; --}}
 
   function menutoggle() {
     if (MenuItems.style.maxHeight == '0px') {
@@ -160,6 +151,7 @@
 <script>
   function changeQuantity(cartId, proId, count) {
     let quantity = parseInt(document.getElementById(proId).innerHTML)
+    console.log(quantity)
     $.ajax({
       url: '/change-product-quantity',
       data: {
@@ -178,6 +170,9 @@
 
         } else {
           document.getElementById(proId).innerHTML = quantity + count
+          const amount=parseInt(document.getElementById(proId+"total").innerHTML)
+          console.log(amount*(quantity+count),"amount")
+          document.getElementById(proId+"count").innerHTML=amount*(quantity+count)
         }
       }
     })

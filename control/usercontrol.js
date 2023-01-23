@@ -114,10 +114,73 @@ module.exports = {
 
     getcartitems: (userId) => {
         return new Promise(async (resolve, reject) => {
-            const usercart = await cart.findOne({ userId: userId })
+            const userid = new mongoose.Types.ObjectId(userId)
+            const usercart = await cart.findOne({ userId: userid })
+           
             if (usercart) {
-                const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
-                const totalquantity = parseInt(productdetails.totalquantity)
+                const productDetails = await cart.aggregate([
+                    { $match: { userId: userid } },
+
+                    { $unwind: "$products" },
+
+                    {
+                        $project: {
+                            totalquantity: '$totalquantity',
+                            productId: '$products.productId',
+                            quantity: '$products.quantity',
+                            totalamount: '$totalamount',
+                        }
+                    }, {
+                        $lookup: {
+                            from: "products",
+                            localField: "productId",
+                            foreignField: "_id",
+                            as: "cartproducts"
+                        }
+                    }, {
+                        $project: {
+                            totalquantity: 1,
+                            productId: 1,
+                            quantity: 1,
+                            totalamount: 1,
+                            cartproduct: {
+                                $arrayElemAt: ['$cartproducts', 0]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            totalquantity: 1,
+                            productId: 1,
+                            quantity: 1,
+                            cartproduct: 1,
+                            subtotal: {
+                                $multiply: ["$quantity", "$cartproduct.productSRP"]
+                            },
+
+
+                        }
+                    },
+                   
+                    {
+                        $project: {
+                            totalquantity: 1,
+                            productId: 1,
+                            quantity: 1,
+                            cartproduct: 1,
+                            subtotal:1
+                        }
+                    },
+                ])
+                const productdetails=productDetails
+                let totalquantity;
+                if(productdetails.length !=0){
+                    
+                     totalquantity = parseInt(productdetails[0].totalquantity)
+
+                }
+                
+
                 if (totalquantity >= 1) {
                     resolve({ productdetails, cartexist: true })
                 } else {
@@ -135,8 +198,8 @@ module.exports = {
 
     changeproductquantity: async (details) => {
         const quantity = details.quantity;
-        const cartid = details.cart
-        const productId = details.product
+        const cartid = new mongoose.Types.ObjectId(details.cart)
+        const productId = new mongoose.Types.ObjectId(details.product)
         const count = parseInt(details.count)
         return new Promise(async (resolve, reject) => {
             if (quantity == 1 && count == -1) {
@@ -158,29 +221,113 @@ module.exports = {
 
     //Remove product from cart
 
-    removeCartitem:(details)=>{
-        const cartid = details.cart
-        const productId = details.product
-        return new Promise((resolve,reject)=>{
+    removeCartitem: (details) => {
+        const cartid = new mongoose.Types.ObjectId(details.cart)
+        const productId = new mongoose.Types.ObjectId(details.product)
+        return new Promise((resolve, reject) => {
             cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, {
                 $pull: { products: { productId: productId } },
                 $inc: { totalquantity: -1 }
-            }).then((data)=>{
-               resolve({removeProduct:true})
+            }).then((data) => {
+                resolve({ removeProduct: true })
             })
         })
     },
 
     //total price of the cart items
 
-    totalPrice:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
+    totalPrice: (userId) => {
+        return new Promise(async (resolve, reject) => {
 
             const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
-            console.log(productdetails.products[0].productId.productSRP,";;;;;;;;")
+            console.log(productdetails.products[0].productId.productSRP, ";;;;;;;;")
             resolve(productdetails)
         })
-    }
+    },
+
+     //find sum of total price
+
+     totalAmount:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            const userid=new mongoose.Types.ObjectId(userId)
+            const usercart=await cart.findOne({userId:userid})
+            if(usercart){
+
+                const totalAmount = await cart.aggregate([
+                    { $match: { userId: userid } },
+
+                    { $unwind: "$products" },
+
+                    {
+                        $project: {
+                            totalquantity: '$totalquantity',
+                            productId: '$products.productId',
+                            quantity: '$products.quantity',
+                            totalamount: '$totalamount',
+                        }
+                    }, {
+                        $lookup: {
+                            from: "products",
+                            localField: "productId",
+                            foreignField: "_id",
+                            as: "cartproducts"
+                        }
+                    }, {
+                        $project: {
+                            totalquantity: 1,
+                            productId: 1,
+                            quantity: 1,
+                            totalamount: 1,
+                            cartproduct: {
+                                $arrayElemAt: ['$cartproducts', 0]
+                            }
+                        }
+                    },
+                    {
+                        $project: {
+                            totalquantity: 1,
+                            productId: 1,
+                            quantity: 1,
+                            cartproduct: 1,
+                            subtotal: {
+                                $multiply: ["$quantity", "$cartproduct.productSRP"]
+                            },
+
+
+                        }
+                    },
+                   
+                    {
+                        $project: {
+                            subtotal:1
+                        }
+                    },{
+                        $group: {
+                        _id: null,
+                        total: { $sum: "$subtotal" }
+                        }
+                   },{
+                    $project:{
+                        _id:0,
+                        total:1
+                    }
+                   }
+                ])
+                if(totalAmount.length!=0){
+
+                console.log(totalAmount[0].total,"totalamount")
+                resolve(totalAmount[0].total)
+
+                }
+            }
+        })
+
+     }
+
 
 
 }
+
+  
+
+   
