@@ -348,6 +348,17 @@ module.exports = {
          const userdetails =  await user.findOneAndUpdate({_id:userId},{$set:{address:updateaddress}})
          console.log(userdetails,"updated address")
         })
+    },
+
+    //get useraddress
+    showAddress:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            let userdetails=await user.findOne({_id:userId}).lean()
+            
+            const useraddress=userdetails.address[0]
+            
+            resolve(useraddress)
+        })
     }
 
 }

@@ -159,11 +159,13 @@ router.post("/removecartitem",(req,res)=>{
 
 //checkout
 router.get("/checkout",verifyLogin, cartCount,async(req,res)=>{
+  let useraddress=await control.showAddress(req.session.user._id)
+  console.log(useraddress,"response")
   const userproduct= await control.getcartitems(req.session.user._id)
   const userproducts=userproduct.productdetails
   const totalAmount=await control.totalAmount(req.session.user._id)
-  console.log(userproducts,"/////////////////////")
-  res.render("user/checkout",{user: req.session.user,usercart: res.usercart,userproducts,totalAmount})
+  
+  res.render("user/checkout",{user: req.session.user,usercart: res.usercart,userproducts,totalAmount,useraddress})
 })
 
 router.post("/checkoutform",(req,res)=>{

@@ -211,3 +211,11 @@ body footer a {
         height: 10%;
    }
 }
+.address{
+    border-radius: 18px;
+    /* padding: 8px; */
+    /* display: flex;
+    flex-direction: column;
+    justify-content: center; */
+    
+}

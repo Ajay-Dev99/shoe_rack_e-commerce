@@ -179,8 +179,8 @@
           document.getElementById(proId).innerHTML = quantity + count
           const amount=parseInt(document.getElementById(proId+"total").innerHTML)
           document.getElementById(proId+"count").innerHTML=amount*(quantity+count)
-          const subtotal=parseInt(document.getElementById(proId+"total").innerHTML)
-          document.getElementById("subtotal").innerHTML=parseInt(document.getElementById("subtotal").innerHTML)+(subtotal*count)
+          
+          document.getElementById("subtotal").innerHTML=parseInt(document.getElementById("subtotal").innerHTML)+(amount*count)
 
         }
       }
