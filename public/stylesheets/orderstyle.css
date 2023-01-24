@@ -1,6 +1,6 @@
 * {
     box-sizing: border-box;
-    margin-bottom:6px;
+  
     padding:0;
 }
 
@@ -186,9 +186,7 @@ body footer a {
     color: inherit;
 }
 @media screen and (max-width: 1024px) {
-    body {
-        width: 80%;
-   }
+ 
     body main {
         column-gap: 70px;
    }

@@ -1,18 +1,14 @@
 function change_image(image){
 
-  var container = document.getElementById("main-image");
+    document.getElementById("main-image").src = image.src;
+    $("#main-image").elevateZoom();
 
- container.src = image.src;
+
 }
 
 
 
 document.addEventListener("DOMContentLoaded", function(event) {
-
-
-
-
-
 
 
 });

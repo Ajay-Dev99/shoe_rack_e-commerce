@@ -174,8 +174,6 @@ module.exports = {
                     },
                 ])
                 const productdetails = productDetails
-                console.log(productdetails, "productdetails")
-
                 let totalquantity;
                 if (productdetails.length != 0) {
 
@@ -240,9 +238,7 @@ module.exports = {
 
     totalPrice: (userId) => {
         return new Promise(async (resolve, reject) => {
-
             const productdetails = await cart.findOne({ userId: userId }).populate('products.productId').lean();
-            console.log(productdetails.products[0].productId.productSRP, ";;;;;;;;")
             resolve(productdetails)
         })
     },
@@ -331,13 +327,28 @@ module.exports = {
 
     productView:(proId)=>{
         return new Promise(async(resolve,reject)=>{
-            const productDetails=await product.findOne({_id:proId})
-            console.log(productDetails,"????????????")
+            const productDetails=await product.findOne({_id:proId}).lean()
             resolve(productDetails)
         })
+    },
+
+    //add address to userdatabase
+
+    addAddress:(userId,userdata)=>{
+        return new Promise(async(resolve,reject)=>{
+          
+            const updateaddress={
+                name:userdata.name,
+                email:userdata.email,
+                phone:userdata.phone,
+                house:userdata.address,
+                city:userdata.city,
+                postal:userdata.postal
+            }
+         const userdetails =  await user.findOneAndUpdate({_id:userId},{$set:{address:updateaddress}})
+         console.log(userdetails,"updated address")
+        })
     }
-
-
 
 }
 

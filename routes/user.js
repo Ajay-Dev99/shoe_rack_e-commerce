@@ -115,10 +115,9 @@ router.get("/logout", (req, res) => {
 
 
 //addtocart
-
 router.get("/addtocart/:id", verifyLogin, (req, res) => {
   control.addtoCart(req.params.id, req.session.user._id).then((data) => {
-    res.json({ status: true })
+    res.json({ status: true})
   })
 })
 
@@ -144,7 +143,6 @@ router.post("/change-product-quantity",(req,res)=>{
 //Remove cart items
 
 router.post("/removecartitem",(req,res)=>{
-  console.log("done999",req.body)
   control.removeCartitem(req.body).then((response)=>{
    res.json(response)
   })
@@ -154,15 +152,28 @@ router.post("/removecartitem",(req,res)=>{
 
  router.get("/productview/:id",cartCount,(req,res)=>{
   control.productView(req.params.id).then((response)=>{
-    console.log(response,"response????????????");
     const productdetails=response
     res.render("user/productview",{user: req.session.user,usercart: res.usercart,productdetails})
   })
  })
 
 //checkout
-router.get("/placeorder",(req,res)=>{
-  res.render("user/orderpage")
+router.get("/checkout",verifyLogin, cartCount,async(req,res)=>{
+  const userproduct= await control.getcartitems(req.session.user._id)
+  const userproducts=userproduct.productdetails
+  const totalAmount=await control.totalAmount(req.session.user._id)
+  console.log(userproducts,"/////////////////////")
+  res.render("user/checkout",{user: req.session.user,usercart: res.usercart,userproducts,totalAmount})
 })
+
+router.post("/checkoutform",(req,res)=>{
+  console.log(req.body,">>>>>>>>>>>")
+  control.addAddress(req.session.user._id,req.body)
+  res.redirect("/")
+})
+
+
+
+
 
 module.exports = router;

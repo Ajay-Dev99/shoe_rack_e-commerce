@@ -18,7 +18,36 @@ const userSchema = new mongoose.Schema({
     blocked: {
         type: Boolean,
         default: false
+    },
+    address:[
+        {
+        name:{
+            type:String,
+            required:true
+        },
+        email:{
+            type:String,
+            required:true
+        },
+        phone:{
+            type:Number,
+            required:true
+        },
+        house:{
+            type:String,
+            required:true
+        },
+        city:{
+            type:String,
+            required:true
+        },
+        postal:{
+            type:String,
+            required:true
+        }
     }
+    ]
+
 })
 
 
