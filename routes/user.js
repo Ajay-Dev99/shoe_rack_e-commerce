@@ -135,7 +135,7 @@ router.get("/cart", verifyLogin, cartCount,async(req, res) => {
 
 //cart increment
 
-router.post("/change-product-quantity",(req,res)=>{
+router.post("/change-product-quantity", verifyLogin,(req,res)=>{
   control.changeproductquantity(req.body).then((response)=>{
       res.json(response)
   })
@@ -143,7 +143,7 @@ router.post("/change-product-quantity",(req,res)=>{
 
 //Remove cart items
 
-router.post("/removecartitem",(req,res)=>{
+router.post("/removecartitem", verifyLogin,(req,res)=>{
   control.removeCartitem(req.body).then((response)=>{
    res.json(response)
   })
@@ -151,7 +151,7 @@ router.post("/removecartitem",(req,res)=>{
 
 //single product view
 
- router.get("/productview/:id",cartCount,(req,res)=>{
+ router.get("/productview/:id", verifyLogin,cartCount,(req,res)=>{
   control.productView(req.params.id).then((response)=>{
     const productdetails=response
     res.render("user/productview",{user: req.session.user,usercart: res.usercart,productdetails})
@@ -168,9 +168,17 @@ router.get("/checkout",verifyLogin, cartCount,async(req,res)=>{
   res.render("user/checkout",{user: req.session.user,usercart: res.usercart,userproducts,totalAmount,useraddress})
 })
 
+//add address
+
+router.get("/addaddress", verifyLogin,cartCount,(req,res)=>{
+  res.render("user/address",{user: req.session.user, usercart: res.usercart})
+})
+
+
+
 router.post("/checkoutform",(req,res)=>{
   control.addAddress(req.session.user._id,req.body)
-  res.render("user/payment")
+  res.redirect("/checkout")
 })
 
 
