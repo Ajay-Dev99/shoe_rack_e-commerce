@@ -125,6 +125,7 @@ router.get("/addtocart/:id", verifyLogin, (req, res) => {
 router.get("/cart", verifyLogin, cartCount,async(req, res) => {
   control.getcartitems(req.session.user._id).then( async(response) => {
       const userproducts = response.productdetails
+    
     const totalAmount=await control.totalAmount(req.session.user._id)
       res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart,totalAmount})
    
@@ -160,7 +161,6 @@ router.post("/removecartitem",(req,res)=>{
 //checkout
 router.get("/checkout",verifyLogin, cartCount,async(req,res)=>{
   let useraddress=await control.showAddress(req.session.user._id)
-  console.log(useraddress,"response")
   const userproduct= await control.getcartitems(req.session.user._id)
   const userproducts=userproduct.productdetails
   const totalAmount=await control.totalAmount(req.session.user._id)
@@ -169,9 +169,8 @@ router.get("/checkout",verifyLogin, cartCount,async(req,res)=>{
 })
 
 router.post("/checkoutform",(req,res)=>{
-  console.log(req.body,">>>>>>>>>>>")
   control.addAddress(req.session.user._id,req.body)
-  res.redirect("/")
+  res.render("user/payment")
 })
 
 

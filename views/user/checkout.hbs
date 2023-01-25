@@ -2,116 +2,137 @@
 
 <link rel="stylesheet" href="/stylesheets/orderstyle.css">
 
-	<main class="mb-3" style="width: 70%;">
-				
-		<section class="checkout-form ">
-			{{#if useraddress}}
-			<div class="border p-2 mb-2 address">
-				<p>{{useraddress.name}}</p>
-				<p>{{useraddress.email}}</p>
-				<p>{{useraddress.phone}}</p>
-				<p>{{useraddress.house}}(ho)</p>
-				<p>{{useraddress.city}}</p>
-				<p>{{useraddress.postal}}</p>
-					</div>
-				{{else}}
-			<form action="/checkoutform" method="post">
-				<h6>Contact information</h6>
-				<div class="form-control">
-					<label for="checkout-email">E-mail</label>
-					<div>
-						<span class="fa fa-envelope"></span>
-						<input type="email" id="checkout-email" name="email" placeholder="Enter your email..." required>
-					</div>
-				</div>
-				<div class="form-control">
-					<label for="checkout-phone">Phone</label>
-					<div>
-						<span class="fa fa-phone"></span>
-						<input type="tel" name="phone" id="checkout-phone" placeholder="Enter you phone..."required>
-					</div>
-				</div>
-				<br>
-				<h6>Shipping address</h6>
-				<div class="form-control">
-					<label for="checkout-name">Full name</label>
-					<div>
-						<span class="fa fa-user-circle"></span>
-						<input type="text" id="checkout-name" name="name" placeholder="Enter you name..." required>
-					</div>
-				</div>
-				<div class="form-control">
-					<label for="checkout-address">Address</label>
-					<div>
-						<span class="fa fa-home"></span>
-						<input type="text" name="address" id="checkout-address" placeholder="Your address..." required>
-					</div>
-				</div>
-				<div class="form-control">
-					<label for="checkout-city">City</label>
-					<div>
-						<span class="fa fa-building"></span>
-						<input type="text" name="city" id="checkout-city" placeholder="Your city..." required>
-					</div>
-				</div>
-				<div class="form-group">
-					<div class="form-control">
-						<label for="checkout-country">Country</label>
-						<div>
-							<span class="fa fa-globe"></span>
-							<input type="text" name="country" id="checkout-country" placeholder="Your country..." list="country-list" required>
-							{{!-- <datalist id="country-list">
-								<option value="India"></option>
-								<option value="USA"></option>
-								<option value="Russia"></option>
-								<option value="Japan"></option>
-								<option value="Egypt"></option>
-							</datalist> --}}
-						</div>
-					</div>
-					<div class="form-control">
-						<label for="checkout-postal">Postal code</label>
-						<div>
-							<span class="fa fa-archive"></span>
-							<input type="numeric" name="postal" id="checkout-postal" placeholder="Your postal code..." required>
-            </div>
-					</div>
-				</div>
-				
-				<div class="form-control-btn mb-3">
-					<button type="submit">Submit</button>
-				</div>
-			</form>
-	{{/if}}
-			<div>
-				<input type="text" class="w-100 h-70px">
-			</div>
-		</section>
-
-		<section class="checkout-details">
-			<div class="checkout-details-inner">
-				<div class="checkout-lists">
-					{{#each userproducts}}
-					<div class="card">
-						<div class="card-image"><img src="/images/categoryimage/{{this.cartproduct.imageurl.[0].filename}}" alt=""></div>
-						<div class="card-details">
-							<div class="card-name">{{this.cartproduct.productname}}</div>
-							<div class="card-price">₹{{this.cartproduct.productSRP}}</div>
-							<div class="card-price text-success">Quantity {{this.quantity}}</div>	
-						</div>
-					</div>
-					{{/each}}
-				
-				</div>
+<main class="mb-3" style="width: 70%;">
+{{#if useraddress}}
+	<section class="checkout-form ">
 		
-				<div class="checkout-total">
-					<h6>Total</h6>
-					<p><h6>{{totalAmount}}</h6></p>
+		{{#each useraddress}}
+		<div class="border p-2 mb-2 address">
+			<p>{{this.name}}</p>
+			<p>{{this.email}}</p>
+			<p>{{this.phone}}</p>
+			<p>{{this.house}}(ho)</p>
+			<p>{{this.city}}</p>
+			<p>{{this.postal}}</p>
+		</div>
+	{{/each}}
+		<div class="form-check mb-3">
+			<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+			<label class="form-check-label" for="flexRadioDefault1" checked>
+				<u> Use default Address </u>
+			</label>
+		</div>
+		{{/if}}
+		{{else}}
+		<form action="/checkoutform" method="post">
+		
+			<h6>Add another Address</h6>
+			{{else}}
+			<h6>Contact information</h6>
+			{{/if}}
+			<div class="form-control">
+				<label for="checkout-email">E-mail</label>
+				<div>
+					<span class="fa fa-envelope"></span>
+					<input type="email" id="checkout-email" name="email" placeholder="Enter your email..." required>
 				</div>
 			</div>
-		</section>
+			<div class="form-control">
+				<label for="checkout-phone">Phone</label>
+				<div>
+					<span class="fa fa-phone"></span>
+					<input type="tel" name="phone" id="checkout-phone" placeholder="Enter you phone..." required>
+				</div>
+			</div>
+			<br>
+			<h6>Shipping address</h6>
+			<div class="form-control">
+				<label for="checkout-name">Full name</label>
+				<div>
+					<span class="fa fa-user-circle"></span>
+					<input type="text" id="checkout-name" name="name" placeholder="Enter you name..." required>
+				</div>
+			</div>
+			<div class="form-control">
+				<label for="checkout-address">Address</label>
+				<div>
+					<span class="fa fa-home"></span>
+					<input type="text" name="address" id="checkout-address" placeholder="Your address..." required>
+				</div>
+			</div>
+			<div class="form-control">
+				<label for="checkout-city">City</label>
+				<div>
+					<span class="fa fa-building"></span>
+					<input type="text" name="city" id="checkout-city" placeholder="Your city..." required>
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="form-control">
+					<label for="checkout-country">Country</label>
+					<div>
+						<span class="fa fa-globe"></span>
+						<input type="text" name="country" id="checkout-country" placeholder="Your country..."
+							list="country-list" required>
+						{{!-- <datalist id="country-list">
+							<option value="India"></option>
+							<option value="USA"></option>
+							<option value="Russia"></option>
+							<option value="Japan"></option>
+							<option value="Egypt"></option>
+						</datalist> --}}
+					</div>
+				</div>
+				<div class="form-control">
+					<label for="checkout-postal">Postal code</label>
+					<div>
+						<span class="fa fa-archive"></span>
+						<input type="numeric" name="postal" id="checkout-postal" placeholder="Your postal code..."
+							required>
+					</div>
+				</div>
+			</div>
 
-	</main>
+			<div class="form-control-btn my-3">
+				<button type="submit" class="btn-dark w-100">Submit</button>
+			</div>
+		</form>
+		
 
+	</section>
 
-	
+	<section class="checkout-details">
+
+		<div class="checkout-details-inner lh-lg mb-3">
+
+			<h3 class="pb-2 ">Order Summary</h3>
+			<div class="d-flex justify-content-between pb-2">
+				<div>Original Price</div>
+				<div>₹{{totalAmount}}</div>
+			</div>
+			<div class="d-flex justify-content-between pb-2">
+				<div>Coupon Savings</div>
+				<div>₹0</div>
+			</div>
+			<div class="d-flex justify-content-between pb-2">
+				<div>Delivery</div>
+				<div>Free</div>
+			</div>
+			<div class="checkout-total d-flex justify-content-between pt-2">
+				<div>
+					<h6>Total</h6>
+				</div>
+				<div>
+					<h6>₹{{totalAmount}}</h6>
+				</div>
+			</div>
+		</div>
+		<div class="d-flex justify-content-end mt-2">
+		{{!-- <button class="btn btn-dark p-2 w-100">Check Out</button> --}}
+		<a href="/payment" class="btn btn-dark w-100"> Continue to Payment</a>
+		</div>
+	</section>
+
+</main>
+
+{{>userfooter}}

@@ -34,8 +34,8 @@
     color: #555;
   }
   
-  p {
-    color: #555;
+  .para {
+    color: rgb(255, 255, 255);
   }
   
   .container {
@@ -45,7 +45,7 @@
     padding-right: 25px;
   }
   
-  .row {
+  .rows {
     display: flex;
     align-items: center;
     flex-wrap: wrap;
@@ -222,14 +222,15 @@
   /* footer */
   
   .footer {
-    background: #000;
-    color: #8a8a8a;
+    background: #193D56;
+    color: #BEC0D7;
     font-size: 14px;
     padding: 60px 0 20px;
+    margin-top: 195px;
   }
   
   .footer p {
-    color: #8a8a8a;
+    color: #BEC0D7;
   }
   
   .footer h3 {
@@ -580,4 +581,5 @@
       display: none;
     }
   }
+
   

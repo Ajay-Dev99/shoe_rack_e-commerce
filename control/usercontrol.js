@@ -345,8 +345,18 @@ module.exports = {
                 city:userdata.city,
                 postal:userdata.postal
             }
-         const userdetails =  await user.findOneAndUpdate({_id:userId},{$set:{address:updateaddress}})
-         console.log(userdetails,"updated address")
+            const userdetails =  await user.findOne({_id:userId})
+            if ('address' in userdetails) {
+                console.log('Key "name" exists in the schema.');
+                 await user.findOneAndUpdate({_id:userId},{$push:{address:updateaddress}})
+              } else {
+                console.log('Key "name" does not exist in the schema.');
+                 await user.findOneAndUpdate({_id:userId},{$set:{address:updateaddress}})
+              }
+              
+          
+        //  console.log(userdetails.address,"updated address")
+        // 
         })
     },
 
@@ -355,8 +365,8 @@ module.exports = {
         return new Promise(async(resolve,reject)=>{
             let userdetails=await user.findOne({_id:userId}).lean()
             
-            const useraddress=userdetails.address[0]
-            
+            const useraddress=userdetails.address
+            // console.log(userdetails.address.length,"????????????????")
             resolve(useraddress)
         })
     }
