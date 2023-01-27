@@ -256,10 +256,12 @@
   }
   
   .footer-col-2 img {
-    width: 180px;
+    border-radius: 50%;
+    width: 100px;
     margin-bottom: 20px;
-  }
-  
+    margin-top: 17px;
+}
+
   .footer-col-3,
   .footer-col-4 {
     flex-basis: 12%;
@@ -580,6 +582,14 @@
     .cart-info p {
       display: none;
     }
+  }
+
+  .addressform{
+    padding: 20px;
+    width: 60%;
+    background-color: #193d56;
+    color: white;
+    border-radius: 10px;
   }
 
   

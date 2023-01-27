@@ -5,7 +5,7 @@
                <a href="/"> <img class="rounded-pill" src="/images/logoimage/download.png" alt="" height="80px" width="80px"> </a>
             </div>
             <div>
-                <form class="d-flex">
+                <form class="d-none d-sm-flex">
                     <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search"
                         style="width: 500px;">
                     {{!-- <button class="btn btn-outline-success" type="submit">Search</button> --}}
@@ -42,10 +42,14 @@
                     </button>
                     <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                         {{#if user}}
-                        <li><a class="dropdown-item" href="/account">Account</a></li>
-                        <li><a class="dropdown-item" href="/logout">Logout</a></li>
+                         <li class="nav-item mb-2 ms-2">
+                        <a class="nav-link" href="/account">
+                            <i class="fa fa-user"></i> Account
+                        </a>
+                    </li>
+                        <li class="nav-item mb-2 ms-2"><a class="nav-link" href="/logout"><i class="fa fa-sign-out"></i>Logout</a></li>
                         {{else}}
-                        <li><a class="dropdown-item" href="/login">Login</a></li>
+                        <li><a class="dropdown-item" href="/login"><i class="fa fa-sign-in"></i> Login</a></li>
                         {{/if}}
 
 

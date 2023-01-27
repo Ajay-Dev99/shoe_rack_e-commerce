@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 const e = require("express")
 const dbConnect = require("../connection/dbconnection")
 const cart = require("../models/cartmodel")
-const { default: mongoose } = require("mongoose")
+const { default: mongoose, Error } = require("mongoose")
 const { response } = require("../app")
 const product = require("../models/productmodel")
 const Ordercollection = require("../models/order")
@@ -115,14 +115,28 @@ module.exports = {
     },
 
     //display cart items
+    totalquantity: async (userid) => {
+        try {
+            const userID = new mongoose.Types.ObjectId(userid)
+            const Cart = await cart.findOne({ userId: userID }).lean()
+            if(Cart){
+                return Cart.totalquantity
+
+            }else{
+                return 0
+            }
+            
+        } catch (error) {
+            throw new Error(error)
+        }
+    },
 
     getcartitems: (userId) => {
         return new Promise(async (resolve, reject) => {
             const userid = new mongoose.Types.ObjectId(userId)
             const usercart = await cart.findOne({ userId: userid })
-            console.log(usercart,"//////")
             if (usercart) {
-                const productDetails = await cart.aggregate([
+                const productdetails = await cart.aggregate([
                     { $match: { userId: userid } },
 
                     { $unwind: "$products" },
@@ -176,20 +190,7 @@ module.exports = {
                         }
                     },
                 ])
-                const productdetails = productDetails
-                let totalquantity;
-                if (productdetails.length != 0) {
-
-                    totalquantity = parseInt(productdetails[0].totalquantity)
-                }
-
-
-                if (totalquantity>0) {
-                    resolve({ productdetails, cartexist: true })
-                } else {
-                    resolve({ cartexist: false })
-                }
-
+                resolve({ productdetails, cartexist: true })
             } else {
                 resolve({ cartexist: false })
             }
@@ -253,7 +254,6 @@ module.exports = {
             const userid = new mongoose.Types.ObjectId(userId)
             const usercart = await cart.findOne({ userId: userid })
             if (usercart) {
-
                 const totalAmount = await cart.aggregate([
                     { $match: { userId: userid } },
 
@@ -317,10 +317,11 @@ module.exports = {
                 let total;
                 if (totalAmount.length != 0) {
                     total = totalAmount[0].total
-                    // console.log(totalAmount[0].total,"totalamount")
-
                 }
                 resolve(total)
+            } else {
+                resolve(0)
+
             }
         })
 
@@ -402,15 +403,15 @@ module.exports = {
 
                 newOrder.orderitem.push(orderitem);
             }
-             await newOrder.save().then(()=>{
-                cart.findOneAndDelete({ userId: userid }).then(()=>{console.log("Deleted")}).catch(err=>console.log(err))
-             })
-             resolve()
+            await newOrder.save().then(() => {
+                cart.findOneAndDelete({ userId: userid }).then(() => { console.log("Deleted") }).catch(err => console.log(err))
+            })
+            resolve()
 
-          })
+        })
     }
 }
-    
+
 
 
 

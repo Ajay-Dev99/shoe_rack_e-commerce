@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const control = require("../control/usercontrol")
 const admincontrol = require("../control/admincontrol");
-const { response } = require('../app');
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
     next()
@@ -11,33 +10,21 @@ const verifyLogin = (req, res, next) => {
   }
 }
 
-const cartCount = (req, res, next) => {
+const cartCount =async (req, res, next) => {
   if (req.session.loggedIn) {
-    control.getcartitems(req.session.user._id).then((data) => { 
-      if(data.cartexist){
-       
-        if(data.length !=0){
-         res.usercart = data.productdetails[0].totalquantity 
-        }
-        
-        next();
-      }
-      else{
-        res.usercart=0;
-        next();
-      }
-     
-    })
+  const totalqty= await control.totalquantity(req.session.user._id)
+  res.usercart=totalqty
+  next()
   } else {
-    let usercart = 0;
-    res.usercart = usercart
+    let totalqty = 0;
+    res.usercart = totalqty
     next();
   }
 
 }
 
-router.get('/',cartCount, async function (req, res,) {
-
+router.get('/', cartCount, async function (req, res,) {
+console.log(">>>");
   await admincontrol.listProduct().then((data) => {
     const product = data
     const productdata = product.map((product) => {
@@ -48,7 +35,7 @@ router.get('/',cartCount, async function (req, res,) {
         image: product.imageurl[0].filename
       }
     })
-    res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart})
+    res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
   })
 })
 
@@ -83,23 +70,30 @@ router.get("/login", (req, res) => {
 })
 
 router.post("/login", (req, res) => {
+
   control.toLogin(req.body).then((response) => {
     if (response.usernotfound) {
+      console.log("3");
       req.session.usernotexist = true;
       res.redirect("/login")
     }
     else if (response.blockedstatus) {
+      console.log("4");
+
       req.session.blocked = true
       res.redirect("/login")
     }
 
     else {
-
       req.session.user = response.user
       if (response.status) {
+        
         req.session.loggedIn = true;
+        console.log("5");
         res.redirect("/")
       } else {
+        console.log("6");
+
         req.session.passErr = true;
         res.redirect('/login')
       }
@@ -117,88 +111,94 @@ router.get("/logout", (req, res) => {
 //addtocart
 router.get("/addtocart/:id", verifyLogin, (req, res) => {
   control.addtoCart(req.params.id, req.session.user._id).then((data) => {
-    res.json({ status: true})
+    res.json({ status: true })
   })
 })
 
 //cart
-router.get("/cart", verifyLogin, cartCount,async(req, res) => {
-  control.getcartitems(req.session.user._id).then( async(response) => {
-      const userproducts = response.productdetails
-    
-    const totalAmount=await control.totalAmount(req.session.user._id)
-      res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart,totalAmount})
-   
-  })
+router.get("/cart", verifyLogin, cartCount, async (req, res) => {
+
+  const userProducts = await control.getcartitems(req.session.user._id)
+  const userproducts = userProducts.productdetails
+  const totalAmount = await control.totalAmount(req.session.user._id)
+
+  res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart,totalAmount })
+
+
 
 })
 
 //cart increment
 
-router.post("/change-product-quantity", verifyLogin,(req,res)=>{
-  control.changeproductquantity(req.body).then((response)=>{
-      res.json(response)
+router.post("/change-product-quantity", verifyLogin, (req, res) => {
+  control.changeproductquantity(req.body).then((response) => {
+    res.json(response)
   })
 })
 
 //Remove cart items
 
-router.post("/removecartitem", verifyLogin,(req,res)=>{
-  control.removeCartitem(req.body).then((response)=>{
-   res.json(response)
+router.post("/removecartitem", verifyLogin, (req, res) => {
+  control.removeCartitem(req.body).then((response) => {
+    res.json(response)
   })
 })
 
 //single product view
 
- router.get("/productview/:id", verifyLogin,cartCount,(req,res)=>{
-  control.productView(req.params.id).then((response)=>{
-    const productdetails=response
-    res.render("user/productview",{user: req.session.user,usercart: res.usercart,productdetails})
+router.get("/productview/:id", verifyLogin, cartCount, (req, res) => {
+  control.productView(req.params.id).then((response) => {
+    const productdetails = response
+    res.render("user/productview", { user: req.session.user, usercart: res.usercart, productdetails })
   })
- })
+})
 
 //checkout
-router.get("/checkout",verifyLogin, cartCount,async(req,res)=>{
-  let useraddress=await control.showAddress(req.session.user._id)
-  const userproduct= await control.getcartitems(req.session.user._id)
-  const userproducts=userproduct.productdetails
-  const totalAmount=await control.totalAmount(req.session.user._id)
-  
-  res.render("user/checkout",{user: req.session.user,usercart: res.usercart,userproducts,totalAmount,useraddress})
+router.get("/checkout", verifyLogin, cartCount, async (req, res) => {
+  let useraddress = await control.showAddress(req.session.user._id)
+  const userproduct = await control.getcartitems(req.session.user._id)
+  const userproducts = userproduct.productdetails
+  const totalAmount = await control.totalAmount(req.session.user._id)
+
+  res.render("user/checkout", { user: req.session.user, usercart: res.usercart, userproducts, totalAmount, useraddress })
 })
 
 //add address
 
-router.get("/addaddress", verifyLogin,cartCount,(req,res)=>{
-  res.render("user/address",{user: req.session.user, usercart: res.usercart})
+router.get("/addaddress", verifyLogin, cartCount, (req, res) => {
+  res.render("user/address", { user: req.session.user, usercart: res.usercart })
 })
 
 
 
-router.post("/checkoutform",(req,res)=>{
-  control.addAddress(req.session.user._id,req.body)
+router.post("/checkoutform", (req, res) => {
+  control.addAddress(req.session.user._id, req.body)
   res.redirect("/checkout")
 })
 
 
 //place order
 
-router.post("/place-order",async(req,res)=>{
-  console.log(req.body.address,";;;;;;;;;;;;;;")
-  const cartproducts=await control.getcartitems(req.session.user._id)
-  const cartproduct= await cartproducts.productdetails
-  const totalAmount= await control.totalAmount(req.session.user._id)
-  control.placeorder(req.session.user._id,req.body,cartproduct,totalAmount).then((response)=>{
-    res.json({status:true})
+router.post("/place-order", async (req, res) => {
+  console.log(req.body.address, ";;;;;;;;;;;;;;")
+  const cartproducts = await control.getcartitems(req.session.user._id)
+  const cartproduct = await cartproducts.productdetails
+  const totalAmount = await control.totalAmount(req.session.user._id)
+  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then((response) => {
+    res.json({ status: true })
   })
 })
 
 //place order successfull
 
-router.get("/ordersuccess",cartCount,(req,res)=>{
-  res.render("user/ordersuccess",{user: req.session.user, usercart: res.usercart})
+router.get("/ordersuccess", cartCount, (req, res) => {
+  res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
 })
 
+//account
+
+router.get("/account",(req,res)=>{
+  res.render("user/userprofile")
+})
 
 module.exports = router;

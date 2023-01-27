@@ -1,8 +1,8 @@
 <link rel="stylesheet" href="/stylesheets/orderstyle.css">
 {{>userheader}}
-<main class="mb-3" style="width: 70%;">
+<main class="mb-3 d-flex justify-content-center p-4" style="width: 100%;">
     <section class="checkout-form">
-        <div class="d-flex justify-content-end ">
+        <div class="d-flex justify-content-end mb-5">
     <a href="/checkout"><i class="fa fa-arrow-left me-1"></i><u>Checkout</u></a>
     </div>
     <form action="/checkoutform" method="post">
@@ -77,3 +77,8 @@
 </section>
 </main>
 {{>userfooter}}
+<style>
+	body{
+		width: 100%;
+	}
+</style>
