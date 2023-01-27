@@ -182,7 +182,23 @@ router.post("/checkoutform",(req,res)=>{
 })
 
 
+//place order
 
+router.post("/place-order",async(req,res)=>{
+  console.log(req.body.address,";;;;;;;;;;;;;;")
+  const cartproducts=await control.getcartitems(req.session.user._id)
+  const cartproduct= await cartproducts.productdetails
+  const totalAmount= await control.totalAmount(req.session.user._id)
+  control.placeorder(req.session.user._id,req.body,cartproduct,totalAmount).then((response)=>{
+    res.json({status:true})
+  })
+})
+
+//place order successfull
+
+router.get("/ordersuccess",cartCount,(req,res)=>{
+  res.render("user/ordersuccess",{user: req.session.user, usercart: res.usercart})
+})
 
 
 module.exports = router;

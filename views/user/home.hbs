@@ -9,7 +9,7 @@
 <div class="product-container">
     {{#each productdata}}
     <a href="/productview/{{this._id}}" class="text-decoration-none text-dark">
-        <div class="product-card p-2">
+        <div class="product-card p-2 mt-5">
             <img src="/images/categoryimage/{{this.image}}" alt="Product Name" class="product-image">
 
             <h3 class="product-name">{{this.name}}</h3>
@@ -20,7 +20,7 @@
     <div class="d-flex align-content-center justify-content-center">
         {{!-- <a href="/addtocart/{{this._id}}" class="btn btn-primary">Add to cart</a> --}}
         <button onclick="addTocart('{{this._id}}')" class="btn btn-primary">Add to cart</button>
-        <div class="ms-4 pos"><i class='fa fa-heart' style="font-size: 20px; "></i></div>
+        {{!-- <div class="ms-4 pos"><i class='fa fa-heart' style="font-size: 20px; "></i></div> --}}
     </div>
 </div>
 

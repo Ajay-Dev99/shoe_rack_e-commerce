@@ -6,6 +6,9 @@ const cart = require("../models/cartmodel")
 const { default: mongoose } = require("mongoose")
 const { response } = require("../app")
 const product = require("../models/productmodel")
+const Ordercollection = require("../models/order")
+
+
 module.exports = {
     toSingup: (userdata) => {
 
@@ -117,7 +120,7 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
             const userid = new mongoose.Types.ObjectId(userId)
             const usercart = await cart.findOne({ userId: userid })
-
+            console.log(usercart,"//////")
             if (usercart) {
                 const productDetails = await cart.aggregate([
                     { $match: { userId: userid } },
@@ -181,7 +184,7 @@ module.exports = {
                 }
 
 
-                if (totalquantity >= 1) {
+                if (totalquantity>0) {
                     resolve({ productdetails, cartexist: true })
                 } else {
                     resolve({ cartexist: false })
@@ -325,53 +328,91 @@ module.exports = {
 
     //singleproduct view
 
-    productView:(proId)=>{
-        return new Promise(async(resolve,reject)=>{
-            const productDetails=await product.findOne({_id:proId}).lean()
+    productView: (proId) => {
+        return new Promise(async (resolve, reject) => {
+            const productDetails = await product.findOne({ _id: proId }).lean()
             resolve(productDetails)
         })
     },
 
     //add address to userdatabase
 
-    addAddress:(userId,userdata)=>{
-        return new Promise(async(resolve,reject)=>{
-          
-            const updateaddress={
-                name:userdata.name,
-                email:userdata.email,
-                phone:userdata.phone,
-                house:userdata.address,
-                city:userdata.city,
-                postal:userdata.postal
+    addAddress: (userId, userdata) => {
+        return new Promise(async (resolve, reject) => {
+
+            const updateaddress = {
+                name: userdata.name,
+                email: userdata.email,
+                phone: userdata.phone,
+                house: userdata.address,
+                city: userdata.city,
+                postal: userdata.postal
             }
-            const userdetails =  await user.findOne({_id:userId})
+            const userdetails = await user.findOne({ _id: userId })
             if ('address' in userdetails) {
                 console.log('Key "name" exists in the schema.');
-                 await user.findOneAndUpdate({_id:userId},{$push:{address:updateaddress}})
-              } else {
+                await user.findOneAndUpdate({ _id: userId }, { $push: { address: updateaddress } })
+            } else {
                 console.log('Key "name" does not exist in the schema.');
-                 await user.findOneAndUpdate({_id:userId},{$set:{address:updateaddress}})
-              }
-              
-          
-        //  console.log(userdetails.address,"updated address")
-        // 
+                await user.findOneAndUpdate({ _id: userId }, { $set: { address: updateaddress } })
+            }
+
+
+            //  console.log(userdetails.address,"updated address")
+            // 
         })
     },
 
     //get useraddress
-    showAddress:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
-            let userdetails=await user.findOne({_id:userId}).lean()
-            
-            const useraddress=userdetails.address
+    showAddress: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            let userdetails = await user.findOne({ _id: userId }).lean()
+
+            const useraddress = userdetails.address
             // console.log(userdetails.address.length,"????????????????")
             resolve(useraddress)
         })
-    }
+    },
 
+
+    placeorder: (userId, order, cartproducts, total) => {
+        return new Promise(async (resolve, reject) => {
+            const userid = new mongoose.Types.ObjectId(userId);
+            const addressid = new mongoose.Types.ObjectId(order.address);
+            const addressDetails = await user.findOne({ _id: userid }, { address: { $elemMatch: { _id: addressid } } }).lean();
+            const products = cartproducts
+            const totalAmount = total
+            let status = order['payment-method'] === "COD" ? "orderplaced" : "pending"
+            const newOrder = new Ordercollection({
+                userid: userId,
+                address: addressDetails.address[0],
+                paymentmethod: order['payment-method'],
+                orderitem: [],
+                totalamount: totalAmount,
+                status: status
+            });
+
+            for (let i = 0; i < products.length; i++) {
+                const orderitem = {
+                    product: products[i].cartproduct._id,
+                    quantity: products[i].quantity,
+                    productprice: products[i].cartproduct.productSRP,
+                    totalamount: products[i].subtotal
+                };
+
+                newOrder.orderitem.push(orderitem);
+            }
+             await newOrder.save().then(()=>{
+                cart.findOneAndDelete({ userId: userid }).then(()=>{console.log("Deleted")}).catch(err=>console.log(err))
+             })
+             resolve()
+
+          })
+    }
 }
+    
+
+
 
 
 
