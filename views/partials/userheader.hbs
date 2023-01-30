@@ -1,4 +1,4 @@
-<header style="width: 100%;">
+<header style="width: 100%; ">
     <nav class="navbar navbar-expand-lg navbar-light header ">
         <div class="container-fluid fs-4 d-flex">
             <div class=".img-fluid me-3">
@@ -7,7 +7,7 @@
             <div>
                 <form class="d-none d-sm-flex">
                     <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search"
-                        style="width: 500px;">
+                        style="width: 500px; height: 40px;">
                     {{!-- <button class="btn btn-outline-success" type="submit">Search</button> --}}
                 </form>
             </div>
@@ -35,7 +35,7 @@
                         {{user.name}}
                         {{else}}
 
-                      <span class="material-icons-sharp p-2 text-dark text-white">person</span>
+                      <span class="material-icons-sharp p-2  text-white">person</span>
 
                         {{/if}}
 
@@ -44,7 +44,7 @@
                         {{#if user}}
                          <li class="nav-item mb-2 ms-2">
                         <a class="nav-link" href="/account">
-                            <i class="fa fa-user"></i> Account
+                            <i class="bi bi-person-circle"></i>My Account
                         </a>
                     </li>
                         <li class="nav-item mb-2 ms-2"><a class="nav-link" href="/logout"><i class="fa fa-sign-out"></i>Logout</a></li>

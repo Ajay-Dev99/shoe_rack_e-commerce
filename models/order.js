@@ -1,4 +1,7 @@
 const { default: mongoose, Schema } = require("mongoose");
+const indianTime = new Date();
+
+const options = { timeZone: 'Asia/Kolkata' };
 
 
 const orderShema=new mongoose.Schema({
@@ -38,6 +41,10 @@ const orderShema=new mongoose.Schema({
     status:{
         type:String,
         required:true
+    },
+    OrdercreatedAt: {
+        type: String,
+        default: indianTime.toLocaleString('IND', options),
     }
 
 

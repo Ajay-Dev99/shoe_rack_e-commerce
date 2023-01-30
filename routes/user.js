@@ -24,7 +24,7 @@ const cartCount =async (req, res, next) => {
 }
 
 router.get('/', cartCount, async function (req, res,) {
-console.log(">>>");
+
   await admincontrol.listProduct().then((data) => {
     const product = data
     const productdata = product.map((product) => {
@@ -73,12 +73,12 @@ router.post("/login", (req, res) => {
 
   control.toLogin(req.body).then((response) => {
     if (response.usernotfound) {
-      console.log("3");
+      
       req.session.usernotexist = true;
       res.redirect("/login")
     }
     else if (response.blockedstatus) {
-      console.log("4");
+      
 
       req.session.blocked = true
       res.redirect("/login")
@@ -89,10 +89,10 @@ router.post("/login", (req, res) => {
       if (response.status) {
         
         req.session.loggedIn = true;
-        console.log("5");
+        
         res.redirect("/")
       } else {
-        console.log("6");
+        
 
         req.session.passErr = true;
         res.redirect('/login')
@@ -180,7 +180,7 @@ router.post("/checkoutform", (req, res) => {
 //place order
 
 router.post("/place-order", async (req, res) => {
-  console.log(req.body.address, ";;;;;;;;;;;;;;")
+  
   const cartproducts = await control.getcartitems(req.session.user._id)
   const cartproduct = await cartproducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
@@ -197,8 +197,17 @@ router.get("/ordersuccess", cartCount, (req, res) => {
 
 //account
 
-router.get("/account",(req,res)=>{
-  res.render("user/userprofile")
+router.get("/account",cartCount,(req,res)=>{
+  res.render("user/userprofile",{user:req.session.user, usercart: res.usercart })
+})
+
+//orderlist
+
+router.get("/orderdetials",verifyLogin,cartCount,async(req,res)=>{
+ const orderdetails= await control.viewOrderdetails(req.session.user._id)
+ console.log(orderdetails[0].orderedproducts.imageurl,"///////////////////////////////////////////////////////")
+ console.log(orderdetails,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
+ res.render("user/orderlist",{orderdetails,user: req.session.user,usercart: res.usercart})
 })
 
 module.exports = router;

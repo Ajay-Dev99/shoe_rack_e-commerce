@@ -7,6 +7,8 @@ const { default: mongoose, Error } = require("mongoose")
 const { response } = require("../app")
 const product = require("../models/productmodel")
 const Ordercollection = require("../models/order")
+// const order = require("../models/order")
+
 
 
 module.exports = {
@@ -40,7 +42,7 @@ module.exports = {
 
 
     toLogin: (userdata) => {
-        // console.log(userdata)
+       
         return new Promise(async (resolve, reject) => {
             try {
                 let response = {}
@@ -190,6 +192,7 @@ module.exports = {
                         }
                     },
                 ])
+                
                 resolve({ productdetails, cartexist: true })
             } else {
                 resolve({ cartexist: false })
@@ -351,16 +354,16 @@ module.exports = {
             }
             const userdetails = await user.findOne({ _id: userId })
             if ('address' in userdetails) {
-                console.log('Key "name" exists in the schema.');
+               
                 await user.findOneAndUpdate({ _id: userId }, { $push: { address: updateaddress } })
             } else {
-                console.log('Key "name" does not exist in the schema.');
+              
                 await user.findOneAndUpdate({ _id: userId }, { $set: { address: updateaddress } })
             }
 
 
-            //  console.log(userdetails.address,"updated address")
-            // 
+            
+        
         })
     },
 
@@ -370,7 +373,7 @@ module.exports = {
             let userdetails = await user.findOne({ _id: userId }).lean()
 
             const useraddress = userdetails.address
-            // console.log(userdetails.address.length,"????????????????")
+            
             resolve(useraddress)
         })
     },
@@ -390,7 +393,8 @@ module.exports = {
                 paymentmethod: order['payment-method'],
                 orderitem: [],
                 totalamount: totalAmount,
-                status: status
+                status: status,
+                 createdAt:new Date()
             });
 
             for (let i = 0; i < products.length; i++) {
@@ -407,6 +411,63 @@ module.exports = {
                 cart.findOneAndDelete({ userId: userid }).then(() => { console.log("Deleted") }).catch(err => console.log(err))
             })
             resolve()
+
+        })
+    },
+
+    //view Orderlist
+
+    viewOrderdetails:(userid)=>{
+        return new Promise(async(resolve,reject)=>{
+            const userId=new mongoose.Types.ObjectId(userid)
+            const order=await Ordercollection.findOne({userid:userId})
+               
+            if(order){
+               const orderdetails=await Ordercollection.aggregate([
+                {$match:{userid:userId}},
+
+                {$unwind:"$orderitem"},
+
+                {
+                    $project:{    
+                        paymentmethod:"$paymentmethod",
+                        OrdercreatedAt:"$OrdercreatedAt",
+                        totalamount:"$totalamount",
+                        status:"$status",
+                        Productquantity:"$orderitem.quantity",
+                        productprice:"$orderitem.productprice",
+                        producttotal:"$orderitem.totalamount" ,
+                        productId:"$orderitem.product"
+                    }
+                },{
+                    $lookup:{
+                        from:"products",
+                        localField:"productId",
+                        foreignField:"_id",
+                        as:"orderedproducts"
+                    }
+                },
+                {
+                    $project:{
+                        paymentmethod:1,
+                        OrdercreatedAt:1,
+                        totalamount:1,
+                        status:1,
+                        Productquantity:1,
+                        productprice:1,
+                        producttotal:1,
+                        productId:1,
+                        orderedproducts:{
+                            $arrayElemAt:["$orderedproducts",0]
+                        }
+                    }
+                }
+
+               ])
+               console.log("orderdetails",orderdetails,"orderdetails")
+               resolve(orderdetails)
+            }
+
 
         })
     }
