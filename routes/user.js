@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const control = require("../control/usercontrol")
 const admincontrol = require("../control/admincontrol");
+const e = require('express');
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
     next()
@@ -10,11 +11,11 @@ const verifyLogin = (req, res, next) => {
   }
 }
 
-const cartCount =async (req, res, next) => {
+const cartCount = async (req, res, next) => {
   if (req.session.loggedIn) {
-  const totalqty= await control.totalquantity(req.session.user._id)
-  res.usercart=totalqty
-  next()
+    const totalqty = await control.totalquantity(req.session.user._id)
+    res.usercart = totalqty
+    next()
   } else {
     let totalqty = 0;
     res.usercart = totalqty
@@ -73,12 +74,12 @@ router.post("/login", (req, res) => {
 
   control.toLogin(req.body).then((response) => {
     if (response.usernotfound) {
-      
+
       req.session.usernotexist = true;
       res.redirect("/login")
     }
     else if (response.blockedstatus) {
-      
+
 
       req.session.blocked = true
       res.redirect("/login")
@@ -87,12 +88,12 @@ router.post("/login", (req, res) => {
     else {
       req.session.user = response.user
       if (response.status) {
-        
+
         req.session.loggedIn = true;
-        
+
         res.redirect("/")
       } else {
-        
+
 
         req.session.passErr = true;
         res.redirect('/login')
@@ -122,7 +123,7 @@ router.get("/cart", verifyLogin, cartCount, async (req, res) => {
   const userproducts = userProducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
 
-  res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart,totalAmount })
+  res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart, totalAmount })
 
 
 
@@ -180,34 +181,41 @@ router.post("/checkoutform", (req, res) => {
 //place order
 
 router.post("/place-order", async (req, res) => {
-  
+
   const cartproducts = await control.getcartitems(req.session.user._id)
   const cartproduct = await cartproducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
-  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then((response) => {
-    res.json({ status: true })
+  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then((orderId) => {
+    console.log(orderId,">>>>>>>>>")
+    if(req.body['payment-method'] === "COD"){
+        res.json({ status: true })
+    }else{
+      control.generateRazorpay(orderId,totalAmount).then((response)=>{
+        res.json(response)
+      })
+    }
   })
 })
 
 //place order successfull
 
-router.get("/ordersuccess", cartCount, (req, res) => {
+router.get("/ordersuccess",verifyLogin,cartCount, (req, res) => {
   res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
 })
 
 //account
 
-router.get("/account",cartCount,(req,res)=>{
-  res.render("user/userprofile",{user:req.session.user, usercart: res.usercart })
+router.get("/account", cartCount, (req, res) => {
+  res.render("user/userprofile", { user: req.session.user, usercart: res.usercart })
 })
 
 //orderlist
 
-router.get("/orderdetials",verifyLogin,cartCount,async(req,res)=>{
- const orderdetails= await control.viewOrderdetails(req.session.user._id)
- console.log(orderdetails[0].orderedproducts.imageurl,"///////////////////////////////////////////////////////")
- console.log(orderdetails,">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
- res.render("user/orderlist",{orderdetails,user: req.session.user,usercart: res.usercart})
+router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
+  const orderdetails = await control.viewOrderdetails(req.session.user._id)
+
+
+  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
 })
 
 module.exports = router;

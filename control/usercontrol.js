@@ -7,7 +7,11 @@ const { default: mongoose, Error } = require("mongoose")
 const { response } = require("../app")
 const product = require("../models/productmodel")
 const Ordercollection = require("../models/order")
-// const order = require("../models/order")
+const Razorpay = require('razorpay');
+const instance = new Razorpay({
+    key_id: 'rzp_test_cPumZ2UTOj7JH5',
+    key_secret: 'd3l0POxuqxCwAKIQKAPuMrdk',
+});
 
 
 
@@ -16,7 +20,7 @@ module.exports = {
 
         return new Promise(async (resolve, reject) => {
             try {
-                let alreadySignup = await user.findOne({ email: userdata.email })
+                const alreadySignup = await user.findOne({ email: userdata.email })
                 if (alreadySignup) {
                     resolve({ exist: true })
                 }
@@ -42,7 +46,7 @@ module.exports = {
 
 
     toLogin: (userdata) => {
-       
+
         return new Promise(async (resolve, reject) => {
             try {
                 let response = {}
@@ -121,13 +125,13 @@ module.exports = {
         try {
             const userID = new mongoose.Types.ObjectId(userid)
             const Cart = await cart.findOne({ userId: userID }).lean()
-            if(Cart){
+            if (Cart) {
                 return Cart.totalquantity
 
-            }else{
+            } else {
                 return 0
             }
-            
+
         } catch (error) {
             throw new Error(error)
         }
@@ -192,7 +196,7 @@ module.exports = {
                         }
                     },
                 ])
-                
+
                 resolve({ productdetails, cartexist: true })
             } else {
                 resolve({ cartexist: false })
@@ -354,16 +358,16 @@ module.exports = {
             }
             const userdetails = await user.findOne({ _id: userId })
             if ('address' in userdetails) {
-               
+
                 await user.findOneAndUpdate({ _id: userId }, { $push: { address: updateaddress } })
             } else {
-              
+
                 await user.findOneAndUpdate({ _id: userId }, { $set: { address: updateaddress } })
             }
 
 
-            
-        
+
+
         })
     },
 
@@ -373,7 +377,7 @@ module.exports = {
             let userdetails = await user.findOne({ _id: userId }).lean()
 
             const useraddress = userdetails.address
-            
+
             resolve(useraddress)
         })
     },
@@ -394,7 +398,7 @@ module.exports = {
                 orderitem: [],
                 totalamount: totalAmount,
                 status: status,
-                 createdAt:new Date()
+                createdAt: new Date()
             });
 
             for (let i = 0; i < products.length; i++) {
@@ -407,67 +411,87 @@ module.exports = {
 
                 newOrder.orderitem.push(orderitem);
             }
-            await newOrder.save().then(() => {
+            await newOrder.save().then((response) => {
                 cart.findOneAndDelete({ userId: userid }).then(() => { console.log("Deleted") }).catch(err => console.log(err))
+                resolve(response._id)
             })
-            resolve()
+
 
         })
     },
 
     //view Orderlist
 
-    viewOrderdetails:(userid)=>{
-        return new Promise(async(resolve,reject)=>{
-            const userId=new mongoose.Types.ObjectId(userid)
-            const order=await Ordercollection.findOne({userid:userId})
-               
-            if(order){
-               const orderdetails=await Ordercollection.aggregate([
-                {$match:{userid:userId}},
+    viewOrderdetails: (userid) => {
+        return new Promise(async (resolve, reject) => {
+            const userId = new mongoose.Types.ObjectId(userid)
+            const order = await Ordercollection.findOne({ userid: userId })
 
-                {$unwind:"$orderitem"},
+            if (order) {
+                const orderdetails = await Ordercollection.aggregate([
+                    { $match: { userid: userId } },
 
-                {
-                    $project:{    
-                        paymentmethod:"$paymentmethod",
-                        OrdercreatedAt:"$OrdercreatedAt",
-                        totalamount:"$totalamount",
-                        status:"$status",
-                        Productquantity:"$orderitem.quantity",
-                        productprice:"$orderitem.productprice",
-                        producttotal:"$orderitem.totalamount" ,
-                        productId:"$orderitem.product"
-                    }
-                },{
-                    $lookup:{
-                        from:"products",
-                        localField:"productId",
-                        foreignField:"_id",
-                        as:"orderedproducts"
-                    }
-                },
-                {
-                    $project:{
-                        paymentmethod:1,
-                        OrdercreatedAt:1,
-                        totalamount:1,
-                        status:1,
-                        Productquantity:1,
-                        productprice:1,
-                        producttotal:1,
-                        productId:1,
-                        orderedproducts:{
-                            $arrayElemAt:["$orderedproducts",0]
+                    { $unwind: "$orderitem" },
+
+                    {
+                        $project: {
+                            paymentmethod: "$paymentmethod",
+                            OrdercreatedAt: "$OrdercreatedAt",
+                            totalamount: "$totalamount",
+                            status: "$status",
+                            Productquantity: "$orderitem.quantity",
+                            productprice: "$orderitem.productprice",
+                            producttotal: "$orderitem.totalamount",
+                            productId: "$orderitem.product"
+                        }
+                    }, {
+                        $lookup: {
+                            from: "products",
+                            localField: "productId",
+                            foreignField: "_id",
+                            as: "orderedproducts"
+                        }
+                    },
+                    {
+                        $project: {
+                            paymentmethod: 1,
+                            OrdercreatedAt: 1,
+                            totalamount: 1,
+                            status: 1,
+                            Productquantity: 1,
+                            productprice: 1,
+                            producttotal: 1,
+                            productId: 1,
+                            orderedproducts: {
+                                $arrayElemAt: ["$orderedproducts", 0]
+                            }
                         }
                     }
-                }
 
-               ])
-               console.log("orderdetails",orderdetails,"orderdetails")
-               resolve(orderdetails)
+                ])
+
+                resolve(orderdetails)
             }
 
+
+        })
+    },
+
+    //Razorpay
+
+    generateRazorpay: (orderId,total) => {
+
+        return new Promise((resolve, reject) => {
+
+            var options = { 
+            amount: total,
+            currency: "INR",
+            receipt: ""+orderId
+            };
+            instance.orders. create (options, function(err, order) {
+            // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",order);
+                resolve(order)
+        });
 
         })
     }
