@@ -3,11 +3,13 @@ const router = express.Router();
 const control = require("../control/usercontrol")
 const admincontrol = require("../control/admincontrol");
 const e = require('express');
+const usercontrol = require('../control/usercontrol');
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
     next()
   } else {
     res.redirect("/login")
+    res.json({loggedin:false})
   }
 }
 
@@ -186,11 +188,12 @@ router.post("/place-order", async (req, res) => {
   const cartproduct = await cartproducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
   control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then((orderId) => {
-    console.log(orderId,">>>>>>>>>")
+   
     if(req.body['payment-method'] === "COD"){
-        res.json({ status: true })
+        res.json({ success: true })
     }else{
       control.generateRazorpay(orderId,totalAmount).then((response)=>{
+        
         res.json(response)
       })
     }
@@ -213,9 +216,17 @@ router.get("/account", cartCount, (req, res) => {
 
 router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
   const orderdetails = await control.viewOrderdetails(req.session.user._id)
-
-
   res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
+})
+
+router.post("/verify-payment",async(req,res)=>{
+    await control.verifypayment(req.body).then(()=>{
+    control.changeStatus(req.body['order[receipt]']).then(()=>{
+        res.json({paymentsuccess:true})
+      })
+  }).catch((err)=>{
+        res.json({paymentsuccess:false})
+   })
 })
 
 module.exports = router;

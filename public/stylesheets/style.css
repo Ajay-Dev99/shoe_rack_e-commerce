@@ -58,15 +58,18 @@
   justify-content: space-between;
   width: 100%;
 }
-.user_searchbar{
+
+.user_searchbar {
   width: 500px;
   position: relative;
 }
-.user_searchicon{
+
+.user_searchicon {
   position: absolute;
   right: 22rem;
-    top: 0rem;
+  top: 0rem;
 }
+
 .sidebar {
   background-color: red;
   position: fixed;
@@ -77,13 +80,49 @@
 
   height: 540px;
 }
-.account_btn{
+
+.account_btn {
   background-color: #898989;
-    border-radius: 50%;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+@media only screen and (max-width: 768px) {
+  .hide-on-tablet {
+    height: 50px;
+    justify-content: center;
+    /* display: none; */
+    width: 50px;
+  }
+}
+
+@media only screen and (max-width: 415px) {
+  .fit-on-mobile {
+    width: 96%;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 10px;
+    padding-left: 78px;
+  }
+}
+
+@media only screen and (max-width:415px) {
+  .fit-input-on-mobile {
+    width: 330px;
+  }
+}
+
+
+@media only screen and (max-width:415px) {
+  .fit-logo-on-mobile {
+    position: absolute;
+    bottom: 100px;
+    left: 230px;
+    border-radius: 50%;
+  }
 }
 
 /* .card {

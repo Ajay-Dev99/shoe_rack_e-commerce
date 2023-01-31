@@ -16,7 +16,8 @@
 				<p>{{this.postal}}</p>
 			</div>
 			<div class="form-check mb-3">
-				<input class="form-check-input" type="radio" name="address" id="flexRadioDefault1" value="{{this._id}}" required>
+				<input class="form-check-input" type="radio" name="address" id="flexRadioDefault1" value="{{this._id}}"
+					required>
 				<label class="form-check-label" for="address">
 					<u> Use this Address </u>
 				</label>
@@ -25,7 +26,7 @@
 
 
 			<a href="/addaddress" class="btn btn-dark">+Add another address</a>
-			
+
 		</section>
 		{{else}}
 		<section class="checkout-details">
@@ -86,28 +87,81 @@
 	</main>
 </form>
 {{>userfooter}}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+	$("#checkout-form").submit((e) => {
+		e.preventDefault()
+		
+		$.ajax({
+			url: '/place-order',
+			method: 'post',
+			data: $('#checkout-form').serialize(),
+			success: (response) => {
+				
+				if (response.success) {
+					location.href = '/ordersuccess'
+				} else {
+					razorpayPayment(response)
+					
+				}
+			}
+		})
+	})
+</script>
+<script>
+	 function razorpayPayment(order) {
+        var options = {
+            "key": "rzp_test_cPumZ2UTOj7JH5", // Enter the Key ID generated from the Dashboard
+            "amount":order.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+            "currency": "INR",
+            "name": "Shoe Rack",
+            "description": "Test Transaction",
+            "image": "http://localhost:3000/images/logo.png",
+            "order_id": order.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+            "handler": function (response) {
+                console.log(response)
+                verifyPayment(response,order);
+            },
+            "prefill": {
+                "name": "ajay",
+                "email":"ajay@gmail.com",
+                "contact":"8714441727"
+            },
+            "notes": {
+                "address": "Razorpay Corporate Office"
+            },
+            "theme": {
+  
+                "color": "#193D56"   
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+</script>
 
 <script>
-
-  $("#checkout-form").submit((e)=>{
-	e.preventDefault()
-	$.ajax({
-		url:'/place-order',
-		method:'post',
-		data:$('#checkout-form').serialize(),
-		success:(response)=>{
-			if(response.status){
-				location.href='/ordersuccess'
+	 function verifyPayment(payment,order){
+		
+		$.ajax({
+			url:"/verify-payment",
+			method:"post",
+			data:{
+				payment,
+				order
+			},
+			success:(response) => {
+				if(response.paymentsuccess){
+					location.href="/ordersuccess"
+				}
+				
 			}
-		}
-	})
-  })
-
-
+		})
+	}
 </script>
 
 <style>
-	body{
+	body {
 		width: 100%;
 	}
 </style>

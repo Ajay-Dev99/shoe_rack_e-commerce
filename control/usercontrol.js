@@ -8,6 +8,7 @@ const { response } = require("../app")
 const product = require("../models/productmodel")
 const Ordercollection = require("../models/order")
 const Razorpay = require('razorpay');
+const { resolve } = require("path")
 const instance = new Razorpay({
     key_id: 'rzp_test_cPumZ2UTOj7JH5',
     key_secret: 'd3l0POxuqxCwAKIQKAPuMrdk',
@@ -484,15 +485,43 @@ module.exports = {
         return new Promise((resolve, reject) => {
 
             var options = { 
-            amount: total,
+            amount: total*100,
             currency: "INR",
             receipt: ""+orderId
             };
             instance.orders. create (options, function(err, order) {
-            // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>",order);
+           
                 resolve(order)
         });
 
+        })
+    },
+
+    //Payment verification
+
+    verifypayment:(details)=>{
+        
+        return new Promise((resolve,reject)=>{  
+            const crypto=require('crypto')
+            const hmac=crypto.createHmac('sha256','d3l0POxuqxCwAKIQKAPuMrdk')
+            hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]'])
+            generated_signature=hmac.digest('hex')
+           
+            if(generated_signature==details['payment[razorpay_signature]']){
+                resolve()
+            }else{
+                reject()
+            }
+            
+        })
+    },
+
+    //change status
+
+    changeStatus:(orderId)=>{
+        return new Promise(async(resolve,reject)=>{
+            await Ordercollection.findOneAndUpdate({_id:orderId},{$set:{status:"orderplaced"}})
+            resolve()
         })
     }
 }
