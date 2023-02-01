@@ -193,8 +193,12 @@ router.post("/place-order", async (req, res) => {
         res.json({ success: true })
     }else{
       control.generateRazorpay(orderId,totalAmount).then((response)=>{
-        
-        res.json(response)
+        const data={
+          response:response,
+          user:req.session.user.address
+        }
+
+        res.json(data)
       })
     }
   })
@@ -202,7 +206,8 @@ router.post("/place-order", async (req, res) => {
 
 //place order successfull
 
-router.get("/ordersuccess",verifyLogin,cartCount, (req, res) => {
+router.get("/ordersuccess",verifyLogin,cartCount, async(req, res) => {
+   await control.deleteCart(req.session.user._id)
   res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
 })
 
@@ -220,8 +225,9 @@ router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
 })
 
 router.post("/verify-payment",async(req,res)=>{
+  
     await control.verifypayment(req.body).then(()=>{
-    control.changeStatus(req.body['order[receipt]']).then(()=>{
+        control.changeStatus(req.body['order[receipt]']).then(()=>{
         res.json({paymentsuccess:true})
       })
   }).catch((err)=>{

@@ -413,7 +413,6 @@ module.exports = {
                 newOrder.orderitem.push(orderitem);
             }
             await newOrder.save().then((response) => {
-                cart.findOneAndDelete({ userId: userid }).then(() => { console.log("Deleted") }).catch(err => console.log(err))
                 resolve(response._id)
             })
 
@@ -421,8 +420,11 @@ module.exports = {
         })
     },
 
-    //view Orderlist
+    deleteCart:(userid)=>{
+        cart.findOneAndDelete({ userId: userid }).then(() => { console.log("Deleted") }).catch(err => console.log(err))
+    },
 
+    //view Orderlist
     viewOrderdetails: (userid) => {
         return new Promise(async (resolve, reject) => {
             const userId = new mongoose.Types.ObjectId(userid)
@@ -482,9 +484,9 @@ module.exports = {
 
     generateRazorpay: (orderId,total) => {
 
-        return new Promise((resolve, reject) => {
-
-            var options = { 
+        return new Promise(async(resolve, reject) => {
+           
+            const options = { 
             amount: total*100,
             currency: "INR",
             receipt: ""+orderId
@@ -497,8 +499,8 @@ module.exports = {
         })
     },
 
-    //Payment verification
 
+    //Payment verification
     verifypayment:(details)=>{
         
         return new Promise((resolve,reject)=>{  
