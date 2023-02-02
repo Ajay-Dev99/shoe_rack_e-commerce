@@ -408,6 +408,15 @@ module.exports = {
     },
 
 
+    //find user Adderss
+
+    userdetails:(userId)=>{
+        return new Promise(async(resolve,reject)=>{
+           const userdata=await user.findOne({_id:userId})
+           resolve(userdata)
+        })
+    },
+
     placeorder: (userId, order, cartproducts, total) => {
         return new Promise(async (resolve, reject) => {
             const userid = new mongoose.Types.ObjectId(userId);

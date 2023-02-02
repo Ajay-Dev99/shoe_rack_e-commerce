@@ -211,10 +211,12 @@ router.post("/place-order", async (req, res) => {
     if(req.body['payment-method'] === "COD"){
         res.json({ success: true })
     }else{
-      await control.generateRazorpay(orderId,totalAmount).then((response)=>{
+      await control.generateRazorpay(orderId,totalAmount).then(async(response)=>{
+        const userdata=await control.userdetails(req.session.user._id)
+        console.log(userdata,"55555555")
         const data={
           response:response,
-          user:req.session.user.address
+           user:userdata.address
         }
 
         res.json(data)
