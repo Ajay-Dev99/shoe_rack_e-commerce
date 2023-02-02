@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const control = require("../control/usercontrol")
-const admincontrol = require("../control/admincontrol");
+const control = require("../control/usercontroller")
+const admincontrol = require("../control/admincontroller");
 const e = require('express');
-const usercontrol = require('../control/usercontrol');
+const usercontrol = require('../control/usercontroller');
+const sendmail = require('../config/nodemailer')
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
     next()
@@ -27,7 +28,8 @@ const cartCount = async (req, res, next) => {
 }
 
 router.get('/', cartCount, async function (req, res,) {
-
+  
+ 
   await admincontrol.listProduct().then((data) => {
     const product = data
     const productdata = product.map((product) => {
@@ -50,14 +52,33 @@ router.get("/signup", (req, res) => {
 })
 
 router.post("/signup-user", (req, res) => {
-  control.toSingup(req.body).then((data) => {
+  control.doSingup(req.body).then((data) => {
     if (data.exist) {
       req.session.existed = true;
       res.redirect("/signup")
     } else {
-      res.redirect('/login')
+      const useremail=req.body.email
+      sendmail(useremail,req)
+     
+      res.render("user/otpverification")
+
     }
   })
+})
+//otp verification
+router.post("/otpverification",(req,res)=>{
+
+  const otp=parseInt(req.session.otp)
+  const userOtp=parseInt(req.body.otp)
+  control.verifyOtp(userOtp,otp).then((response)=>{
+    if(response.status){
+      res.json({status:true})
+      req.session.otp=null;
+    }else{
+      res.json({status:false})
+    }
+  })
+  
 })
 
 router.get("/login", (req, res) => {
@@ -74,15 +95,13 @@ router.get("/login", (req, res) => {
 
 router.post("/login", (req, res) => {
 
-  control.toLogin(req.body).then((response) => {
+  control.doLogin(req.body).then((response) => {
     if (response.usernotfound) {
 
       req.session.usernotexist = true;
       res.redirect("/login")
     }
     else if (response.blockedstatus) {
-
-
       req.session.blocked = true
       res.redirect("/login")
     }
@@ -187,12 +206,12 @@ router.post("/place-order", async (req, res) => {
   const cartproducts = await control.getcartitems(req.session.user._id)
   const cartproduct = await cartproducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
-  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then((orderId) => {
+  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then(async(orderId) => {
    
     if(req.body['payment-method'] === "COD"){
         res.json({ success: true })
     }else{
-      control.generateRazorpay(orderId,totalAmount).then((response)=>{
+      await control.generateRazorpay(orderId,totalAmount).then((response)=>{
         const data={
           response:response,
           user:req.session.user.address

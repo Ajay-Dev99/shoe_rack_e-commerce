@@ -3,14 +3,14 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const logger = require('morgan');
-const databaseConnect=require('./connection/dbconnection')
+const databaseConnect=require('./config/dbconnection')
 const userRouter = require('./routes/user');
 const adminRouter = require('./routes/admin');
 const session=require("express-session")
 const app = express();
 const hbs=require("express-handlebars")
 const multer = require('multer')
-
+require("dotenv").config()
 
 
 databaseConnect.dbConnect()

@@ -1,0 +1,65 @@
+<link rel="stylesheet" href="/stylesheets/otp.css">
+     
+<div class="otp fit-on-mobile ">
+<form action="javascript: void(0)" id="otp-form" name="otp-form">
+  
+  <div class="title">
+    <h3>OTP VERIFICATION</h3>
+    <p class="info">An otp has been sent to your registerd email address</p>
+    <p class="msg">Please enter OTP to verify</p>
+    <p class="text-danger" id="otp_wrong"></p>
+
+  </div>
+  <div class="otp-input-fields" style="background-color: #193D56;">
+    <input type="number" class="otp__digit otp__field__1" required>
+    <input type="number" class="otp__digit otp__field__2" required>
+    <input type="number" class="otp__digit otp__field__3" required>
+    <input type="number" class="otp__digit otp__field__4" required>
+    <input type="number" class="otp__digit otp__field__5" required>
+    <input type="number" class="otp__digit otp__field__6" required>
+  </div>
+  
+  <div  class="result d-none"><p id="_otp" class="_notok"> </p></div>
+  <div class="text-center"> 
+  <button type="submit" class="btn btn-block rounded-pill fs-5 px-4 mb-2 submit-btn">submit</button>
+  </div>
+</form>
+</div>
+
+
+
+<script src="/javascripts/otp.js"></script>
+
+{{!-- <div class="d-flex justify-content-center align-items-center">
+<form action="" id="otpform">
+<input type="text" name="otp" placeholder="enter the otp" required>
+<button type="submit">submit</button>
+</form>
+</div> --}}
+<script>
+$('#otp-form').submit((e)=>{
+    let otp=document.getElementById("_otp").innerHTML
+   
+    e.preventDefault()
+
+    $.ajax({
+        url:'/otpverification',
+        method:"post",
+        data:{otp:otp},
+        success:(response)=>{
+           
+            if(response.status){
+                location.href="/login"
+            }else{
+                
+                document.getElementById("otp_wrong").innerHTML="Entered OTP is wrong"
+            }
+        }
+    })
+})
+</script>
+<style>
+	body {
+		width: 100%;
+	}
+</style>

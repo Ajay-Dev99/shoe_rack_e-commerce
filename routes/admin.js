@@ -1,11 +1,11 @@
 var express = require('express');
 const { response } = require('../app');
 var router = express.Router();
-const admincontrol = require("../control/admincontrol")
+const admincontrol = require("../control/admincontroller")
 const categoryimgupload= require("../utilities/imageUpload")
 const multer = require('multer');
 const { compareSync } = require('bcrypt');
-const usercontrol = require('../control/usercontrol');
+const usercontrol = require('../control/usercontroller');
 
 
 const verifyLogin=(req,res,next)=>{
