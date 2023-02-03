@@ -124,7 +124,13 @@ router.get("/listproducts",verifyLogin,(req,res)=>{
 
 })
 
-
+//list orders
+router.get("/orders",async(req,res)=>{
+  const orders=await admincontrol.listOrders()
+  console.log(orders,"999999999999999")
+  console.log(orders[0].orderitem,"ppppppppppp")
+  res.render("admin/admin_orderlist",{orders})
+})
 
 
 

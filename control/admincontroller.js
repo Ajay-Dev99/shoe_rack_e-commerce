@@ -6,6 +6,7 @@ const product = require("../models/productmodel")
 const bcrypt = require("bcrypt")
 const e = require("express")
 const { response } = require("../app")
+const Ordercollection=require("../models/ordermodel")
 
 module.exports = {
 
@@ -169,6 +170,15 @@ module.exports = {
             } catch (error) {
                 throw error
             }
+        })
+    },
+
+    //list orders
+
+    listOrders:()=>{
+        return new Promise(async(resolve,reject)=>{
+            const orders = await Ordercollection.find().populate('orderitem.product').lean()
+           resolve(orders)
         })
     }
 

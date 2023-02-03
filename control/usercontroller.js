@@ -6,14 +6,14 @@ const cart = require("../models/cartmodel")
 const { default: mongoose, Error } = require("mongoose")
 const { response } = require("../app")
 const product = require("../models/productmodel")
-const Ordercollection = require("../models/order")
+const Ordercollection = require("../models/ordermodel")
 const Razorpay = require('razorpay');
 const { resolve } = require("path")
 require("dotenv").config()
 
 
 const instance = new Razorpay({
-    key_id:process.env.RAZORPAY_KEY_ID,
+    key_id: process.env.RAZORPAY_KEY_ID,
     key_secret: process.env.RAZORPAY_SECRETE_KEY,
 });
 
@@ -55,19 +55,26 @@ module.exports = {
             try {
                 let response = {}
                 const client = await user.findOne({ email: userdata.email })
-               
+
                 if (client) {
                     bcrypt.compare(userdata.password, client.password).then((status) => {
                         if (status) {
-                            if (client.blocked) {
-                                resolve({ blockedstatus: true })
-                            } else {
-                                response.status = true;
-                                response.user = client
-                                resolve(response)
-                                
+                            if(client.verified){
+                              console.log("verified")  
+                                if (client.blocked) {
+                                    resolve({ blockedstatus: true })
+                                } else {
+                                    response.status = true;
+                                    response.user = client
+                                    resolve(response)
+    
+                                }
+                            }else{
+                                console.log("not verified")
+                                resolve({ status: false })
                             }
                         } else {
+                          
                             resolve({ status: false })
                         }
 
@@ -85,22 +92,29 @@ module.exports = {
 
     //verify OTP
 
-    verifyOtp:(userOtp,otp)=>{
-  return new Promise((resolve,reject)=>{
+    verifyOtp: (userOtp, otp) => {
+        return new Promise((resolve, reject) => {
 
-  
+            if (userOtp === otp) {
+                resolve({ status: true })
+            } else {
+                resolve({ status: false })
+            }
 
-    if(userOtp===otp){
-      resolve({status:true})
-    }else{
-        resolve({status:false})
-    }
-
-  })
-
-
+        })
     },
 
+        //change verification status
+        changeverificationstatus:(userId)=>{
+            return new Promise(async(resolve,reject)=>{
+                const client=new mongoose.Types.ObjectId(userId)
+
+                const cllientdata=user.findOne({_id:client})
+               
+                await user.updateOne({ _id: client }, { $set: { verified: true } })
+                resolve()
+            })
+        },
 
     //add to cart
 
@@ -410,10 +424,10 @@ module.exports = {
 
     //find user Adderss
 
-    userdetails:(userId)=>{
-        return new Promise(async(resolve,reject)=>{
-           const userdata=await user.findOne({_id:userId})
-           resolve(userdata)
+    userdetails: (userId) => {
+        return new Promise(async (resolve, reject) => {
+            const userdata = await user.findOne({ _id: userId })
+            resolve(userdata)
         })
     },
 
@@ -453,16 +467,75 @@ module.exports = {
         })
     },
 
-    deleteCart:(userid)=>{
+    deleteCart: (userid) => {
         cart.findOneAndDelete({ userId: userid }).then(() => { console.log("Deleted") }).catch(err => console.log(err))
     },
 
     //view Orderlist
-    viewOrderdetails: (userid) => {
+    viewOrderdetails: (orderID) => {
+        return new Promise(async (resolve, reject) => {
+            const orderId = new mongoose.Types.ObjectId(orderID)
+            const order = await Ordercollection.findOne({ _id: orderId })
+
+            if (order) {
+                const orderdetails = await Ordercollection.aggregate([
+                    { $match: { _id: orderId } },
+
+                    { $unwind: "$orderitem" },
+
+                    {
+                        $project: {
+                            paymentmethod: "$paymentmethod",
+                            OrdercreatedAt: "$OrdercreatedAt",
+                            totalamount: "$totalamount",
+                            status: "$status",
+                            Productquantity: "$orderitem.quantity",
+                            productprice: "$orderitem.productprice",
+                            producttotal: "$orderitem.totalamount",
+                            productId: "$orderitem.product"
+                        }
+                    }, {
+                        $lookup: {
+                            from: "products",
+                            localField: "productId",
+                            foreignField: "_id",
+                            as: "orderedproducts"
+                        }
+                    },
+                    {
+                        $project: {
+                            paymentmethod: 1,
+                            OrdercreatedAt: 1,
+                            totalamount: 1,
+                            status: 1,
+                            Productquantity: 1,
+                            productprice: 1,
+                            producttotal: 1,
+                            productId: 1,
+                            orderedproducts: {
+                                $arrayElemAt: ["$orderedproducts", 0]
+                            }
+                        }
+                    },
+                    {
+                        $sort: { OrdercreatedAt: -1 }
+                    }
+
+                ])
+                console.log(orderdetails, "orderdetailslllllll")
+                resolve(orderdetails)
+            }
+
+
+        })
+    },
+    viewallOrderdetails: (userid) => {
+        console.log(userid,"useridddddd")
         return new Promise(async (resolve, reject) => {
             const userId = new mongoose.Types.ObjectId(userid)
             const order = await Ordercollection.findOne({ userid: userId })
 
+            console.log(order,"orderssssss")
             if (order) {
                 const orderdetails = await Ordercollection.aggregate([
                     { $match: { userid: userId } },
@@ -502,10 +575,13 @@ module.exports = {
                                 $arrayElemAt: ["$orderedproducts", 0]
                             }
                         }
+                    },
+                    {
+                        $sort: { OrdercreatedAt: -1 }
                     }
 
                 ])
-
+                console.log(orderdetails, "orderdetailslllllll")
                 resolve(orderdetails)
             }
 
@@ -515,47 +591,46 @@ module.exports = {
 
     //Razorpay
 
-    generateRazorpay: (orderId,total) => {
+    generateRazorpay: (orderId, total) => {
 
-        return new Promise(async(resolve, reject) => {
-           
-            const options = { 
-            amount: total*100,
-            currency: "INR",
-            receipt: ""+orderId
+        return new Promise(async (resolve, reject) => {
+            const options = {
+                amount: total * 100,
+                currency: "INR",
+                receipt: "" + orderId
             };
-            instance.orders. create (options, function(err, order) {
-           
+            instance.orders.create(options, function (err, order) {
+
                 resolve(order)
-        });
+            });
 
         })
     },
 
 
     //Payment verification
-    verifypayment:(details)=>{
-        
-        return new Promise((resolve,reject)=>{  
-            const crypto=require('crypto')
-            const hmac=crypto.createHmac('sha256','d3l0POxuqxCwAKIQKAPuMrdk')
-            hmac.update(details['payment[razorpay_order_id]']+'|'+details['payment[razorpay_payment_id]'])
-            generated_signature=hmac.digest('hex')
-           
-            if(generated_signature==details['payment[razorpay_signature]']){
+    verifypayment: (details) => {
+
+        return new Promise((resolve, reject) => {
+            const crypto = require('crypto')
+            const hmac = crypto.createHmac('sha256', 'd3l0POxuqxCwAKIQKAPuMrdk')
+            hmac.update(details['payment[razorpay_order_id]'] + '|' + details['payment[razorpay_payment_id]'])
+            generated_signature = hmac.digest('hex')
+
+            if (generated_signature == details['payment[razorpay_signature]']) {
                 resolve()
-            }else{
+            } else {
                 reject()
             }
-            
+
         })
     },
 
     //change status
 
-    changeStatus:(orderId)=>{
-        return new Promise(async(resolve,reject)=>{
-            await Ordercollection.findOneAndUpdate({_id:orderId},{$set:{status:"orderplaced"}})
+    changeStatus: (orderId) => {
+        return new Promise(async (resolve, reject) => {
+            await Ordercollection.findOneAndUpdate({ _id: orderId }, { $set: { status: "orderplaced" } })
             resolve()
         })
     }

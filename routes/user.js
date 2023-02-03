@@ -53,6 +53,8 @@ router.get("/signup", (req, res) => {
 
 router.post("/signup-user", (req, res) => {
   control.doSingup(req.body).then((data) => {
+   
+    req.session.clientid=data.data._id
     if (data.exist) {
       req.session.existed = true;
       res.redirect("/signup")
@@ -70,12 +72,18 @@ router.post("/otpverification",(req,res)=>{
 
   const otp=parseInt(req.session.otp)
   const userOtp=parseInt(req.body.otp)
-  control.verifyOtp(userOtp,otp).then((response)=>{
+  control.verifyOtp(userOtp,otp).then(async(response)=>{
     if(response.status){
-      res.json({status:true})
-      req.session.otp=null;
+      
+      await control.changeverificationstatus(req.session.clientid).then(()=>{
+
+        res.json({status:true})
+        req.session.otp=null;
+        req.session.clientid=null
+      })
     }else{
       res.json({status:false})
+    
     }
   })
   
@@ -207,7 +215,7 @@ router.post("/place-order", async (req, res) => {
   const cartproduct = await cartproducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
   control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then(async(orderId) => {
-   
+   req.session.orderId=orderId
     if(req.body['payment-method'] === "COD"){
         res.json({ success: true })
     }else{
@@ -225,12 +233,7 @@ router.post("/place-order", async (req, res) => {
   })
 })
 
-//place order successfull
 
-router.get("/ordersuccess",verifyLogin,cartCount, async(req, res) => {
-   await control.deleteCart(req.session.user._id)
-  res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
-})
 
 //account
 
@@ -238,22 +241,41 @@ router.get("/account", cartCount, (req, res) => {
   res.render("user/userprofile", { user: req.session.user, usercart: res.usercart })
 })
 
-//orderlist
-
-router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
-  const orderdetails = await control.viewOrderdetails(req.session.user._id)
-  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
-})
-
 router.post("/verify-payment",async(req,res)=>{
   
     await control.verifypayment(req.body).then(()=>{
         control.changeStatus(req.body['order[receipt]']).then(()=>{
+          // req.session.orderId=req.body['order[receipt]']
         res.json({paymentsuccess:true})
       })
   }).catch((err)=>{
         res.json({paymentsuccess:false})
    })
+})
+
+
+//place order successfull
+
+router.get("/ordersuccess",verifyLogin,cartCount, async(req, res) => {
+  await control.deleteCart(req.session.user._id)
+ res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
+})
+
+
+//orderlist
+
+router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
+  
+  const orderdetails = await control.viewOrderdetails(req.session.orderId)
+ 
+  // req.session.orderId=null;
+  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
+})
+
+//to list all order details
+router.get("/allorderdetials",async(req,res)=>{
+ const orderdetails =await control.viewallOrderdetails(req.session.user._id)
+  res.render("user/allorderlist",{orderdetails})
 })
 
 module.exports = router;

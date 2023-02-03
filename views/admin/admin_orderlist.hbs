@@ -1,0 +1,118 @@
+{{>adminheader}}
+<section>
+    <div>
+        {{>adminsidebar}}
+    </div>
+    <section  style="margin-left: 225px;  margin-top: 60px;">
+
+         <table align="center"  cellspacing="0" cellpadding="6" width="95%" style="border:0;color:#000000;line-height:150%;text-align:left;font:300 14px/30px &#39;Helvetica Neue&#39;,Helvetica,Arial,sans-serif;" border=".5px">
+                  <thead>
+                    <tr style="background:#efefef">
+                      <th scope="col" width="30%" style="text-align:left;border:1px solid #eee">Product</th>
+                      <th scope="col" width="20%" style="text-align:right;border:1px solid #eee">images</th>
+                      <th scope="col" width="15%" style="text-align:right;border:1px solid #eee">Quantity</th>
+                      <th scope="col" width="20%" style="text-align:right;border:1px solid #eee">price</th>
+                      <th scope="col" width="20%" style="text-align:right;border:1px solid #eee">Ordered At</th>
+                    </tr>
+                  </thead>
+                  <tbody class="orderdetails">
+
+                    {{#each orders}}
+                    <tr width="100%">    
+                      <td width="30%" style="text-align:left;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0;word-wrap:break-word">
+                        {{this.status}}
+                        {{this.OrdercreatedAt}}
+                      </td>
+                      <td width="15%" style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0">
+                       
+                        {{#each orderitem.product.imageurl}}
+                        {{#if @first}}
+                        <img  style="width: 100px;" src="/images/categoryimage/{{filename}}">
+                        {{/if}}
+                        {{/each}}
+                      </td>
+                      <td width="20%" style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                        {{this.quantity}}
+                        <span></span>
+                        </td>
+                      <td width="20%" style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                        <span>Rs.{{this.totalamount}}</span>
+                        </td>
+                      <td width="20%" style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                        <span>{{this.OrdercreatedAt}}</span>
+                        </td>
+                      
+                    </tr>
+                    {{/each}}
+                  </tbody>
+
+                 
+                </table>
+                <br>
+                <br>
+               
+                <br>
+                <table width="100%" cellpadding="0" cellspacing="0" border="0" align="center" style="border-top:1px solid #e9e9e9;border-bottom:1px solid #e9e9e9;font-family:Arial,Helvetica,sans-serif;font-size:12px;padding:0px">
+                  <tbody>
+                    <tr>
+                      <td align="left" width="33%">
+                        <table border="0" cellspacing="0" cellpadding="0" style="font-family:Arial,Helvetica,sans-serif;font-size:12px">
+                          <tbody>
+                            <tr>
+                              <td width="60%">Download the App: </td>
+                              <td width="5%"> </td>
+                              <td width="15%">
+                                <a href="http://swiggy.com/app?utm_source=swiggy&amp;utm_medium=partner-mails" target="_blank">
+                                  <img style="max-height:20px;width:auto" src="https://res.cloudinary.com/swiggy/image/upload/v1447855172/Android_qt1acy.png"></a>
+                              </td>
+                              <td width="5%"> </td>
+                              <td width="15%">
+                                <a href="http://swiggy.com/app?utm_source=swiggy&amp;utm_medium=partner-mails" target="_blank">
+                                  <img style="max-height:20px;width:auto" src="https://res.cloudinary.com/swiggy/image/upload/v1447855170/Apple_e7lnfc.png"></a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td align="center" width="47%">
+                        <table border="0" cellspacing="0" cellpadding="0" height="50" style="font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#9b9b9b">
+                          <tbody>
+                            <tr>
+                              <td align="center">
+                                © 2022-shoe Rack. All rights reserved.
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                      <td align="right" width="20%">
+                        <table border="0" cellspacing="0" cellpadding="0" height="50" style="font-family:Arial,Helvetica,sans-serif;font-size:12px">
+                          <tbody>
+                            <tr>
+                              <td width="5%"> </td>
+                              <td width="20%">
+                                <a href="https://www.facebook.com/swiggy.in" target="_blank">
+                                  <img style="max-height:20px;width:auto" src="https://res.cloudinary.com/swiggy/image/upload/v1447855170/Facebook_ezoqwy.png" alt="Swiggy Facebook" style="display:block" border="0"></a>
+                              </td>
+                              <td width="5%"> </td>
+                              <td width="20%">
+                                <a href="https://twitter.com/swiggy_in" target="_blank">
+                                  <img style="max-height:20px;width:auto" src="https://res.cloudinary.com/swiggy/image/upload/v1447855171/Twitter_stmvbr.png" alt="Swiggy Twitter" style="display:block" border="0"></a>
+                              </td>
+                              <td width="5%"> </td>
+                              
+                              <td width="5%"> </td>
+                              <td width="20%">
+                                <a href="https://instagram.com/swiggyindia/" target="_blank">
+                                  <img style="max-height:20px;width:auto" src="https://res.cloudinary.com/swiggy/image/upload/v1447855170/Instagram_okx3pg.png" alt="Swiggy instagram" style="display:block" border="0"></a>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+    </section>
+</section>
