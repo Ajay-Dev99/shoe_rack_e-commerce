@@ -3,7 +3,7 @@ const router = express.Router();
 const control = require("../control/usercontroller")
 const admincontrol = require("../control/admincontroller");
 const e = require('express');
-const usercontrol = require('../control/usercontroller');
+// const usercontrol = require('../control/usercontroller');
 const sendmail = require('../config/nodemailer')
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
@@ -141,7 +141,11 @@ router.get("/logout", (req, res) => {
 //addtocart
 router.get("/addtocart/:id", verifyLogin, (req, res) => {
   control.addtoCart(req.params.id, req.session.user._id).then((data) => {
-    res.json({ status: true })
+    if(data.status){
+      res.json({ status: true })
+    }else if(data.alredyincart){
+      res.json({alredyincart:true})
+    }
   })
 })
 
@@ -201,7 +205,7 @@ router.get("/addaddress", verifyLogin, cartCount, (req, res) => {
 
 
 
-router.post("/checkoutform", (req, res) => {
+router.post("/checkoutform", verifyLogin,(req, res) => {
   control.addAddress(req.session.user._id, req.body)
   res.redirect("/checkout")
 })
@@ -209,7 +213,7 @@ router.post("/checkoutform", (req, res) => {
 
 //place order
 
-router.post("/place-order", async (req, res) => {
+router.post("/place-order", verifyLogin,async (req, res) => {
 
   const cartproducts = await control.getcartitems(req.session.user._id)
   const cartproduct = await cartproducts.productdetails
@@ -221,7 +225,6 @@ router.post("/place-order", async (req, res) => {
     }else{
       await control.generateRazorpay(orderId,totalAmount).then(async(response)=>{
         const userdata=await control.userdetails(req.session.user._id)
-        console.log(userdata,"55555555")
         const data={
           response:response,
            user:userdata.address
@@ -237,11 +240,12 @@ router.post("/place-order", async (req, res) => {
 
 //account
 
-router.get("/account", cartCount, (req, res) => {
+router.get("/account", verifyLogin,cartCount, (req, res) => {
+
   res.render("user/userprofile", { user: req.session.user, usercart: res.usercart })
 })
 
-router.post("/verify-payment",async(req,res)=>{
+router.post("/verify-payment",verifyLogin,async(req,res)=>{
   
     await control.verifypayment(req.body).then(()=>{
         control.changeStatus(req.body['order[receipt]']).then(()=>{
@@ -273,9 +277,40 @@ router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
 })
 
 //to list all order details
-router.get("/allorderdetials",async(req,res)=>{
+router.get("/allorderdetials",verifyLogin,cartCount, async(req,res)=>{
  const orderdetails =await control.viewallOrderdetails(req.session.user._id)
-  res.render("user/allorderlist",{orderdetails})
+  res.render("user/allorderlist",{ orderdetails, user: req.session.user, usercart: res.usercart })
+})
+
+//to view product delivery status
+
+router.get("/singleview/:id",verifyLogin,cartCount,async(req,res)=>{
+  const orderdetails=await control.viewOrderdetails(req.params.id)
+  
+  res.render("user/orderlist",{ orderdetails, user: req.session.user, usercart: res.usercart })
+})
+
+//Edit User Details
+
+router.post("/edituserdetails",verifyLogin,async(req,res)=>{
+const updation=await control.editUserdetails(req.session.user._id,req.body)
+res.redirect("/account")
+})
+
+//sort
+router.get("/sortbycausal",async(req,res)=>{
+  
+  const product =await control.sort()
+  const productdata = product.map((product) => {
+    return {
+      _id: product._id,
+      name: product.productname,
+      price: product.productSRP,
+      image: product.imageurl[0].filename
+    }
+  })
+  res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
+
 })
 
 module.exports = router;

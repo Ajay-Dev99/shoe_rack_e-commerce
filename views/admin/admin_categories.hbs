@@ -10,8 +10,8 @@
       <table class="table table-bordered ">
         <thead>
           <tr class="bg-dark text-white">
-            <th scope="col">category Id</th>
-            <th scope="col">category Name</th>
+            <th scope="col">Category Id</th>
+            <th scope="col">Category Name</th>
             <th scope="col">Image</th>
             <th scope="col">Manage</th>
           </tr>
@@ -24,7 +24,7 @@
             <td><img src="/images/categoryimage/{{this.imageurl}}" alt="" height="80px" width="80px"></td>
             <td>
               <div class="d-flex">
-             <div> <a href="/admin/editcategory" class="btn"><i class="fa fa-edit text-primary"><p class="text-dark">edit</p></i></a></div>
+             <div> <a href="/admin/editcategory/{{this._id}}" class="btn"><i class="fa fa-edit text-primary"><p class="text-dark">edit</p></i></a></div>
               <div><a href="#" class="btn"><i class="fa fa-trash text-danger"><p class="text-dark">delete</p></i></a></div>
               </div>
             </td>

@@ -60,3 +60,11 @@ aside .side-bar a:active{
   overflow: hidden;
   border-radius: 50%;
 }
+/* #sideBar {
+  display: none;
+}
+@media (max-width: 991px) {
+  #sideBar {
+    display: block;
+  }
+} */

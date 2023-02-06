@@ -5,7 +5,9 @@
 }
 
 .product {
-  
+  display: flex;
+    flex-direction: column;
+    justify-content: center;
   background-color: #193d56;
   color: #ffff;
 }

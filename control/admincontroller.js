@@ -112,6 +112,16 @@ module.exports = {
         })
     },
 
+    //editcategory
+
+    editCategory:(catergoryId)=>{
+
+        return new Promise((resolve,reject)=>{
+            const category= categorycollection.findOne({_id:catergoryId}).lean()
+            resolve(category)
+        })
+    },
+
 
     //Listcategory
     listCategory: () => {

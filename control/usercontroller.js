@@ -1,14 +1,11 @@
 const user = require("../models/usermodel")
 const bcrypt = require("bcrypt")
-const e = require("express")
-const dbConnect = require("../config/dbconnection")
 const cart = require("../models/cartmodel")
 const { default: mongoose, Error } = require("mongoose")
-const { response } = require("../app")
 const product = require("../models/productmodel")
 const Ordercollection = require("../models/ordermodel")
 const Razorpay = require('razorpay');
-const { resolve } = require("path")
+
 require("dotenv").config()
 
 
@@ -126,13 +123,14 @@ module.exports = {
                     const alredyincart = await cart.findOne({ $and: [{ userId }, { products: { $elemMatch: { productId } } }] });
                     if (alredyincart) {
                         await cart.findOneAndUpdate({ $and: [{ userId }, { "products.productId": productId }] }, { $inc: { "products.$.quantity": 1 } });
+                        resolve({alredyincart:true})
                     } else {
                         const newProduct = {
                             productId: productId,
                             quantity: 1
                         }
                         await cart.findOneAndUpdate({ userId: userId }, { $inc: { totalquantity: 1 }, $push: { products: newProduct } })
-                        resolve()
+                        resolve({status:true})
                     }
 
                 } else {
@@ -536,7 +534,7 @@ module.exports = {
             const order = await Ordercollection.findOne({ userid: userId })
 
             console.log(order,"orderssssss")
-            if (order) {
+            // if (order) {
                 const orderdetails = await Ordercollection.aggregate([
                     { $match: { userid: userId } },
 
@@ -583,7 +581,7 @@ module.exports = {
                 ])
                 console.log(orderdetails, "orderdetailslllllll")
                 resolve(orderdetails)
-            }
+            // }
 
 
         })
@@ -633,7 +631,38 @@ module.exports = {
             await Ordercollection.findOneAndUpdate({ _id: orderId }, { $set: { status: "orderplaced" } })
             resolve()
         })
-    }
+    },
+
+    //Edit user details
+
+    editUserdetails:(userId,userdata)=>{
+            return new Promise((resolve,reject)=>{
+                
+                user.findOneAndUpdate({_id:userId},{$set:{
+                    name:userdata.name,
+                    email:userdata.email, 
+                }}).then((data)=>{
+                    resolve(data)
+                })
+              
+            }) 
+    },
+
+    //sort Casuals
+
+
+    sort: () => {
+        return new Promise(async (resolve, reject) => {
+           
+               const products= await product.find({}).lean()
+            //    console.log(products,"99999999999999999999999999")
+               const casuals = products.filter(product => product.productcategory === "Casuals");
+               console.log(casuals,"ppppppppppppppppp");
+           resolve(casuals)
+           
+        })
+    },
+
 }
 
 

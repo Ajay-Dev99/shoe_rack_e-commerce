@@ -5,74 +5,8 @@
 
     <div class="d-flex">
         {{>usersidebar}}
+            {{#if orderdetails}}
         <div class="container my-3 ">
-            {{!-- <table border="0" align="center" cellpadding="0" cellspacing="0" width="100%"
-                style="max-width:100%;background:#e9e9e9;padding:50px 0px">
-                <tr>
-                    <td>
-                        <table border="0" align="center" cellpadding="0" cellspacing="0" width="100%"
-                            style="max-width:100%;background:#ffffff;padding:0px 25px">
-                            <tbody>
-                                <tr>
-                                    <td style="margin:0;padding:0">
-                                        <table border="0" cellpadding="20" cellspacing="0" width="100%"
-                                            style="background:#ffffff;color:#1a1a1a;line-height:150%;text-align:center;border-bottom:1px solid #e9e9e9;font-family:300 14px &#39;Helvetica Neue&#39;,Helvetica,Arial,sans-serif">
-                                            <tbody>
-                                                <tr>
-                                                    <td valign="top" align="center" width="100"
-                                                        style="background-color:#ffffff">
-                                                        <a href="/"> <img alt="Swiggy"
-                                                                style="width: 120px; border-radius: 50%;"
-                                                                src="/images/logoimage/download.png"></a>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-
-                                        <br>
-
-                                        <table border="0" cellpadding="" cellspacing="0" width="100%"
-                                            style="background:#ffffff;color:#000000;line-height:150%;text-align:center;font:300 16px &#39;Helvetica Neue&#39;,Helvetica,Arial,sans-serif">
-                                            <tbody>
-                                                <tr>
-                                                    <td valign="top" width="100">
-                                                        <h3 style="text-align:center;text-transform:uppercase">Shoe Rack
-                                                        </h3>
-                                                        <p>Payment method:
-                                                            {{!-- <span style="font-size:18px;font-weight:bold">PayTM
-                                                            </span></p> --}}
-                                                        {{#each orderdetails}}
-                                                        {{#if}}
-                                                        <span
-                                                            style="font-size:18px;font-weight:bold">{{this.paymentmethod}}</span>
-                                                    </td>
-                                                    {{/if}}
-                                                    {{/each}}
-                                        </table>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <br>
-                        <table border="0" cellpadding="20" cellspacing="0" width="100%"
-                            style="color:#000000;line-height:150%;text-align:left;font:300 16px &#39;Helvetica Neue&#39;,Helvetica,Arial,sans-serif">
-                            <tbody>
-                                <tr>
-                                    <td valign="top" style="font-size:17px;">
-                                        {{!-- <span style="text-decoration:underline;">Order No: #</span> --}}
-                                        {{#each orderdetails}}
-                                        {{#if @first}}
-                                        <span style="text-decoration:underline;">Order No:#{{this._id}}</span>
-                                    </td>
-                                    {{/if}}
-                                    {{/each}}
-                                    {{!-- <h2
-                                        style="display:inline-block;font-family:Arial;font-size:24px;font-weight:bold;margin-top:5px;margin-right:0;margin-bottom:5px;margin-left:0;text-align:left;line-height:100%">
-                                        (April 25, 2016)</h2> --}}
-                    </td>
-                </tr>
-                </tbody>
-            </table> --}}
             <table align="center" cellspacing="0" cellpadding="6" width="95%"
                 style="border:0;color:#000000;line-height:150%;text-align:left;font:300 14px/30px &#39;Helvetica Neue&#39;,Helvetica,Arial,sans-serif;"
                 border=".5px">
@@ -118,7 +52,7 @@
                         </td>
                         <td width="20%"
                             style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
-                            <a href=""><span>more...</span></a>
+                            <a href="/singleview/{{this._id}}"><span>more...</span></a>
                         </td>
 
                     </tr>
@@ -226,5 +160,36 @@
             </tr>
             </table>
         </div>
+
+        {{else}}
+
+        <div class="container-fluid d-flex justify-content-center align-items-center">
+  <div class="row">
+
+    <div class="col-md-12">
+
+      <div class="card">
+      
+        <div class="card-body cart">
+          <div class="col-sm-12 empty-cart-cls text-center">
+            <img src="/images/categoryimage/orderempty.png" width="130" height="130" class="img-fluid mb-4 mr-3">
+            <h3><strong>There are no orders yet.</strong></h3>
+            
+            <a href="/" class="btn btn-primary cart-btn-transform m-5" data-abc="true">Shop Now</a>
+
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+
+
+        {{/if}}
     </div>
 </body>

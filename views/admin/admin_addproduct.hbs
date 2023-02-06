@@ -3,7 +3,16 @@
     <div>
         {{>adminsidebar}}
     </div>
-
+   {{#if data}}
+<script>swal("Product added successfully");</script>
+{{else}}
+<script>Swal.fire({
+  icon: 'error',
+  title: 'Oops...',
+  text: 'Something went wrong!',
+  
+})</script>
+   {{/if}}
     <section style="margin-left: 220px;  margin-top: 50px; ">
         <div class="container py-3 h-100">
             <div class="row d-flex justify-content-center align-items-center">
@@ -37,7 +46,7 @@
                                                 <select class="select p-2" name="productcategory" style="width: 100%;" required>
                                                     <option value="">select category... </option>
                                                     {{#each categories}}
-                                                    <option value="{{this._id}}">{{this.categoryname}}</option>
+                                                    <option value="{{this.categoryname}}">{{this.categoryname}}</option>
                                                     {{/each}}
                                                 </select>
 

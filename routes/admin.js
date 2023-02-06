@@ -1,6 +1,6 @@
-var express = require('express');
+const express = require('express');
 const { response } = require('../app');
-var router = express.Router();
+const router = express.Router();
 const admincontrol = require("../control/admincontroller")
 const categoryimgupload= require("../utilities/imageUpload")
 const multer = require('multer');
@@ -105,14 +105,19 @@ router.post("/addcategory",verifyLogin,categoryimgupload.single('image'),(req,re
 })
 
 //edit category
-// router.get("/editcategory",categoryimgupload.single('image'),(req,res)=>{
-//   res.render("admin/admin_editcategory")
-// })
+
+router.get("/editcategory/:id",verifyLogin,async(req,res)=>{
+  const category=await admincontrol.editCategory(req.params.id)
+  console.log(category,">>>>>>>>>>")
+  res.render("admin/admin_editcategory",{category})
+})
+
 
 //add product
 router.post("/add_product",verifyLogin,categoryimgupload.array('image',4),(req,res)=>{
   admincontrol.addproduct(req.body,req.files).then((data)=>{
-    res.redirect("/admin/addproduct")
+    
+    res.redirect("/admin/addproduct",{data})
   })
 })
 
@@ -125,16 +130,18 @@ router.get("/listproducts",verifyLogin,(req,res)=>{
 })
 
 //list orders
-router.get("/orders",async(req,res)=>{
+router.get("/orders",verifyLogin,async(req,res)=>{
   const orders=await admincontrol.listOrders()
-  console.log(orders,"999999999999999")
-  console.log(orders[0].orderitem,"ppppppppppp")
-  res.render("admin/admin_orderlist",{orders})
+  
+ 
+  res.render("admin/admin_orderlist",{orders,})
 })
 
+//change order status
 
-
-
-
+router.get("/orderaction/:id",verifyLogin,async(req,res)=>{  
+  const orderdetails= await usercontrol.viewOrderdetails(req.params.id)
+  res.render("admin/orderstatuschange",{orderdetails})
+})
 
 module.exports = router;

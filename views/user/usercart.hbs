@@ -6,7 +6,7 @@
 {{#if userproducts}}
 <!-- cart items details -->
 
-<div class="small-container cart-page">
+<div class="small-container container cart-page">
   <table>
     <tr>
       <th>Product</th>
@@ -34,7 +34,7 @@
           onclick="changeQuantity('{{this._id}}','{{this.cartproduct._id}}',-1)">-</button>
         {{!-- <input type="text" class="rounded text-dark text-center" id="{{this.productId._id}}" disabled
           value="{{this.quantity}}" /> --}}
-        <span class="rounded text-dark text-center px-3 border" id="{{this.cartproduct._id}}">{{this.quantity}}</span>
+        <span class="rounded text-dark text-center px-3 border mx-1" id="{{this.cartproduct._id}}">{{this.quantity}}</span>
         <button class="px-2 rounded text-white" style="background-color: #193D56;"
           onclick="changeQuantity('{{this._id}}','{{this.cartproduct._id}}',1)">+</button>
       </td>
