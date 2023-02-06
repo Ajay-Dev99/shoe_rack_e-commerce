@@ -10,7 +10,7 @@ const verifyLogin = (req, res, next) => {
     next()
   } else {
     res.redirect("/login")
-    res.json({loggedin:false})
+    res.json({ loggedin: false })
   }
 }
 
@@ -28,8 +28,8 @@ const cartCount = async (req, res, next) => {
 }
 
 router.get('/', cartCount, async function (req, res,) {
-  
- 
+
+
   await admincontrol.listProduct().then((data) => {
     const product = data
     const productdata = product.map((product) => {
@@ -53,40 +53,40 @@ router.get("/signup", (req, res) => {
 
 router.post("/signup-user", (req, res) => {
   control.doSingup(req.body).then((data) => {
-   
-    req.session.clientid=data.data._id
+
+    req.session.clientid = data.data._id
     if (data.exist) {
       req.session.existed = true;
       res.redirect("/signup")
     } else {
-      const useremail=req.body.email
-      sendmail(useremail,req)
-     
+      const useremail = req.body.email
+      sendmail(useremail, req)
+
       res.render("user/otpverification")
 
     }
   })
 })
 //otp verification
-router.post("/otpverification",(req,res)=>{
+router.post("/otpverification", (req, res) => {
 
-  const otp=parseInt(req.session.otp)
-  const userOtp=parseInt(req.body.otp)
-  control.verifyOtp(userOtp,otp).then(async(response)=>{
-    if(response.status){
-      
-      await control.changeverificationstatus(req.session.clientid).then(()=>{
+  const otp = parseInt(req.session.otp)
+  const userOtp = parseInt(req.body.otp)
+  control.verifyOtp(userOtp, otp).then(async (response) => {
+    if (response.status) {
 
-        res.json({status:true})
-        req.session.otp=null;
-        req.session.clientid=null
+      await control.changeverificationstatus(req.session.clientid).then(() => {
+
+        res.json({ status: true })
+        req.session.otp = null;
+        req.session.clientid = null
       })
-    }else{
-      res.json({status:false})
-    
+    } else {
+      res.json({ status: false })
+
     }
   })
-  
+
 })
 
 router.get("/login", (req, res) => {
@@ -141,10 +141,10 @@ router.get("/logout", (req, res) => {
 //addtocart
 router.get("/addtocart/:id", verifyLogin, (req, res) => {
   control.addtoCart(req.params.id, req.session.user._id).then((data) => {
-    if(data.status){
+    if (data.status) {
       res.json({ status: true })
-    }else if(data.alredyincart){
-      res.json({alredyincart:true})
+    } else if (data.alredyincart) {
+      res.json({ alredyincart: true })
     }
   })
 })
@@ -205,7 +205,7 @@ router.get("/addaddress", verifyLogin, cartCount, (req, res) => {
 
 
 
-router.post("/checkoutform", verifyLogin,(req, res) => {
+router.post("/checkoutform", verifyLogin, (req, res) => {
   control.addAddress(req.session.user._id, req.body)
   res.redirect("/checkout")
 })
@@ -213,21 +213,21 @@ router.post("/checkoutform", verifyLogin,(req, res) => {
 
 //place order
 
-router.post("/place-order", verifyLogin,async (req, res) => {
+router.post("/place-order", verifyLogin, async (req, res) => {
 
   const cartproducts = await control.getcartitems(req.session.user._id)
   const cartproduct = await cartproducts.productdetails
   const totalAmount = await control.totalAmount(req.session.user._id)
-  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then(async(orderId) => {
-   req.session.orderId=orderId
-    if(req.body['payment-method'] === "COD"){
-        res.json({ success: true })
-    }else{
-      await control.generateRazorpay(orderId,totalAmount).then(async(response)=>{
-        const userdata=await control.userdetails(req.session.user._id)
-        const data={
-          response:response,
-           user:userdata.address
+  control.placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then(async (orderId) => {
+    req.session.orderId = orderId
+    if (req.body['payment-method'] === "COD") {
+      res.json({ success: true })
+    } else {
+      await control.generateRazorpay(orderId, totalAmount).then(async (response) => {
+        const userdata = await control.userdetails(req.session.user._id)
+        const data = {
+          response: response,
+          user: userdata.address
         }
 
         res.json(data)
@@ -240,67 +240,67 @@ router.post("/place-order", verifyLogin,async (req, res) => {
 
 //account
 
-router.get("/account", verifyLogin,cartCount, (req, res) => {
+router.get("/account", verifyLogin, cartCount, (req, res) => {
 
   res.render("user/userprofile", { user: req.session.user, usercart: res.usercart })
 })
 
-router.post("/verify-payment",verifyLogin,async(req,res)=>{
-  
-    await control.verifypayment(req.body).then(()=>{
-        control.changeStatus(req.body['order[receipt]']).then(()=>{
-          // req.session.orderId=req.body['order[receipt]']
-        res.json({paymentsuccess:true})
-      })
-  }).catch((err)=>{
-        res.json({paymentsuccess:false})
-   })
+router.post("/verify-payment", verifyLogin, async (req, res) => {
+
+  await control.verifypayment(req.body).then(() => {
+    control.changeStatus(req.body['order[receipt]']).then(() => {
+      // req.session.orderId=req.body['order[receipt]']
+      res.json({ paymentsuccess: true })
+    })
+  }).catch((err) => {
+    res.json({ paymentsuccess: false })
+  })
 })
 
 
 //place order successfull
 
-router.get("/ordersuccess",verifyLogin,cartCount, async(req, res) => {
+router.get("/ordersuccess", verifyLogin, cartCount, async (req, res) => {
   await control.deleteCart(req.session.user._id)
- res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
+  res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
 })
 
 
 //orderlist
 
 router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
-  
+
   const orderdetails = await control.viewOrderdetails(req.session.orderId)
- 
+
   // req.session.orderId=null;
   res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
 })
 
 //to list all order details
-router.get("/allorderdetials",verifyLogin,cartCount, async(req,res)=>{
- const orderdetails =await control.viewallOrderdetails(req.session.user._id)
-  res.render("user/allorderlist",{ orderdetails, user: req.session.user, usercart: res.usercart })
+router.get("/allorderdetials", verifyLogin, cartCount, async (req, res) => {
+  const orderdetails = await control.viewallOrderdetails(req.session.user._id)
+  res.render("user/allorderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
 })
 
 //to view product delivery status
 
-router.get("/singleview/:id",verifyLogin,cartCount,async(req,res)=>{
-  const orderdetails=await control.viewOrderdetails(req.params.id)
-  
-  res.render("user/orderlist",{ orderdetails, user: req.session.user, usercart: res.usercart })
+router.get("/singleview/:id", verifyLogin, cartCount, async (req, res) => {
+  const orderdetails = await control.viewOrderdetails(req.params.id)
+
+  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
 })
 
 //Edit User Details
 
-router.post("/edituserdetails",verifyLogin,async(req,res)=>{
-const updation=await control.editUserdetails(req.session.user._id,req.body)
-res.redirect("/account")
+router.post("/edituserdetails", verifyLogin, async (req, res) => {
+  const updation = await control.editUserdetails(req.session.user._id, req.body)
+  res.redirect("/account")
 })
 
 //sort
-router.get("/sortbycausal",async(req,res)=>{
-  
-  const product =await control.sort()
+router.get("/sortbycausal", async (req, res) => {
+
+  const product = await control.sort()
   const productdata = product.map((product) => {
     return {
       _id: product._id,
@@ -311,6 +311,26 @@ router.get("/sortbycausal",async(req,res)=>{
   })
   res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
 
+})
+
+//change password
+
+router.get("/changepassword", verifyLogin, (req, res) => {
+  
+  res.render("user/changepassword",{passErr:req.session.passErr})
+  req.session.passErr=false
+})
+
+router.post("/resetpassword", verifyLogin, async(req, res) => {
+  console.log(req.body)
+  const data = await control.changePassword(req.body, req.session.user._id)
+  if (data.status) {
+    
+   res.json({status:true})
+  }else{
+    req.session.passErr=true
+    res.json({status:false})
+  }
 })
 
 module.exports = router;

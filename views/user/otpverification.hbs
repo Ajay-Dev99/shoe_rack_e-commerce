@@ -50,7 +50,11 @@ $('#otp-form').submit((e)=>{
            
             if(response.status){
                 location.href="/login"
-            }else{
+            }else if(response.changePassword){
+              alert("hiiiiiiii")
+               location.href="/newpassword"
+            }
+            else{
                 
                 document.getElementById("otp_wrong").innerHTML="Entered OTP is wrong"
             }

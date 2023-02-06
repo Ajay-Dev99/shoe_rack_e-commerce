@@ -5,6 +5,7 @@ const { default: mongoose, Error } = require("mongoose")
 const product = require("../models/productmodel")
 const Ordercollection = require("../models/ordermodel")
 const Razorpay = require('razorpay');
+const { resolve } = require("path")
 
 require("dotenv").config()
 
@@ -655,13 +656,40 @@ module.exports = {
         return new Promise(async (resolve, reject) => {
            
                const products= await product.find({}).lean()
-            //    console.log(products,"99999999999999999999999999")
                const casuals = products.filter(product => product.productcategory === "Casuals");
                console.log(casuals,"ppppppppppppppppp");
            resolve(casuals)
            
         })
     },
+
+    //Change password
+
+    changePassword:(data,userId)=>{
+        return new Promise(async(resolve,reject)=>{
+            const userdata=await user.findOne({_id:userId})
+
+            bcrypt.compare(data.currentpassword, userdata.password).then(async(status)=>{
+                if(status){
+                   
+                    if(data.newpassword==data.confirmpassword){                       
+                        const salt = await bcrypt.genSalt(10)
+                        const hashedpassword = await bcrypt.hash(data.newpassword, salt)
+                        data.newpassword = hashedpassword
+                        const update=await user.findOneAndUpdate({_id:userId},{$set:{password:data.newpassword}})
+                        resolve({status:true})
+                        
+                    }else{
+                        resolve({status:false})
+                    }
+                }else{
+                    resolve({status:false})
+                }
+            })         
+        })
+    },
+
+    
 
 }
 
