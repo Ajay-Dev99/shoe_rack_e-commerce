@@ -58,7 +58,6 @@ module.exports = {
                     bcrypt.compare(userdata.password, client.password).then((status) => {
                         if (status) {
                             if(client.verified){
-                              console.log("verified")  
                                 if (client.blocked) {
                                     resolve({ blockedstatus: true })
                                 } else {
@@ -68,7 +67,6 @@ module.exports = {
     
                                 }
                             }else{
-                                console.log("not verified")
                                 resolve({ status: false })
                             }
                         } else {
@@ -146,7 +144,7 @@ module.exports = {
                         totalquantity: 1
                     })
                     await newcart.save().then((data) => {
-                        resolve(data)
+                        resolve({status:true})
                     }).catch((error) => {
                         throw error
                     })
@@ -491,7 +489,8 @@ module.exports = {
                             Productquantity: "$orderitem.quantity",
                             productprice: "$orderitem.productprice",
                             producttotal: "$orderitem.totalamount",
-                            productId: "$orderitem.product"
+                            productId: "$orderitem.product",
+                            userId:"$userid"
                         }
                     }, {
                         $lookup: {
@@ -500,6 +499,15 @@ module.exports = {
                             foreignField: "_id",
                             as: "orderedproducts"
                         }
+                    },{
+
+                        $lookup: {
+                            from: "users",
+                            localField: "userId",
+                            foreignField: "_id",
+                            as: "userdata"
+                        }
+
                     },
                     {
                         $project: {
@@ -513,6 +521,9 @@ module.exports = {
                             productId: 1,
                             orderedproducts: {
                                 $arrayElemAt: ["$orderedproducts", 0]
+                            },
+                            userdata: {
+                                $arrayElemAt: ["$userdata", 0]
                             }
                         }
                     },
@@ -521,7 +532,7 @@ module.exports = {
                     }
 
                 ])
-                console.log(orderdetails, "orderdetailslllllll")
+             
                 resolve(orderdetails)
             }
 
@@ -529,13 +540,9 @@ module.exports = {
         })
     },
     viewallOrderdetails: (userid) => {
-        console.log(userid,"useridddddd")
         return new Promise(async (resolve, reject) => {
             const userId = new mongoose.Types.ObjectId(userid)
-            const order = await Ordercollection.findOne({ userid: userId })
-
-            console.log(order,"orderssssss")
-            // if (order) {
+            const order = await Ordercollection.findOne({ userid: userId })   
                 const orderdetails = await Ordercollection.aggregate([
                     { $match: { userid: userId } },
 
@@ -580,11 +587,7 @@ module.exports = {
                     }
 
                 ])
-                console.log(orderdetails, "orderdetailslllllll")
                 resolve(orderdetails)
-            // }
-
-
         })
     },
 
@@ -657,7 +660,6 @@ module.exports = {
            
                const products= await product.find({}).lean()
                const casuals = products.filter(product => product.productcategory === "Casuals");
-               console.log(casuals,"ppppppppppppppppp");
            resolve(casuals)
            
         })

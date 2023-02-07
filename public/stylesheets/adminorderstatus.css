@@ -35,7 +35,7 @@ section {
     margin-bottom: 20px;
     background-color: #e8e8e8;
     border-radius: -2%;
-    
+    padding: 2px;
     border-radius: 30px;
 }
 
@@ -195,5 +195,77 @@ section#shiping {
     
 }
   
+.cs-progress-bar {
+  margin: 0 5% 0 5%;
+  width: 90%;
+  table-layout: fixed;
+ }
+
+.cs-progress-bar :after, .cs-progress-bar :before {
+  box-sizing: unset;
+}
+
+.cs-progress-bar .progress-line {
+  height: 3px;
+  background-color: lightgray;
+  border: none;
+  margin-bottom: -20px;
+}
+
+.cs-progress-bar th:not(.done):not(.fail) .dot:before {
+  margin-top: 8px;
+  content: '';
+  height: 6.22px;
+  width: 6.22px;
+  background-color: white;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.cs-progress-bar .dot {
+  padding-top: 0.89px;
+  color: white;
+  height: 40px;
+  height: calc(40px - 8.89px);
+  width: 40px;
+  background-color: lightgray;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.cs-progress-bar .progress-text {
+  padding-bottom: 10px;
+  color: lightgray;
+}
+
+.cs-progress-bar .done .progress-text {
+  color: black;
+}
+
+.cs-progress-bar .done .progress-line,
+.cs-progress-bar .done .dot {
+  background-color: yellowgreen;
+  display: flex;
+  justify-content: center;
+}
+
+.cs-progress-bar .done .dot:before {
+/*   font-family */
+  content: "✔";
+}
+
+.cs-progress-bar .fail .progress-line,
+.cs-progress-bar .fail .dot {
+  background-color: red;
+}
+
+.cs-progress-bar .fail .progress-text {
+  color: black;
+}
+
+.cs-progress-bar .fail .dot:before {
+  content: "✖";
+}
+
 
 

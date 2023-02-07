@@ -108,7 +108,6 @@ router.post("/addcategory",verifyLogin,categoryimgupload.single('image'),(req,re
 
 router.get("/editcategory/:id",verifyLogin,async(req,res)=>{
   const category=await admincontrol.editCategory(req.params.id)
-  console.log(category,">>>>>>>>>>")
   res.render("admin/admin_editcategory",{category})
 })
 
@@ -142,6 +141,12 @@ router.get("/orders",verifyLogin,async(req,res)=>{
 router.get("/orderaction/:id",verifyLogin,async(req,res)=>{  
   const orderdetails= await usercontrol.viewOrderdetails(req.params.id)
   res.render("admin/orderstatuschange",{orderdetails})
+})
+
+router.post("/changeorderstatus",(req,res)=>{
+  
+  admincontrol.changeOrderstatus(req.body)
+  res.json({status:true})
 })
 
 

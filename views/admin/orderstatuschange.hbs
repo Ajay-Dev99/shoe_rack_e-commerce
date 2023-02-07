@@ -1,35 +1,63 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="/stylesheets/adminorderstatus.css">
 {{>adminheader}}
 
 <body>
     {{>adminsidebar}}
-    
+
+    {{#if orderdetails}}
     <section id="head" style="margin-left: 230px;  margin-top: 50px; padding: 10px;">
-        <div class="d-flex">
-            <div class="col-md-7 mt-5">
+        <div class="container d-flex mt-3 ">
+            <div class="col-md-5 col-12">
                 <div class="mb-3">
-                    <h2><u> User Details </u></h2>
                     <section class="checkout-form">
-
-                       
-                        <div class="border p-2 mb-2 address">
-                            <p>{{../orderdetails.user.address.name}}</p>
+                        <div class="text-center">
+                            <h4><u> User Details </u></h4>
                         </div>
-               
+                        {{#each orderdetails}}
+                        {{#if @first}}
+                        <div class=" mb-2 address border">
+                            <div class="">
+                                <p>Name: {{userdata.name}}</p>
+                                <p>Email Address: {{userdata.email}}</p>
+                                <p>Contact Number: {{userdata.address.[0].phone}}</p>
+                                <p>House: {{userdata.address.[0].house}}</p>
+                                <p>City: {{userdata.address.[0].city}}</p>
+                                <p>Postal: {{userdata.address.[0].postal}}</p>
+                                <div class="dropdown show d-flex justify-content-start">
+                                   Status: <a class="btn btn-secondary dropdown-toggle ms-2" href="#" role="button"
+                                        id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
+                                        aria-expanded="false">
+                                        {{this.status}}
+                                    </a>
+
+                                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+
+                                        <button class="dropdown-item btn my-2" onclick="changeorderStatus('Shipped','{{this._id}}')">
+                                            Shipped</button>
+                                        <button class="dropdown-item btn my-2"  onclick="changeorderStatus('Out-of-delivery','{{this._id}}')">Out for Delivery</button>
+                                        <button class="dropdown-item btn my-2"  onclick="changeorderStatus('Delivered','{{this._id}}')"> Delivered</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{/if}}
+                        {{/each}}
 
 
 
-                       
 
                     </section>
                 </div>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-1 col-12"></div>
+            <div class="col-md-6 col-12">
 
                 <body>
                     <section id="head">
                         <div class="text-center mb-3">
-                            <h2> <u> Orders </u></h2>
+                            <h4> <u> Orders </u></h4>
                         </div>
                         {{#each orderdetails}}
                         <div class="container">
@@ -76,6 +104,34 @@
             </div>
         </div>
     </section>
+
+    {{/if}}
 </body>
 
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    
+
+    function changeorderStatus(status,orderId) {
+        
+        $.ajax({
+            url:'/admin/changeorderstatus',
+            data: {
+                orderstatus:status,
+                orderId:orderId
+            },
+            method: 'post',
+            success: (response) => {
+               location.reload()
+            },
+            error: (jqXHR, textStatus, errorThrown) => {
+                console.error(textStatus, errorThrown);
+                alert("An error occurred while changing the order status.");
+            }
+        })
+
+    }
+
+</script>

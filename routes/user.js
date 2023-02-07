@@ -3,7 +3,6 @@ const router = express.Router();
 const control = require("../control/usercontroller")
 const admincontrol = require("../control/admincontroller");
 const e = require('express');
-// const usercontrol = require('../control/usercontroller');
 const sendmail = require('../config/nodemailer')
 const verifyLogin = (req, res, next) => {
   if (req.session.loggedIn) {
@@ -297,21 +296,7 @@ router.post("/edituserdetails", verifyLogin, async (req, res) => {
   res.redirect("/account")
 })
 
-//sort
-router.get("/sortbycausal", async (req, res) => {
 
-  const product = await control.sort()
-  const productdata = product.map((product) => {
-    return {
-      _id: product._id,
-      name: product.productname,
-      price: product.productSRP,
-      image: product.imageurl[0].filename
-    }
-  })
-  res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
-
-})
 
 //change password
 
@@ -322,7 +307,6 @@ router.get("/changepassword", verifyLogin, (req, res) => {
 })
 
 router.post("/resetpassword", verifyLogin, async(req, res) => {
-  console.log(req.body)
   const data = await control.changePassword(req.body, req.session.user._id)
   if (data.status) {
     

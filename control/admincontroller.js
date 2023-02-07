@@ -21,15 +21,15 @@ module.exports = {
                     bcrypt.compare(adminData.password, cleint.password).then((status) => {
                         if (status) {
                             resolve({ login: true })
-                            // console.log("login succesful")
+                          
                         } else {
                             resolve({ status: false })
-                            // console.log("login failed")
+                           
                         }
                     })
                 } else {
                     resolve({ usernotfound: true })
-                    // console.log("user not found")
+                  
                 }
 
             } catch (error) {
@@ -189,6 +189,18 @@ module.exports = {
         return new Promise(async(resolve,reject)=>{
             const orders = await Ordercollection.find().populate('orderitem.product').lean()
            resolve(orders)
+        })
+    },
+    
+    //changeorderstaatus
+
+    changeOrderstatus:(data)=>{
+        return new Promise(async(reject,resolve)=>{
+            const orderstatus=data.orderstatus
+            const orderId=new mongoose.Types.ObjectId(data.orderId)
+          
+            const order=await Ordercollection.findOneAndUpdate({_id:orderId},{$set:{status:orderstatus}})
+           
         })
     }
 

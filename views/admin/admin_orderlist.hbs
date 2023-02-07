@@ -11,13 +11,10 @@
       border=".5px">
       <thead>
         <tr style="background:#efefef">
-          <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">user</th>
-          <th scope="col" width="30%" style="text-align:center;border:1px solid #eee">Product</th>
-          {{!-- <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">images</th> --}}
-          {{!-- <th scope="col" width="15%" style="text-align:center;border:1px solid #eee">Quantity</th> --}}
-          {{!-- <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">price</th> --}}
+          <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">User</th>
+       
           <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">Ordered At</th>
-          <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">status</th>
+          <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">Status</th>
           <th scope="col" width="20%" style="text-align:center;border:1px solid #eee"></th>
         </tr>
       </thead>
@@ -32,24 +29,20 @@
             style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
             <span>{{../address.name}}</span>
           </td>
-          <td width="25%"
-            style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0;word-wrap:break-word">
-            {{product.productname}}
 
-          </td>
    
        
           <td width="15%"
             style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
             <span>{{../OrdercreatedAt}}</span>
           </td>
-          <td width="15%"
+          <td width="15%" class="text-danger"
             style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
             <span>{{../status}}</span>
           </td>
           <td
             style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
-            <a href="/admin/orderaction/{{../_id}}" class="btn btn-primary">action</a>
+            <a href="/admin/orderaction/{{../_id}}" class="btn btn-primary">Action</a>
           </td>
 
         </tr>

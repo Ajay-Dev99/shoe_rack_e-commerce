@@ -23,7 +23,7 @@
             <p>{{this.cartproduct.productname}}</p>
             <small>Price ₹<span id='{{this.cartproduct._id}}total'>{{this.cartproduct.productSRP}}</span></small>
             <br />
-            {{!-- <a href="/removecartitem/{{this.productId._id}}">Remove</a> --}}
+            
             <button class="btn text-danger my-2"
               onclick="removeitem('{{this._id}}','{{this.cartproduct._id}}')"> Remove</button>
           </div>
@@ -32,8 +32,7 @@
       <td class="d-flex">
         <button class="px-2 rounded text-white" style="background-color: #193D56;"
           onclick="changeQuantity('{{this._id}}','{{this.cartproduct._id}}',-1)">-</button>
-        {{!-- <input type="text" class="rounded text-dark text-center" id="{{this.productId._id}}" disabled
-          value="{{this.quantity}}" /> --}}
+       
         <span class="rounded text-dark text-center px-3 border mx-1" id="{{this.cartproduct._id}}">{{this.quantity}}</span>
         <button class="px-2 rounded text-white" style="background-color: #193D56;"
           onclick="changeQuantity('{{this._id}}','{{this.cartproduct._id}}',1)">+</button>
@@ -54,7 +53,7 @@
         <td></td>
         <td>
              <a href="/checkout" class="btn btn-success text-center"><h5>Check Out</h5></a>
-           {{!-- <button type="button" class="btn btn-success text-center"><h5>Place order</h5></button> --}}
+          
           </td> 
       </tr>
     
