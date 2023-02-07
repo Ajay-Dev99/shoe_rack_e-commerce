@@ -50,6 +50,10 @@ router.get("/signup", (req, res) => {
   req.session.existed = false
 })
 
+
+
+
+
 router.post("/signup-user", (req, res) => {
   control.doSingup(req.body).then((data) => {
 
@@ -270,6 +274,7 @@ router.get("/ordersuccess", verifyLogin, cartCount, async (req, res) => {
 router.get("/orderdetials", verifyLogin, cartCount, async (req, res) => {
 
   const orderdetails = await control.viewOrderdetails(req.session.orderId)
+  
 
   // req.session.orderId=null;
   res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
@@ -285,8 +290,14 @@ router.get("/allorderdetials", verifyLogin, cartCount, async (req, res) => {
 
 router.get("/singleview/:id", verifyLogin, cartCount, async (req, res) => {
   const orderdetails = await control.viewOrderdetails(req.params.id)
-
-  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
+    const orderstatus=orderdetails[0].status
+    let delivered;
+    if(orderstatus=="Delivered" || orderstatus=="Order cancelled"){
+      delivered=true
+    }else{
+      delivered=false
+    }
+  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart,delivered })
 })
 
 //Edit User Details
@@ -315,6 +326,15 @@ router.post("/resetpassword", verifyLogin, async(req, res) => {
     req.session.passErr=true
     res.json({status:false})
   }
+})
+
+//Cancel Order
+
+router.post("/cancelorder",verifyLogin,async(req,res)=>{
+  const orderId=req.body.orderid;
+  const cancel=await control.cancelOrder(orderId) 
+  res.json({status:true})
+
 })
 
 module.exports = router;

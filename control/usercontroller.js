@@ -6,6 +6,7 @@ const product = require("../models/productmodel")
 const Ordercollection = require("../models/ordermodel")
 const Razorpay = require('razorpay');
 const { resolve } = require("path")
+const { response } = require("../app")
 
 require("dotenv").config()
 
@@ -652,19 +653,6 @@ module.exports = {
             }) 
     },
 
-    //sort Casuals
-
-
-    sort: () => {
-        return new Promise(async (resolve, reject) => {
-           
-               const products= await product.find({}).lean()
-               const casuals = products.filter(product => product.productcategory === "Casuals");
-           resolve(casuals)
-           
-        })
-    },
-
     //Change password
 
     changePassword:(data,userId)=>{
@@ -690,7 +678,18 @@ module.exports = {
             })         
         })
     },
+    
 
+    //Cancel Order
+
+    cancelOrder:(orderId)=>{
+    const orderid=new mongoose.Types.ObjectId(orderId)
+        return new Promise(async(resolve,reject)=>{
+          const order = await Ordercollection.findOneAndUpdate({_id:orderid},{$set:{status:"Order cancelled"}})
+          console.log(order);
+           resolve()
+        })
+    }
     
 
 }

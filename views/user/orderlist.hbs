@@ -1,39 +1,83 @@
-
 <link rel="stylesheet" href="/stylesheets/singleorderview.css">
 {{>userheader}}
+
 <body>
     <section id="head">
-      {{#each orderdetails}}
+        {{#each orderdetails}}
         <div class="container">
             <div class="row">
-               {{#each orderedproducts.imageurl}}
-                        {{#if @first}}
-                          <div class="col-md-6">
-                            <img class="head-img" src="/images/categoryimage/{{filename}}" alt="" / style="max-width: 25%; border-radius: 50%;">
-                            </div>
-                        {{/if}}
-                        {{/each}}
-             
+                {{#each orderedproducts.imageurl}}
+                {{#if @first}}
+                <div class="col-md-6">
+                    <img class="head-img" src="/images/categoryimage/{{filename}}" alt="" /
+                        style="max-width: 25%; border-radius: 50%;">
+                </div>
+                {{/if}}
+                {{/each}}
+
                 <div class="col-md-6 head-text">
                     <h3>{{orderedproducts.productname}}</h3>
                     <h5>Quantity:{{Productquantity}}</h5>
                     <h5>MRP:{{productprice}}</h5>
                     <h5>Total:{{producttotal}}</h5>
                     <h5>Order placed at:{{ OrdercreatedAt}} </h5>
-                    {{!-- <p>Click edit button to change this text. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sapien.</p> --}}
-                    <div class=""><i class="fa fa-check main-content__checkmark text-success" id="checkmark"></i> {{status}}</div>
+                    <div class=""><i class="fa fa-check main-content__checkmark text-success" id="checkmark"></i>
+                        {{status}}</div>
                 </div>
             </div>
         </div>
         {{/each}}
-    {{!-- <div class="d-flex justify-content-center"><a href="/" class="btn btn-primary rounded-pill">Home</a></div> --}}
+        {{#if delivered}}
+
+        {{else}}
+        <div class="container d-flex justify-content-end"><button class="btn btn-primary" type="button"
+                onclick="cancelOrder('{{orderdetails.[0]._id}}')">Cancel Order</button></div>
+        {{/if}}
     </section>
-    <!-- Optional JavaScript -->
-    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
     <script src="https://kit.fontawesome.com/e05090259d.js" crossorigin="anonymous"></script>
 </body>
 {{>userfooter}}
+
 </html>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    function cancelOrder(orderId) {
+      
+        swal({
+            title: "Are you sure?",
+            text: "The Order will be cancelled!",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        }).then((willDelete) => {
+            if (willDelete) {
+
+                $.ajax({
+                    url: "/cancelorder",
+                    method: "post",
+                    data: {
+                        orderid: orderId
+                    },
+                    success: (response) => {
+                        location.reload()
+                    }
+                })
+            } else {
+
+            }
+        }).then(() => {
+        })
+
+    }
+</script>
