@@ -8,10 +8,10 @@ const e = require("express")
 const { response } = require("../app")
 const Ordercollection=require("../models/ordermodel")
 
-module.exports = {
+
 
     //adminlogin
-    doadminLogin: (adminData) => {
+  const  doadminLogin= (adminData) => {
         return new Promise(async (resolve, reject) => {
             try {
                 let response = {}
@@ -36,10 +36,10 @@ module.exports = {
                 throw error
             }
         })
-    },
+    }
 
     //listusers
-    listUsers: () => {
+   const listUsers= () => {
 
         return new Promise(async (resolve, reject) => {
             try {
@@ -56,10 +56,10 @@ module.exports = {
 
         })
 
-    },
+    }
 
     //------block user---------
-    blockUser: (userId) => {
+   const blockUser= (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
                 await user.updateOne({ _id: userId }, { $set: { blocked: true } }).then((response) => {
@@ -71,10 +71,10 @@ module.exports = {
                 throw error
             }
         })
-    },
+    }
 
     //------Unblock user---------
-    unblockUser: (userId) => {
+   const unblockUser= (userId) => {
         return new Promise(async (resolve, reject) => {
             try {
                 await user.updateOne({ _id: userId }, { $set: { blocked: false } }).then((respone) => {
@@ -87,9 +87,9 @@ module.exports = {
             }
 
         })
-    },
+    }
     //add category
-    addCategory: (categoryDetails, img) => {
+   const addCategory = (categoryDetails, img) => {
 
         return new Promise(async (resolve, reject) => {
 
@@ -110,21 +110,21 @@ module.exports = {
 
 
         })
-    },
+    }
 
     //editcategory
 
-    editCategory:(catergoryId)=>{
+   const editCategory=(catergoryId)=>{
 
         return new Promise((resolve,reject)=>{
             const category= categorycollection.findOne({_id:catergoryId}).lean()
             resolve(category)
         })
-    },
+    }
 
 
     //Listcategory
-    listCategory: () => {
+  const  listCategory= () => {
         return new Promise(async (resolve, reject) => {
             try {
                 await categorycollection.find({}).lean().then((categories) => {
@@ -136,10 +136,10 @@ module.exports = {
                 throw error
             }
         })
-    },
+    }
 
     //add product
-    addproduct: (productDetails, img) => {
+   const addproduct = (productDetails, img) => {
 
         return new Promise(async (resolve, reject) => {
             try {
@@ -164,11 +164,11 @@ module.exports = {
             }
         })
 
-    },
+    }
 
     //List product
 
-    listProduct: () => {
+   const listProduct = () => {
         return new Promise(async (resolve, reject) => {
             try {
                 await product.find({}).lean().then((products) => {
@@ -181,27 +181,55 @@ module.exports = {
                 throw error
             }
         })
-    },
+    }
 
     //list orders
 
-    listOrders:()=>{
+  const  listOrders=()=>{
         return new Promise(async(resolve,reject)=>{
             const orders = await Ordercollection.find().populate('orderitem.product').lean()
            resolve(orders)
         })
-    },
+    }
     
     //changeorderstaatus
 
-    changeOrderstatus:(data)=>{
+  const  changeOrderstatus=(data)=>{
         return new Promise(async(reject,resolve)=>{
             const orderstatus=data.orderstatus
-            const orderId=new mongoose.Types.ObjectId(data.orderId)
-          
+            const orderId=new mongoose.Types.ObjectId(data.orderId) 
             const order=await Ordercollection.findOneAndUpdate({_id:orderId},{$set:{status:orderstatus}})
            
         })
     }
 
-}
+
+    const getadminPage=(req,res)=>{
+        if (req.session.adminloggedin) {
+            res.redirect("/admin/home")
+          } else {
+            res.render('admin/admin_login', { notfound: req.session.notfound, passErr: req.session.passwordErr });
+            req.session.notfound = false
+            req.session.passwordErr = false
+          }
+    }
+
+  module.exports={
+    
+    doadminLogin,
+    listUsers,
+    blockUser,
+    unblockUser,
+    addCategory,
+    editCategory,
+    listCategory,
+    addproduct,
+    listProduct,
+    listOrders,
+    changeOrderstatus,
+
+
+    getadminPage,
+
+
+  }

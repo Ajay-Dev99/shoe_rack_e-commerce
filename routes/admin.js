@@ -17,17 +17,7 @@ const verifyLogin=(req,res,next)=>{
  }
 
 
-router.get('/', function (req, res, next) {
-
-  if (req.session.adminloggedin) {
-    res.redirect("/admin/home")
-  } else {
-    res.render('admin/admin_login', { notfound: req.session.notfound, passErr: req.session.passwordErr });
-    req.session.notfound = false
-    req.session.passwordErr = false
-  }
-
-});
+router.get('/', admincontrol.getadminPage)
 router.get("/home", verifyLogin,(req, res) => {
   res.render('admin/admin_dashboard',{admin:req.session.adminloggedin})
 })
