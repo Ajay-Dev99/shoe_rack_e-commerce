@@ -53,7 +53,7 @@
                                     class="fa fa-heart text-muted"></i> <i class="fa fa-share-alt text-muted"></i> --}}
                             </div>
                             <div class="cart mt-4 align-items-center ms-2"> 
-                                <button class="btn btn-danger text-uppercase mr-2 px-4">Add to Wishlist</button>
+                                <button class="btn btn-danger text-uppercase mr-2 px-4" onclick="addtoWishlist('{{productdetails._id}}')">Add to Wishlist</button>
                             </div>
                             </div>
                         </div>
@@ -94,6 +94,21 @@
                 }
             }
 
+        })
+    }
+</script>
+<script>
+    function addtoWishlist(ProductId){
+        alert(ProductId)
+        $.ajax({
+            url:"/addtowishlist",
+            method:"post",
+            data:{
+                ProductId:ProductId
+            },
+            success:(response)=>{
+                alert(response)
+            }
         })
     }
 </script>

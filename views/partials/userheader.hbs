@@ -3,7 +3,7 @@
 <script src="https://kit.fontawesome.com/af562a2a63.js" crossorigin="anonymous"></script>
 <header style="width: 100%; ">
     <nav class="navbar navbar-expand-lg navbar-light header ">
-        <div class="container-fluid fs-4 d-flex">
+        <div class="container-fluid fs-4 d-flex" style=" padding-right: var(--x-gutter-x, 0.5rem);">
             <div class=".img-fluid me-3">
                 <a href="/"> <img class="rounded-pill" src="/images/logoimage/download.png" alt="" height="80px"
                         width="80px"> </a>
@@ -16,10 +16,18 @@
                 </form>
             </div>
 
-            <div class="d-flex justify-content-center align-items-center">
-                 {{#if user}}
-                <div class="pt-2 me-2">
+            <div class="d-flex justify-content-between align-items-center">
+                {{#if user}}
+                <div class="pt-2 me-3">
                     {{!-- <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart</span></a> --}}
+                    <a href="/wishlist" class="position-relative">
+                      <span class="material-icons-sharp text-white">favorite</span>
+
+
+                    </a>
+                </div>
+                <div class="pt-2 me-2">
+                
                     <a href="/cart/" class="position-relative">
                         <span class="material-icons-sharp text-white">shopping_cart
                         </span>
@@ -33,6 +41,7 @@
 
                     </a>
                 </div>
+
                 {{/if}}
                 <div class="dropdown pe-3">
                     <button class="btn dropdown-toggle text-white " type="button" id="dropdownMenuButton1"
