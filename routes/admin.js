@@ -92,6 +92,7 @@ router.get("/addproduct",verifyLogin,(req,res)=>{
 router.get("/categories",verifyLogin,(req,res)=>{
   admincontrol.listCategory().then((categories)=>{
     res.render("admin/admin_categories",{categories})
+    console.log(categories,"hi this is sanay!")
   })
  
 })
