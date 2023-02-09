@@ -1,0 +1,134 @@
+<link rel="stylesheet" href="/stylesheets/wishlist.css">
+
+{{>userheader}}
+<body style="background-color: #eaefff">
+  
+{{#if wishlistExist}}
+<div class="wishlist" >Your Wishlist</div>
+<hr>
+<div class="product-container">
+  {{#each products.productdetails}}
+  <a href="/productview/{{this.wishListProduct._id}}" class="text-decoration-none text-dark">
+    <div class="product-card p-2 mt-5">
+      {{#each wishListProduct.imageurl}}
+      {{#if @first}}
+      <img src="/images/categoryimage/{{filename}}" alt="Product Name" class="product-image">
+      {{/if}}
+      {{/each}}
+      <h3 class="product-name">{{this.wishListProduct.productname}}</h3>
+
+      <div class="product-price">₹ {{this.wishListProduct.productMRP}}</div>
+  </a>
+
+  <div class="d-flex align-content-center justify-content-between">
+        {{!-- <div> <button onclick="addTocart('{{this.wishListProduct._id}}')" class="btn ">Add to cart</button> </div> --}}
+    <div class="ms-3"><button class="btn btn-dark" onclick="removeFromWishlist('{{this.wishListProduct._id}}','{{this._id}}')">Remove</button>
+    </div>
+    <a href="/productview/{{this.wishListProduct._id}}">
+      <div style="position: absolute;top: 10px;right: 10px;"> <span
+          class="material-icons-sharp text-danger">fullscreen</span> </div>
+    </a>
+
+  </div>
+</div>
+{{/each}}
+
+{{else}}
+
+<div class="container-fluid  mt-100">
+  <div class="row">
+
+    <div class="col-md-12">
+
+      <div class="card">
+
+        <div class="card-body cart">
+          <div class="col-sm-12 empty-cart-cls text-center">
+            <img src="/images/categoryimage/emptywishlist.jpg" width="500" height="130" class="img-fluid mb-4 mr-3">
+            <h3><strong>Your Wishlist is Empty</strong></h3>
+            <h4>Add something to make me happy :)</h4>
+            <a href="/" class="btn btn-primary cart-btn-transform m-3" data-abc="true">continue shopping</a>
+
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+</div>
+</body>
+
+{{/if}}
+{{>userfooter}}
+
+<script>
+  function addTocart(proId) {
+
+    $.ajax({
+      url: "/addtocart/" + proId,
+      method: "get",
+      success: (response) => {
+        console.log(response)
+
+        if (response.status) {
+          let count = document.getElementById("cart-count").innerHTML;
+          count = parseInt(count) + 1
+          document.getElementById("cart-count").innerHTML = count
+          swal("product added to cart!", "success!", "success");
+
+        } else if (response.alredyincart) {
+          swal("product added to cart!", "success!", "success");
+        }
+
+        else {
+          location.href = "/login"
+        }
+      }
+
+    })
+  }
+</script>
+
+<script>
+  function removeFromWishlist(productId,wishlistId){
+     swal({
+      title: "Are you sure?",
+      text: "The Product will be deleted from the cart!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+      .then((willDelete) => {
+        if (willDelete) {
+    $.ajax({
+      url:"/removefromwishlist",
+      method:"post",
+      data:{
+        productId:productId,
+        wishlistId:wishlistId
+      },
+      success:(response)=>{
+        swal("Removed!").then(()=>{
+          location.reload()
+        })
+      }
+    })
+        } else {
+      
+        }
+      }).then(() => {
+      })
+  }
+
+
+
+
+
+
+
+
+  
+</script>

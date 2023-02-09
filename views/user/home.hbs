@@ -59,9 +59,10 @@
   
   <div class="d-flex align-content-center justify-content-center">
     
-   <div> <button onclick="addTocart('{{this._id}}')" class="btn btn-primary">Add to cart</button> </div>
-  <a href="/productview/{{this._id}}"><div style="position: absolute;top: 10px;right: 10px;"> <span class="material-icons-sharp text-danger">fullscreen</span> </div></a>
+   
 
+  <a href="/productview/{{this._id}}"><div style="position: absolute;top: 10px;right: 10px;"> <span class="material-icons-sharp text-dark">fullscreen</span> </div></a>
+<div><a href="/productview/{{this._id}}"><button class="btn" style="border: 1px solid black;padding: 6px;">View More</button></a></div>
   </div>
 </div>
 
@@ -73,30 +74,3 @@
 
 
 
-<script>
-  function addTocart(proId) {
-
-    $.ajax({
-      url: "/addtocart/" + proId,
-      method: "get",
-      success: (response) => {
-        console.log(response)
-
-        if (response.status) {
-          let count = document.getElementById("cart-count").innerHTML;
-          count = parseInt(count) + 1
-          document.getElementById("cart-count").innerHTML = count
-          swal("product added to cart!", "success!", "success");
-
-        } else if (response.alredyincart) {
-          swal("product added to cart!", "success!", "success");
-        }
-
-        else {
-          location.href = "/login"
-        }
-      }
-
-    })
-  }
-</script>

@@ -2,7 +2,8 @@ const express = require('express');
 const router = express.Router();
 const usercontrol = require("../control/usercontroller")
 const e = require('express');
-const {verifyLogin,cartCount}=require("../Middlewares/userMiddlewares")
+const {verifyLogin,cartCount}=require("../Middlewares/userMiddlewares");
+const admin = require('../models/admin');
 
 
   //Get Methods
@@ -21,6 +22,7 @@ router.get("/orderdetials", verifyLogin, cartCount, usercontrol.getOrderDetails)
 router.get("/allorderdetials", verifyLogin, cartCount,usercontrol.getAllOrderDetails)
 router.get("/singleview/:id", verifyLogin, cartCount,usercontrol.getSingleView)
 router.get("/changepassword", verifyLogin,usercontrol.getChangePasswordPage)
+router.get("/wishlist",verifyLogin,cartCount,usercontrol.getWishlist)
 
   //Post Methods
 router.post("/signup-user", usercontrol.userSignUp)
@@ -34,6 +36,11 @@ router.post("/verify-payment", verifyLogin,usercontrol.verifyOnlineypayment)
 router.post("/edituserdetails", verifyLogin,usercontrol.editUserProfile)
 router.post("/resetpassword", verifyLogin,usercontrol.resetPassword) 
 router.post("/cancelorder",verifyLogin,usercontrol.userCancelOrder)
+router.post("/addtowishlist",verifyLogin,usercontrol.addTowishlist)
+router.post("/removefromwishlist",verifyLogin,usercontrol.removeWishlistItem)
+
+ 
+
 
 
 module.exports = router;

@@ -7,7 +7,8 @@ const Ordercollection = require("../models/ordermodel")
 const Razorpay = require('razorpay');
 const { resolve } = require("path")
 const { response } = require("../app")
-const admincontrol=require("../control/admincontroller")
+const admincontrol = require("../control/admincontroller")
+const wishList = require("../models/wishlist")
 const sendmail = require('../config/nodemailer')
 require("dotenv").config()
 
@@ -681,79 +682,208 @@ const changePassword = (data, userId) => {
     })
 }
 
-
-//Cancel Order
-
 const cancelOrder = (orderId) => {
     const orderid = new mongoose.Types.ObjectId(orderId)
     return new Promise(async (resolve, reject) => {
         const order = await Ordercollection.findOneAndUpdate({ _id: orderid }, { $set: { status: "Order cancelled" } })
-        console.log(order);
+
         resolve()
     })
 }
+
+const addtowishlist = async (productid, userid) => {
+    try {
+        const productId = mongoose.Types.ObjectId(productid)
+        const userWishlist = await wishList.findOne({ userId: userid })
+        if (userWishlist) {
+            await wishList.findOneAndUpdate({ userId: userid }, { $push: { products: { productId: productId } } })
+        } else {
+            const newWishlist = new wishList({
+                userId: userid,
+                products: [{
+                    productId: productid
+                }]
+            })
+            await newWishlist.save()
+        }
+
+
+    } catch (error) {
+        throw error
+    }
+}
+
+const productExistInCart = (productId, userId) => {
+    return new Promise(async (resolve, reject) => {
+        const usercart = await cart.findOne({ userId: userId })
+
+        if (usercart) {
+            const productAlreadyExist = await cart.findOne({ userid: userId }, { products: { $elemMatch: { productId: productId } } });
+            const productLength = productAlreadyExist.products.length
+            if (productLength != 0) {
+                resolve(true)
+            } else {
+                resolve(false)
+            }
+        } else {
+            resolve(false)
+        }
+    })
+}
+const productExistInWishlist = (productId, userId) => {
+    return new Promise(async (resolve, reject) => {
+        const userwishList = await wishList.findOne({ userId: userId })
+
+        if (userwishList) {
+            const productAlreadyExist = await wishList.findOne({ userid: userId }, { products: { $elemMatch: { productId: productId } } });
+            const productLength = productAlreadyExist.products.length
+            console.log(productLength);
+            if (productLength != 0) {
+                console.log("done");
+                resolve(true)
+            } else {
+                console.log("not done");
+                resolve(false)
+            }
+        } else {
+            resolve(false)
+        }
+    })
+}
+
+
+const getwishListitems = (userId) => {
+    return new Promise(async (resolve, reject) => {
+        const userid = new mongoose.Types.ObjectId(userId)
+        const userwishList = await wishList.findOne({ userId: userid })
+        if (userwishList) {
+            const productdetails = await wishList.aggregate([
+                { $match: { userId: userid } },
+
+                { $unwind: "$products" },
+
+                {
+                    $project: {
+
+                        productId: '$products.productId',
+                    }
+                }, {
+                    $lookup: {
+                        from: "products",
+                        localField: "productId",
+                        foreignField: "_id",
+                        as: "wishlistproducts"
+                    }
+                }, {
+                    $project: {
+
+                        productId: 1,
+                        wishListProduct: {
+                            $arrayElemAt: ['$wishlistproducts', 0]
+                        }
+                    }
+                },
+                {
+                    $project: {
+                        productId: 1,
+                        wishListProduct: 1,
+                    }
+                },
+            ])
+
+            if (productdetails.length != 0) {
+                resolve({ productdetails, wishlistExist: true })
+            } else {
+                resolve({ wishlistExist: false })
+            }
+        } else {
+            resolve({ wishlistExist: false })
+        }
+
+    })
+}
+
+const removefromwishlist = (details) => {
+    console.log("done");
+    const wishListId = new mongoose.Types.ObjectId(details.wishlistId)
+    console.log(wishListId);
+    const productId = new mongoose.Types.ObjectId(details.productId)
+    console.log(productId);
+    return new Promise(async (resolve, reject) => {
+        await wishList.findOneAndUpdate({ _id: wishListId, products: { $elemMatch: { productId: productId } } }, {
+            $pull: { products: { productId: productId } },
+        })
+        resolve()
+    })
+}
+//......................................................................................................................................//
+
 
 const getSignupPage = (req, res) => {
     res.render("user/user_signup", { existed: req.session.existed })
     req.session.existed = false
 }
-const getCartPage = async(req, res) => {
+const getCartPage = async (req, res) => {
     const userProducts = await getcartitems(req.session.user._id)
     const userproducts = userProducts.productdetails
     const totalAmount = await totalamount(req.session.user._id)
     res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart, totalAmount })
 }
 
-const getHomepage=async(req,res)=>{
+const getHomepage = async (req, res) => {
     await admincontrol.listProduct().then((data) => {
         const product = data
         const productdata = product.map((product) => {
-          return {
-            _id: product._id,
-            name: product.productname,
-            price: product.productSRP,
-            image: product.imageurl[0].filename
-          }
+            return {
+                _id: product._id,
+                name: product.productname,
+                price: product.productSRP,
+                image: product.imageurl[0].filename
+            }
         })
         res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
-      })
+    })
 }
 
-const getLoginpage=(req,res)=>{
+const getLoginpage = (req, res) => {
     if (req.session.loggedIn) {
         res.redirect("/")
-      } else {
+    } else {
         res.render("user/user_login", { notexisted: req.session.usernotexist, pass: req.session.passErr, block: req.session.blocked })
         req.session.usernotexist = false
         req.session.passErr = false
         req.session.blocked = false
-      }
+    }
 }
 
-const logout=(req,res)=>{
+const logout = (req, res) => {
     req.session.destroy()
     res.redirect("/")
 }
 
-const addTOCart=(req,res)=>{
+const addTOCart = (req, res) => {
     addtoCart(req.params.id, req.session.user._id).then((data) => {
         if (data.status) {
-          res.json({ status: true })
+            res.json({ status: true })
         } else if (data.alredyincart) {
-          res.json({ alredyincart: true })
+            res.json({ alredyincart: true })
         }
-      })
+    })
 }
 
-const singleProductview=(req,res)=>{
-    productView(req.params.id).then((response) => {
+const singleProductview = (req, res) => {
+    productView(req.params.id).then(async (response) => {
         const productdetails = response
-        res.render("user/productview", { user: req.session.user, usercart: res.usercart, productdetails })
-      })
+        const cartExist = await productExistInCart(req.params.id, req.session.user._id)
+        const wishlistExist = await productExistInWishlist(req.params.id, req.session.user._id)
+        console.log(wishlistExist);
+        res.render("user/productview", { user: req.session.user, usercart: res.usercart, productdetails, cartExist, wishlistExist })
+
+    })
 
 }
 
-const getCheckoutPage=async(req,res)=>{
+const getCheckoutPage = async (req, res) => {
     let useraddress = await showAddress(req.session.user._id)
     const userproduct = await getcartitems(req.session.user._id)
     const userproducts = userproduct.productdetails
@@ -761,181 +891,205 @@ const getCheckoutPage=async(req,res)=>{
     res.render("user/checkout", { user: req.session.user, usercart: res.usercart, userproducts, totalAmount, useraddress })
 }
 
-const addAnotherAddress=(req,res)=>{
+const addAnotherAddress = (req, res) => {
     res.render("user/address", { user: req.session.user, usercart: res.usercart })
 }
 
-const getUserProfile=(req,res)=>{
+const getUserProfile = (req, res) => {
     res.render("user/userprofile", { user: req.session.user, usercart: res.usercart })
 }
 
-const displayOrderSuccessPage=async(req,res)=>{
+const displayOrderSuccessPage = async (req, res) => {
     await deleteCart(req.session.user._id)
     res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
 }
 
-const getOrderDetails=async(req,res)=>{
+const getOrderDetails = async (req, res) => {
     const orderdetails = await viewOrderdetails(req.session.orderId)
     res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
 }
 
-const getAllOrderDetails=async(req,res)=>{
+const getAllOrderDetails = async (req, res) => {
     const orderdetails = await viewallOrderdetails(req.session.user._id)
     res.render("user/allorderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
 }
 
-const getSingleView=async(req,res)=>{
+const getSingleView = async (req, res) => {
     const orderdetails = await viewOrderdetails(req.params.id)
-    const orderstatus=orderdetails[0].status
+    const orderstatus = orderdetails[0].status
     let delivered;
-    if(orderstatus=="Delivered" || orderstatus=="Order cancelled"){
-      delivered=true
-    }else{
-      delivered=false
+    if (orderstatus == "Delivered" || orderstatus == "Order cancelled") {
+        delivered = true
+    } else {
+        delivered = false
     }
-  res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart,delivered })
+    res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart, delivered })
 }
 
-const getChangePasswordPage=(req,res)=>{
-    res.render("user/changepassword",{passErr:req.session.passErr})
-    req.session.passErr=false
+const getChangePasswordPage = (req, res) => {
+    res.render("user/changepassword", { passErr: req.session.passErr })
+    req.session.passErr = false
 }
 
-const userSignUp=(req,res)=>{
+const userSignUp = (req, res) => {
     doSingup(req.body).then((data) => {
         req.session.clientid = data.data._id
         if (data.exist) {
-          req.session.existed = true;
-          res.redirect("/signup")
+            req.session.existed = true;
+            res.redirect("/signup")
         } else {
-          const useremail = req.body.email
-          sendmail(useremail, req)  
-          res.render("user/otpverification")
+            const useremail = req.body.email
+            sendmail(useremail, req)
+            res.render("user/otpverification")
         }
-      })
-}
-
-const otpVerification=(req,res)=>{
-    const otp = parseInt(req.session.otp)
-    const userOtp = parseInt(req.body.otp)
-    verifyOtp(userOtp, otp).then(async (response) => {
-      if (response.status) {
-        await changeverificationstatus(req.session.clientid).then(() => {
-          res.json({ status: true })
-          req.session.otp = null;
-          req.session.clientid = null
-        })
-      } else {
-        res.json({ status: false })
-      }
     })
 }
 
-const userLogin=(req,res)=>{
+const otpVerification = (req, res) => {
+    const otp = parseInt(req.session.otp)
+    const userOtp = parseInt(req.body.otp)
+    verifyOtp(userOtp, otp).then(async (response) => {
+        if (response.status) {
+            await changeverificationstatus(req.session.clientid).then(() => {
+                res.json({ status: true })
+                req.session.otp = null;
+                req.session.clientid = null
+            })
+        } else {
+            res.json({ status: false })
+        }
+    })
+}
+
+const userLogin = (req, res) => {
     doLogin(req.body).then((response) => {
         if (response.usernotfound) {
-    
-          req.session.usernotexist = true;
-          res.redirect("/login")
+
+            req.session.usernotexist = true;
+            res.redirect("/login")
         }
         else if (response.blockedstatus) {
-          req.session.blocked = true
-          res.redirect("/login")
+            req.session.blocked = true
+            res.redirect("/login")
         }
-    
+
         else {
-          req.session.user = response.user
-          if (response.status) {
-    
-            req.session.loggedIn = true;
-    
-            res.redirect("/")
-          } else {
-    
-    
-            req.session.passErr = true;
-            res.redirect('/login')
-          }
+            req.session.user = response.user
+            if (response.status) {
+
+                req.session.loggedIn = true;
+
+                res.redirect("/")
+            } else {
+
+
+                req.session.passErr = true;
+                res.redirect('/login')
+            }
         }
-    
-      })
+
+    })
 }
 
-const changeCartProductQuantity=(req,res)=>{
+const changeCartProductQuantity = (req, res) => {
     changeproductquantity(req.body).then((response) => {
         res.json(response)
-      })
+    })
 }
 
-const removeUserCartitem=(req,res)=>{
+const removeUserCartitem = (req, res) => {
     removeCartitem(req.body).then((response) => {
         res.json(response)
-      })
+    })
 }
 
-const userCheckout=(req,res)=>{
+const userCheckout = (req, res) => {
     addAddress(req.session.user._id, req.body)
     res.redirect("/checkout")
 }
 
-const userPlaceOrder=async(req,res)=>{
+const userPlaceOrder = async (req, res) => {
     const cartproducts = await getcartitems(req.session.user._id)
     const cartproduct = await cartproducts.productdetails
     const totalAmount = await totalamount(req.session.user._id)
     placeorder(req.session.user._id, req.body, cartproduct, totalAmount).then(async (orderId) => {
-      req.session.orderId = orderId
-      if (req.body['payment-method'] === "COD") {
-        res.json({ success: true })
-      } else {
-        await generateRazorpay(orderId, totalAmount).then(async (response) => {
-          const userdata = await userdetails(req.session.user._id)
-          const data = {
-            response: response,
-            user: userdata.address
-          }
-  
-          res.json(data)
-        })
-      }
+        req.session.orderId = orderId
+        if (req.body['payment-method'] === "COD") {
+            res.json({ success: true })
+        } else {
+            await generateRazorpay(orderId, totalAmount).then(async (response) => {
+                const userdata = await userdetails(req.session.user._id)
+                const data = {
+                    response: response,
+                    user: userdata.address
+                }
+
+                res.json(data)
+            })
+        }
     })
 }
 
-const verifyOnlineypayment=async(req,res)=>{
+const verifyOnlineypayment = async (req, res) => {
     await verifypayment(req.body).then(() => {
         changeStatus(req.body['order[receipt]']).then(() => {
-          // req.session.orderId=req.body['order[receipt]']
-          res.json({ paymentsuccess: true })
+            // req.session.orderId=req.body['order[receipt]']
+            res.json({ paymentsuccess: true })
         })
-      }).catch((err) => {
+    }).catch((err) => {
         res.json({ paymentsuccess: false })
-      })
+    })
 }
 
-const editUserProfile=async(req,res)=>{
+const editUserProfile = async (req, res) => {
     const updation = await editUserdetails(req.session.user._id, req.body)
     res.redirect("/account")
 }
 
-const resetPassword=async(req,res)=>{
+const resetPassword = async (req, res) => {
     const data = await changePassword(req.body, req.session.user._id)
     if (data.status) {
-      
-     res.json({status:true})
-    }else{
-      req.session.passErr=true
-      res.json({status:false})
+
+        res.json({ status: true })
+    } else {
+        req.session.passErr = true
+        res.json({ status: false })
     }
 }
 
-const userCancelOrder=async(req,res)=>{
-    const orderId=req.body.orderid;
-    const cancel=await cancelOrder(orderId) 
-    res.json({status:true})
+const userCancelOrder = async (req, res) => {
+    const orderId = req.body.orderid;
+    const cancel = await cancelOrder(orderId)
+    res.json({ status: true })
 }
 
+const addTowishlist = async (req, res) => {
+    const productId = req.body.ProductId
+    await addtowishlist(productId, req.session.user._id)
+    res.json({ status: true })
+
+}
+
+const getWishlist = async (req, res) => {
+    const products = await getwishListitems(req.session.user._id)
+    let wishlistExist;
+    if (products.wishlistExist == true) {
+        wishlistExist = true
+    } else {
+        wishlistExist = false
+    }
+    res.render("user/wishlist", { user: req.session.user, products, usercart: res.usercart, wishlistExist })
+}
+
+const removeWishlistItem = async (req, res) => {
+    const details = req.body
+    console.log(details);
+    await removefromwishlist(details)
+    res.json({ status: true })
+}
 
 module.exports = {
-  
+
     doSingup,
     doLogin,
     verifyOtp,
@@ -987,7 +1141,14 @@ module.exports = {
     verifyOnlineypayment,
     editUserProfile,
     resetPassword,
-    userCancelOrder
+    userCancelOrder,
+    addTowishlist,
+    addtowishlist,
+    productExistInCart,
+    getWishlist,
+    productExistInWishlist,
+    removeWishlistItem,
+    removefromwishlist
 
 }
 
