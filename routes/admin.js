@@ -135,7 +135,7 @@ router.get("/orders",verifyLogin,async(req,res)=>{
  
   res.render("admin/admin_orderlist",{orders,})
 })
-
+  
 //change order status
 
 router.get("/orderaction/:id",verifyLogin,async(req,res)=>{  

@@ -1,4 +1,4 @@
-const user = require("../models/usermodel")
+ae const user = require("../models/usermodel")
 const bcrypt = require("bcrypt")
 const cart = require("../models/cartmodel")
 const { default: mongoose, Error } = require("mongoose")
