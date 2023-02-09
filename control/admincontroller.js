@@ -381,6 +381,10 @@ const adminChangeOrderStatus=(req,res)=>{
     res.json({status:true})
 }
 
+const adminCouponMangement=(req,res)=>{
+    res.render("admin/admin_addcoupon")
+}
+
 module.exports = {
 
     doadminLogin,
@@ -413,7 +417,8 @@ module.exports = {
     adminLogin,
     adminAddCategory,
     adminAddProduct,
-    adminChangeOrderStatus
+    adminChangeOrderStatus,
+    adminCouponMangement,
     
 
 }

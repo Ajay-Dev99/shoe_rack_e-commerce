@@ -737,12 +737,9 @@ const productExistInWishlist = (productId, userId) => {
         if (userwishList) {
             const productAlreadyExist = await wishList.findOne({ userid: userId }, { products: { $elemMatch: { productId: productId } } });
             const productLength = productAlreadyExist.products.length
-            console.log(productLength);
             if (productLength != 0) {
-                console.log("done");
                 resolve(true)
             } else {
-                console.log("not done");
                 resolve(false)
             }
         } else {

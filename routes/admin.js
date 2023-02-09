@@ -20,6 +20,7 @@ router.get("/editcategory/:id",verifyLogin,admincontrol.adminEditCategory)
 router.get("/listproducts",verifyLogin,admincontrol.listProducts)
 router.get("/orders",verifyLogin,admincontrol.adminListorders)
 router.get("/orderaction/:id",verifyLogin,admincontrol.adminOrderDetails)
+router.get("/addcoupon",verifyLogin,admincontrol.adminCouponMangement)
 
 
 router.post('/login',admincontrol.adminLogin)
