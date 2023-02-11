@@ -8,12 +8,8 @@
                 <a href="/"> <img class="rounded-pill" src="/images/logoimage/download.png" alt="" height="80px"
                         width="80px"> </a>
             </div>
-            <div>
-                <form class="d-none d-sm-flex hide-on-tablet  ">
-                    <input class="form-control me-2 rounded-pill" type="search" placeholder="Search" aria-label="Search"
-                        style="width: 500px; height: 35px;">
-                    {{!-- <button class="btn btn-outline-success" type="submit">Search</button> --}}
-                </form>
+            <div class="d-none d-sm-flex hide-on-tablet">
+               <i> Shoe Rack </i>
             </div>
 
             <div class="d-flex justify-content-between align-items-center">
@@ -21,7 +17,7 @@
                 <div class="pt-2 me-3">
                     {{!-- <a href="/cart"><span class="material-icons-sharp text-white ">shopping_cart</span></a> --}}
                     <a href="/wishlist" class="position-relative">
-                      <span class="material-icons-sharp text-danger">favorite</span>
+                      <span class="material-icons-sharp text-white">favorite</span>
 
 
                     </a>
@@ -31,7 +27,7 @@
                     <a href="/cart/" class="position-relative">
                         <span class="material-icons-sharp text-white">shopping_cart
                         </span>
-                        <span class="position-absolute   translate-middle badge rounded-pill bg-dark p-1">
+                        <span class="position-absolute   translate-middle badge rounded-pill bg-danger text-white p-1">
                             {{#if usercart}}
                             <small id="cart-count"> {{usercart}} </small>
                             {{else}}

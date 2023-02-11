@@ -44,20 +44,34 @@
 				</div>
 				<div class="d-flex justify-content-between pb-2">
 					<div>Coupon Savings</div>
-					<div>₹0</div>
+					<div>₹ <span id="discount">{{couponSavings}}</span></div>
 				</div>
 				<div class="d-flex justify-content-between pb-2">
 					<div>Delivery</div>
 					<div>Free</div>
 				</div>
+
 				<div class="checkout-total d-flex justify-content-between pt-2">
 					<div>
 						<h6>Total</h6>
 					</div>
 					<div>
-						<h6>₹{{totalAmount}}</h6>
+						<h6>₹{{allTotal}}</h6>
 					</div>
 				</div>
+			</div>
+			<div class="checkout-details-inner lh-lg mb-3">
+				<h3 class="pb-2 ">Apply Coupon</h3>
+				
+				<small class="text-danger" id="expired"></small>
+				<div class="d-flex">
+					<div class="flex-grow-1"><input type="text" placeholder="Enter the coupon code..." class="p-3"
+							id="couponcode"></div>
+					<div class="ms-2"><a class="btn btn-success p-1" style="border-radius: 0%;"
+							onclick="applyCoupon()">Apply</a></div>
+				</div>
+				<div class="text-end"><u><a class="text-dark" href="/usercoupons" style="font-size: 14px;">View
+							Coupons</a></u></div>
 			</div>
 			<div class="checkout-details-inner lh-lg mb-3">
 
@@ -91,17 +105,16 @@
 <script>
 	$("#checkout-form").submit((e) => {
 		e.preventDefault()
-		
+
 		$.ajax({
 			url: '/place-order',
 			method: 'post',
 			data: $('#checkout-form').serialize(),
 			success: (response) => {
-				
+
 				if (response.success) {
 					location.href = '/ordersuccess'
 				} else {
-					console.log(response)
 					razorpayPayment(response)
 
 				}
@@ -110,54 +123,87 @@
 	})
 </script>
 <script>
-	 function razorpayPayment(order) {
-        var options = {
-            "key": "rzp_test_cPumZ2UTOj7JH5", // Enter the Key ID generated from the Dashboard
-            "amount":order.response.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
-            "currency": "INR",
-            "name": "Shoe Rack",
-            "description": "Test Transaction",
-            "image": "http://localhost:3000/images/logo.png",
-            "order_id": order.response.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-            "handler": function (response) {
-                console.log(response)
-                verifyPayment(response,order.response);
-            },
-            "prefill": {
-                "name": order.user[0].name,
-                "email":order.user[0].email,
-                "contact":order.user[0].phone
-            },
-            "notes": {
-                "address": "Razorpay Corporate Office"
-            },
-            "theme": {
-  
-                "color": "#193D56"   
-            }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    }
+	function razorpayPayment(order) {
+		var options = {
+			"key": "rzp_test_cPumZ2UTOj7JH5", // Enter the Key ID generated from the Dashboard
+			"amount": order.response.amount, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+			"currency": "INR",
+			"name": "Shoe Rack",
+			"description": "Test Transaction",
+			"image": "http://localhost:3000/images/logo.png",
+			"order_id": order.response.id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+			"handler": function (response) {
+				console.log(response)
+				verifyPayment(response, order.response);
+			},
+			"prefill": {
+				"name": order.user[0].name,
+				"email": order.user[0].email,
+				"contact": order.user[0].phone
+			},
+			"notes": {
+				"address": "Razorpay Corporate Office"
+			},
+			"theme": {
+
+				"color": "#193D56"
+			}
+		};
+		var rzp1 = new Razorpay(options);
+		rzp1.open();
+	}
 </script>
 
 <script>
-	 function verifyPayment(payment,order){
-		
+	function verifyPayment(payment, order) {
+
 		$.ajax({
-			url:"/verify-payment",
-			method:"post",
-			data:{
+			url: "/verify-payment",
+			method: "post",
+			data: {
 				payment,
 				order
 			},
-			success:(response) => {
-				if(response.paymentsuccess){
-					location.href="/ordersuccess"
+			success: (response) => {
+				if (response.paymentsuccess) {
+					location.href = "/ordersuccess"
 				}
-				
+
 			}
 		})
+	}
+</script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+	function applyCoupon() {
+		
+		const couponcode = document.getElementById("couponcode").value
+
+		$.ajax({
+			url: "/applycoupon",
+			method: "post",
+			data: {
+				code: couponcode
+			},
+			success: (response) => {
+				if(response.status && !response.min_total){
+				
+				
+					document.getElementById("expired").innerText="The minimum spend for this coupon is not satisfied"
+				}
+				else if (response.status) {
+				console.log(response)
+				
+				swal("Coupon applied!").then(()=>{
+					location.reload()
+					
+				})
+				}else if(!response.status){
+					document.getElementById("expired").innerText="This Coupon has Expired"
+				}
+			}
+			})
 	}
 </script>
 

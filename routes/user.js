@@ -23,6 +23,7 @@ router.get("/allorderdetials", verifyLogin, cartCount,usercontrol.getAllOrderDet
 router.get("/singleview/:id", verifyLogin, cartCount,usercontrol.getSingleView)
 router.get("/changepassword", verifyLogin,usercontrol.getChangePasswordPage)
 router.get("/wishlist",verifyLogin,cartCount,usercontrol.getWishlist)
+router.get("/usercoupons",verifyLogin,cartCount,usercontrol.getcoupons)
 
   //Post Methods
 router.post("/signup-user", usercontrol.userSignUp)
@@ -38,6 +39,9 @@ router.post("/resetpassword", verifyLogin,usercontrol.resetPassword)
 router.post("/cancelorder",verifyLogin,usercontrol.userCancelOrder)
 router.post("/addtowishlist",verifyLogin,usercontrol.addTowishlist)
 router.post("/removefromwishlist",verifyLogin,usercontrol.removeWishlistItem)
+router.post("/applycoupon",usercontrol.userApplyCoupon)
+router.post("/categoryfilter",usercontrol.categoryFilter)
+
 
  
 

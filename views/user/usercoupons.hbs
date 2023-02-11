@@ -1,0 +1,40 @@
+<link rel="stylesheet" href="stylesheets/coupon.css">
+{{>userheader}}
+<div class="d-flex">
+{{>usersidebar}}
+  <div class="flex-grow-1 overflow-y-lg-auto" style="background-color: #eee;">
+    <section>
+                <div class="container row">
+                    {{#each coupons}}
+            <div class="coupon-card col-md-5 col-12 m-3 ">
+                
+                <h3>{{this.disCount}}% flat off on all products<br>using this coupon code</h3>
+                <di class="coupon-row">
+                    <span class="cpnCode" id="{{this._id}}">{{this.couponCode}}</span>
+                    <span class="cpnBtn" id="cpnBtn{{this._id}}" onclick="copyCode('{{this._id}}')">Copy Code</span>
+                </di>
+                <p>Valid Till: {{this.expiryDate}}</p>
+                <div class="circle1"></div>
+                <div class="circle2"></div>
+            </div>
+            {{/each}}
+
+        </div>
+    </section>
+</div>
+</div>
+ 
+<script>
+    function copyCode(couponId) {
+        const cpnBtn = document.getElementById("cpnBtn" + couponId);
+        const cpnCode = document.getElementById(couponId);
+        navigator.clipboard.writeText(cpnCode.innerHTML);
+        cpnBtn.innerHTML = "COPIED";
+        setTimeout(function () {
+            cpnBtn.innerHTML = "COPY CODE";
+        }, 3000);
+    }
+    cpnBtn.onclick = function () {
+    }
+</script>
+  

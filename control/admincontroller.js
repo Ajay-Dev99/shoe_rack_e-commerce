@@ -7,7 +7,7 @@ const bcrypt = require("bcrypt")
 const e = require("express")
 const { response } = require("../app")
 const Ordercollection = require("../models/ordermodel")
-
+const coupon=require("../models/couponmodel")
 
 
 
@@ -275,6 +275,28 @@ const changeOrderstatus = (data) => {
     })
 }
 
+const addcoupon=(couponDetials)=>{
+    console.log("done");
+        return new Promise(async(resolve,reject)=>{
+            const newCoupon=new coupon({
+                couponCode:couponDetials.code,
+                disCount: couponDetials.discount,
+                expiryDate:couponDetials.expiryDate ,
+                maxDiscountAmount:couponDetials.maxDiscount,
+                minOrderAmount:couponDetials.minAmount
+            })
+                await newCoupon.save()
+                resolve()
+        })
+}
+
+const listCoupon=async()=>{
+    const coupons=await coupon.find({}).lean()
+    console.log(coupons);
+    return coupons
+}
+
+//.............................................................................................................................................//
 
 const getadminPage = (req, res) => {
     if (req.session.adminloggedin) {
@@ -286,8 +308,15 @@ const getadminPage = (req, res) => {
     }
 }
 
-const getAdminDashboard = (req, res) => {
-    res.render('admin/admin_dashboard', { admin: req.session.adminloggedin })
+const getAdminDashboard = async(req, res) => {
+    const userCount=await user.countDocuments({})
+    const productCount=await product.countDocuments({})
+    const orderCount=await Ordercollection.countDocuments({})
+    const total=await Ordercollection.aggregate([
+        { $group: { _id: null, total: { $sum: "$totalamount" } } }
+    ])
+    
+    res.render('admin/admin_dashboard', { admin: req.session.adminloggedin ,userCount,productCount,orderCount,total})
 }
 
 const adminLogout=(req,res)=>{
@@ -297,6 +326,7 @@ const adminLogout=(req,res)=>{
 
 const getUserlist=(req,res)=>{
     listUsers().then((response)=>{
+        console.log(response,"users");
         res.render("admin/admin_userlist",{usersData:response})
     })
 }
@@ -381,8 +411,23 @@ const adminChangeOrderStatus=(req,res)=>{
     res.json({status:true})
 }
 
-const adminCouponMangement=(req,res)=>{
-    res.render("admin/admin_addcoupon")
+const adminCouponMangement=async(req,res)=>{
+    const coupons=await listCoupon()
+    console.log(coupons);
+    res.render("admin/admin_addcoupon",{coupons})
+}
+
+const adminaddcoupon=async(req,res)=>{
+    console.log(req.body)
+   await addcoupon(req.body)
+   res.json({status:true})
+}
+
+const disableProduct=async(req,res)=>{
+    const productId=req.body.proId
+    console.log(productId);
+    await product.findOneAndUpdate({_id:productId},{$set:{status:"disabled"}})
+    res.json({status:true})
 }
 
 module.exports = {
@@ -419,6 +464,10 @@ module.exports = {
     adminAddProduct,
     adminChangeOrderStatus,
     adminCouponMangement,
+    adminaddcoupon,
+    addcoupon,
+    listCoupon,
+    disableProduct
     
 
 }

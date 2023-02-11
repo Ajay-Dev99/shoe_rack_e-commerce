@@ -23,7 +23,7 @@
     <tr>
       {{!-- <th scope="col">Product id</th> --}}
       <th scope="col">Product name</th>
-      <th scope="col">Category id:</th>
+      <th scope="col">Category</th>
       <th scope="col">MRP</th>
       <th scope="col">SRP</th>
       <th scope="col">Stock</th>
@@ -34,8 +34,8 @@
   </thead>
   {{#each response}}
   <tbody class="bg-white">
-    <tr>
-      {{!-- <th scope="row">{{this._id}}</th> --}}
+    <tr id="product{{this._id}}">
+    
       <td><b>{{this.productname}}</b></td>
       <td><b>{{this.productcategory}}</b></td>
       <td><b>  ₹{{this.productMRP}} </b></td>
@@ -51,8 +51,8 @@
       <td>{{this.productdescription}}</td>
       <td>
           <div class="d-flex">
-             <div> <a href="/admin/editcategory" class="btn"><i class="fa fa-edit text-primary"><p class="text-dark ">edit</p></i></a></div>
-              <div><a href="#" class="btn"><i class="fa fa-trash text-danger"><p class="text-dark">delete</p></i></a></div>
+             <div> <a href="/admin/editcategory" class="btn"><i class="fa fa-edit text-primary" style="font-size: 25px;"><p class="text-dark "></p></i></a></div>
+              <div><a href="#" onclick="disableProduct('{{this._id}}')" class="btn"><i class="fa fa-ban text-danger" style="font-size: 25px;" aria-hidden="true"></i></a></div>
               </div>
       </td>
     </tr>
@@ -65,3 +65,26 @@
     </section>
   </div>
 </section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+<script>
+  function disableProduct(productId){
+    alert(productId)
+    $.ajax({
+      url:"/admin/disableproduct",
+      method:"post",
+      data:{
+        proId:productId
+      },
+      success:(response)=>{
+       document.getElementById("product"+productId).addClass("bg-danger")
+        swal("Product disabled")
+
+     
+      }
+    })
+
+  }
+</script>

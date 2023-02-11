@@ -31,9 +31,9 @@
   </nav>
   <nav class="featured-category">
     <ul class="nav-row">
-      <li class="nav-row-list"><a href="/sortbycausal" class="nav-row-list-link">Casual</a></li>
-      <li class="nav-row-list"><a href="/sortbysports" class="nav-row-list-link">Sports</a></li>
-      <li class="nav-row-list"><a href="/sortbyformal" class="nav-row-list-link">Formal</a></li>
+      <li class="nav-row-list"><a onclick="categoryFilter('Casuals')" class="nav-row-list-link">Casual</a></li>
+      <li class="nav-row-list"><a  onclick="categoryFilter('Sports')"  class="nav-row-list-link">Sports</a></li>
+      <li class="nav-row-list"><a  onclick="categoryFilter('Formal')"  class="nav-row-list-link">Formal</a></li>
 
     </ul>
   </nav>
@@ -62,7 +62,7 @@
    
 
   <a href="/productview/{{this._id}}"><div style="position: absolute;top: 10px;right: 10px;"> <span class="material-icons-sharp text-dark">fullscreen</span> </div></a>
-<div><a href="/productview/{{this._id}}"><button class="btn" style="border: 1px solid black;padding: 6px;">View More</button></a></div>
+
   </div>
 </div>
 
@@ -72,5 +72,21 @@
 {{>userfooter}}
 
 
+<script>
+  function categoryFilter(category){
+    alert(category)
+    $.ajax({
+      url:"/categoryfilter",
+      method:"post",
+      data:{
+        categoryname:category
+      },
+      success:(response)=>{
+        alert(response)
+        
+      }
 
+    })
+  }
+</script>
 

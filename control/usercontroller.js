@@ -11,7 +11,7 @@ const admincontrol = require("../control/admincontroller")
 const wishList = require("../models/wishlist")
 const sendmail = require('../config/nodemailer')
 require("dotenv").config()
-
+const coupon=require("../models/couponmodel")
 
 const instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -413,7 +413,6 @@ const addAddress = (userId, userdata) => {
 const showAddress = (userId) => {
     return new Promise(async (resolve, reject) => {
         let userdetails = await user.findOne({ _id: userId }).lean()
-
         const useraddress = userdetails.address
 
         resolve(useraddress)
@@ -735,7 +734,7 @@ const productExistInWishlist = (productId, userId) => {
         const userwishList = await wishList.findOne({ userId: userId })
 
         if (userwishList) {
-            const productAlreadyExist = await wishList.findOne({ userid: userId }, { products: { $elemMatch: { productId: productId } } });
+            const productAlreadyExist = await wishList.findOne({ userId: userId }, { products: { $elemMatch: { productId: productId } } });
             const productLength = productAlreadyExist.products.length
             if (productLength != 0) {
                 resolve(true)
@@ -813,6 +812,17 @@ const removefromwishlist = (details) => {
         resolve()
     })
 }
+
+const listCoupon=async()=>{
+    const coupons=await coupon.find({}).lean()
+    console.log(coupons);
+    return coupons
+}
+
+const ApplyCoupon=async(code,userId)=>{
+    console.log(code);
+    
+}
 //......................................................................................................................................//
 
 
@@ -885,7 +895,12 @@ const getCheckoutPage = async (req, res) => {
     const userproduct = await getcartitems(req.session.user._id)
     const userproducts = userproduct.productdetails
     const totalAmount = await totalamount(req.session.user._id)
-    res.render("user/checkout", { user: req.session.user, usercart: res.usercart, userproducts, totalAmount, useraddress })
+    const cartdata = await cart.findOne({userId:req.session.user._id})
+    const couponSavings=cartdata.cuponsavings
+    const allTotal=parseInt(totalAmount-couponSavings)
+    console.log(allTotal);
+  
+    res.render("user/checkout", { user: req.session.user, usercart: res.usercart, userproducts, totalAmount, useraddress ,couponSavings,allTotal})
 }
 
 const addAnotherAddress = (req, res) => {
@@ -1085,6 +1100,68 @@ const removeWishlistItem = async (req, res) => {
     res.json({ status: true })
 }
 
+const getcoupons=async(req,res)=>{
+    const coupons=await listCoupon()
+    res.render("user/usercoupons",{user:req.session.user,usercart: res.usercart,coupons})
+}
+
+const userApplyCoupon=async(req,res)=>{
+   
+    console.log(req.body.code);
+    const couponcode=req.body.code
+   
+    const date= new Date();
+    const Coupon=await coupon.findOne({couponCode:couponcode})
+    const totalAmount = await totalamount(req.session.user._id)   
+    if(Coupon){
+        const minimumAmount=Coupon.minOrderAmount
+        const exdate=new Date(Coupon.expiryDate)
+        if(exdate>=date){
+           if(totalAmount>Coupon.minOrderAmount){
+            let discount=parseInt((totalAmount*Coupon.disCount)/100)
+            let totaldisconut=0;
+            if (Coupon.maxDiscountAmount> discount) {
+                totaldisconut = discount
+            } else {
+                totaldisconut = Coupon.maxDiscountAmount
+            }          
+            await cart.findOneAndUpdate({userId:req.session.user._id},{$set:{cuponsavings:totaldisconut}})
+            res.json({ status: true, Coupon, min_total: true, totaldisconut ,minimumAmount})        
+           }else{
+            res.json({ status: true, min_total: false, Coupon })
+           }
+        }else{
+            res.json({ status: false })
+        }
+    }else {
+        res.json({ status: false })
+    }
+  
+
+}
+
+const categoryFilter=async(req,res)=>{
+    console.log(req.body);
+    const categoryName=req.body.categoryname
+    console.log(categoryName,"pp");
+    const products =await product.find({ productcategory:categoryName })
+    console.log(products);
+    const productdata = products.map((product) => {
+        return {
+            _id: product._id,
+            name: product.productname,
+            price: product.productSRP,
+            image: product.imageurl[0].filename
+        }
+    })
+    console.log(productdata,"iiiiiii");
+   
+    // res.render("user/home", { user: req.session.user, productdata})
+    
+ 
+
+}
+
 module.exports = {
 
     doSingup,
@@ -1145,8 +1222,12 @@ module.exports = {
     getWishlist,
     productExistInWishlist,
     removeWishlistItem,
-    removefromwishlist
-
+    removefromwishlist,
+    getcoupons,
+    listCoupon,
+    userApplyCoupon,
+    ApplyCoupon,
+    categoryFilter
 }
 
 
