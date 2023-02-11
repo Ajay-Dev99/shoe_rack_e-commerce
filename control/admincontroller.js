@@ -91,7 +91,6 @@ const unblockUser = (userId) => {
 }
 //add category
 const addCategory = (categoryDetails, img) => {
-
     return new Promise(async (resolve, reject) => {
 
         try {
@@ -415,12 +414,18 @@ const adminLogin=(req,res)=>{
 }
 
 const adminAddCategory=(req,res)=>{
+    console.log("hiiii");
+    console.log(req.body,"00000000000000");
+    console.log(req.file,"kkkkkkkkkkkkkkk");
     addCategory(req.body,req.file).then((data)=>{ 
-        res.redirect("/admin/categories")
+        console.log("hvhgkhjgkgk");
+        res.json({status:true})
       })
 }
 
 const adminAddProduct=async(req,res)=>{
+    console.log(res.erromessage,">>>>>>>>>>>>>>>>>");
+    console.log(req.files,"<<<<<<<<<<<<<<");
   await addproduct(req.body,req.files).then((data)=>{  
     res.redirect("/admin/addproduct")
   })
@@ -464,6 +469,13 @@ const editCoupon=async(req,res)=>{
     res.render("admin/admin_editcoupon",{coupons})
 }
 
+const deleteCategory=async(req,res)=>{
+    const categoryId=req.body.categoryId
+    console.log(categoryId,"--------");
+    await categorycollection.deleteOne({_id:categoryId})
+    res.json({status:true})
+}
+
 
 module.exports = {
 
@@ -505,7 +517,8 @@ module.exports = {
     disableProduct,
     getOrdersByMonth,
     editProduct,
-    editCoupon
+    editCoupon,
+    deleteCategory
     
 
 }

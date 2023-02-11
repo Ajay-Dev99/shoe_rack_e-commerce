@@ -24,8 +24,12 @@
             <td><img src="/images/categoryimage/{{this.imageurl}}" alt="" height="80px" width="80px"></td>
             <td>
               <div class="d-flex">
-             <div> <a href="/admin/editcategory/{{this._id}}" class="btn"><i class="fa fa-edit text-primary"><p class="text-dark">edit</p></i></a></div>
-              <div><a href="#" class="btn"><i class="fa fa-trash text-danger"><p class="text-dark">delete</p></i></a></div>
+                <div> <a href="/admin/editcategory/{{this._id}}" class="btn"><i class="fa fa-edit text-primary">
+                      <p class="text-dark">edit</p>
+                    </i></a></div>
+                <div><a href="#" onclick="deleteCategory('{{this._id}}')" class="btn"><i class="fa fa-trash text-danger">
+                      <p class="text-dark">delete</p>
+                    </i></a></div>
               </div>
             </td>
           </tr>
@@ -35,21 +39,131 @@
     </div>
     <div class="col-md-4 col-12 p-5" style="background-color: #ddddddc9;">
       <h2>Add category</h2>
-      <form action="/admin/addcategory" method="post" enctype="multipart/form-data">
+      <form id="addCategoryForm">
         <div class="mb-3">
           <label for="exampleInputEmail1" class="form-label">Category Name</label>
-          <input type="text" class="form-control" name="categoryname" aria-describedby="emailHelp" required />
-
+          <input type="text" class="form-control" name="categoryname" onblur="javascript:value=value.replace(/\s/g,'');"
+            id="category" aria-describedby="emailHelp" required />
+          <small class="text-danger" id="reqd"></small>
         </div>
         <div class="mb-3">
           <label for="exampleInputPassword1" class="form-label">Add image</label>
-          <input class="form-control" type="file" name="image" required />
+          <input class="form-control" type="file" name="image" id="image" required />
         </div>
         <div class="d-flex justify-content-center">
-          <button type="submit" class="btn fontcolor login-btn">Submit</button>
+          <button class="btn fontcolor login-btn" id="submit-button">
+            <span id="btn-span" class="hidden"> Submit</span>
+            <span id="spinner"></span>
+          </button>
         </div>
       </form>
     </div>
   </div>
 
 </section>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  const category = document.getElementById("category");
+  category.addEventListener("blur", validateName);
+  function validateName() {
+    document.getElementById("reqd").innerHTML = ""
+    const name = category.value;
+    // Checking  if the name field is blank
+    if (name === "") {
+      document.getElementById("reqd").innerHTML = " * Required"
+      return false;
+    }
+    return true;
+  }
+  const submitButton = document.getElementById("addCategoryForm");
+  submitButton.addEventListener("submit", function (event) {
+    event.preventDefault();
+    let validatename = validateName()
+    if (!validatename) {
+      return;
+    }
+    document.getElementById("spinner").style.display = "block";
+    document.getElementById("btn-span").style.display = "hidden";
+    submitButton.style.display = "hidden"
+    const fileInput = document.getElementById("image");
+    const file = fileInput.files[0];
+    if (!file) {
+      swal("Please select an image file.");
+      return;
+    }
+    // validate file type
+    if (!file.type.match("image.*")) {
+      swal("Invalid file type. Please select an image file.");
+      return;
+    }
+    // validate file size
+    if (file.size > 5000000) {
+      swal("File size is too large. Please select a file smaller than 5MB.");
+      return;
+    }
+    const formData = new FormData();
+    const image = $("#image")[0].files[0];
+    const category = $("#category").val();
+    formData.append("categoryname", category);
+    console.log("formData",formData)
+    formData.append("image", image);
+
+    $.ajax({
+      url: "/admin/addcategory",
+      method: "POST",
+      data: formData,
+      processData: false,
+      contentType: false,
+      success: function (response) {
+        if (response.status) {
+          location.reload()
+        }
+        if (response.exists) {
+          swal("Category already exists");
+        }
+      },
+      error: function (error) {
+        swal("Failed!", error, "error");
+      }
+    });
+  });
+</script>
+
+<script>
+  function deleteCategory(categoryId){
+
+        swal({
+      title: "Are you sure?",
+      text: "The Product will be deleted from the cart!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+      .then((willDelete) => {
+        if (willDelete) {
+    $.ajax({
+      url:"/admin/deletecategory",
+      method:"post",
+      data:{
+        categoryId:categoryId
+      },
+      success:(response)=>{
+
+        if(response.status){
+          swal("product deleted!").then(()=>{
+            location.reload()
+          })
+        }
+      }
+    })
+        } else {
+         
+        }
+      }).then(() => {
+      })
+  }
+
+
+  
+</script>

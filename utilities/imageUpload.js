@@ -25,8 +25,6 @@ const storage = multer.diskStorage({
      else{
          cb(null, false);
          cb(new Error('Only jpeg,  jpg , png, and gif Image allow'))
-         
-        
      }
     }
   })

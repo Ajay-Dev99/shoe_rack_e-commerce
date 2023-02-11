@@ -25,6 +25,9 @@
   </thead>
   {{#each response}}
   <tbody class="bg-white">
+  {{#if (eq status "disabled")}}
+  hiiiiii
+  {{/if}}
     <tr id="product{{this._id}}">
     
       <td><b>{{this.productname}}</b></td>
