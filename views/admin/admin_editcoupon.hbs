@@ -1,0 +1,79 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+{{>adminheader}}
+<section>
+    <div>
+        {{>adminsidebar}}
+    </div>
+    <section class=" admin-section d-flex gap-5">
+
+        <div class="vw-100 main px-5 pt-5 content-admin" style="margin-left: 220px;  margin-top: 50px; ">
+
+            <div class="row container mb-5">
+                <div class="col-md-7 col-12 p-3 m-auto" style="background-color: #193d5652;">
+                    <form id="addcoupon" class="p-5">
+                        <h2 class="text-center mb-3">Edit Coupon</h2>
+
+                        <div class="form-group mb-3">
+                            <label for="code">Coupon Code:</label>
+                            <input type="text" id="code" name="code" class="form-control"
+                                onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons.couponCode}}" required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="discount">Discount (%) :</label>
+                            <input type="number" id="discount" name="discount" class="form-control"
+                                onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons.disCount}}"  required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="expiration-date">Expiry Date:</label>
+                            <input type="date" id="expiration-date" name="expiryDate" class="form-control"
+                                onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons.expiryDate}}"  required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="max-amount">Max Discount Amount:</label>
+                            <input type="number" id="max-amount" name="maxDiscount" class="form-control"
+                                onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons.maxDiscountAmount}}"  required>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label for="min-amount">Min Order Amount:</label>
+                            <input type="number" id="min-amount" name="minAmount" class="form-control"
+                                onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons.minOrderAmount}}"  required>
+                        </div>
+
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-outline-dark b-radius">Submit</button>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+
+          
+    </section>
+    <section>
+
+    </section>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script>
+
+        $("#addcoupon").submit((e) => {
+            e.preventDefault()
+            $.ajax({
+                url: "/admin/addcoupon",
+                method: "post",
+                data: $('#addcoupon').serialize(),
+                success: (response) => {
+                    if (response) {
+                        swal("Coupon added!").then(() => {
+                            location.reload()
+                        })
+                    }
+                }
+            })
+        })
+    </script>

@@ -276,7 +276,6 @@ const changeOrderstatus = (data) => {
 }
 
 const addcoupon=(couponDetials)=>{
-    console.log("done");
         return new Promise(async(resolve,reject)=>{
             const newCoupon=new coupon({
                 couponCode:couponDetials.code,
@@ -292,7 +291,6 @@ const addcoupon=(couponDetials)=>{
 
 const listCoupon=async()=>{
     const coupons=await coupon.find({}).lean()
-    console.log(coupons);
     return coupons
 }
 
@@ -322,12 +320,10 @@ const getOrdersByMonth= () => {
                 $sort: { _id: 1 }
             }
         ])
-        console.log(orders,"ppppppp");
         let details = [];
         orders.forEach(element => {
             details.push(element.total)
         });
-        console.log(details,"detailsss");
         resolve(details)
     })
 }
@@ -341,7 +337,6 @@ const getAdminDashboard = async(req, res) => {
         { $group: { _id: null, total: { $sum: "$totalamount" } } }
     ])
     const monthdetails=await getOrdersByMonth()
-    console.log(monthdetails,"55555555");
     res.render('admin/admin_dashboard', { admin: req.session.adminloggedin ,userCount,productCount,orderCount,total,monthdetails})
 }
 
@@ -352,7 +347,6 @@ const adminLogout=(req,res)=>{
 
 const getUserlist=(req,res)=>{
     listUsers().then((response)=>{
-        console.log(response,"users");
         res.render("admin/admin_userlist",{usersData:response})
     })
 }
@@ -439,21 +433,35 @@ const adminChangeOrderStatus=(req,res)=>{
 
 const adminCouponMangement=async(req,res)=>{
     const coupons=await listCoupon()
-    console.log(coupons);
     res.render("admin/admin_addcoupon",{coupons})
 }
 
 const adminaddcoupon=async(req,res)=>{
-    console.log(req.body)
    await addcoupon(req.body)
    res.json({status:true})
 }
 
 const disableProduct=async(req,res)=>{
     const productId=req.body.proId
-    console.log(productId);
     await product.findOneAndUpdate({_id:productId},{$set:{status:"disabled"}})
     res.json({status:true})
+}
+const editProduct=async(req,res)=>{
+  
+    const proId=req.params.id
+   const products= await product.findOne({_id:proId}).lean()
+   const categories=await listCategory()
+   console.log(categories,"9999999");
+   console.log(products,"ppp");
+    res.render("admin/admin_editproduct",{products,categories})
+}
+
+const editCoupon=async(req,res)=>{
+    console.log(req.params.id,"kooooooooooooi");
+    const couponId=req.params.id
+    const coupons=await coupon.findOne({_id:couponId}).lean()
+    console.log(coupons,"pppppp");
+    res.render("admin/admin_editcoupon",{coupons})
 }
 
 
@@ -495,7 +503,9 @@ module.exports = {
     addcoupon,
     listCoupon,
     disableProduct,
-    getOrdersByMonth
+    getOrdersByMonth,
+    editProduct,
+    editCoupon
     
 
 }

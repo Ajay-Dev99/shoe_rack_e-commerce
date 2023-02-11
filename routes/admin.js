@@ -21,6 +21,8 @@ router.get("/listproducts",verifyLogin,admincontrol.listProducts)
 router.get("/orders",verifyLogin,admincontrol.adminListorders)
 router.get("/orderaction/:id",verifyLogin,admincontrol.adminOrderDetails)
 router.get("/addcoupon",verifyLogin,admincontrol.adminCouponMangement)
+router.get("/editproduct/:id",verifyLogin,admincontrol.editProduct)
+router.get("/editcoupon/:id",verifyLogin,admincontrol.editCoupon)
 
 
 router.post('/login',admincontrol.adminLogin)

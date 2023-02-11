@@ -12,6 +12,7 @@ const wishList = require("../models/wishlist")
 const sendmail = require('../config/nodemailer')
 require("dotenv").config()
 const coupon=require("../models/couponmodel")
+const category=require("../models/categoriesmodel")
 
 const instance = new Razorpay({
     key_id: process.env.RAZORPAY_KEY_ID,
@@ -440,8 +441,7 @@ const placeorder = (userId, order, cartproducts, total) => {
         let status = order['payment-method'] === "COD" ? "orderplaced" : "pending"
         const  monthInNo= new Date().getMonth()+1
         // const monthName = new Date(2023, monthInNo - 1).toLocaleString('default', { month: 'long' });
-          console.log(monthInNo,"pppppppppp");
-        //   console.log(monthName,"00000");
+      
         const newOrder = new Ordercollection({
             userid: userId,
             address: addressDetails.address[0],
@@ -811,11 +811,8 @@ const getwishListitems = (userId) => {
 }
 
 const removefromwishlist = (details) => {
-    console.log("done");
     const wishListId = new mongoose.Types.ObjectId(details.wishlistId)
-    console.log(wishListId);
     const productId = new mongoose.Types.ObjectId(details.productId)
-    console.log(productId);
     return new Promise(async (resolve, reject) => {
         await wishList.findOneAndUpdate({ _id: wishListId, products: { $elemMatch: { productId: productId } } }, {
             $pull: { products: { productId: productId } },
@@ -826,14 +823,10 @@ const removefromwishlist = (details) => {
 
 const listCoupon=async()=>{
     const coupons=await coupon.find({}).lean()
-    console.log(coupons);
     return coupons
 }
 
-const ApplyCoupon=async(code,userId)=>{
-    console.log(code);
-    
-}
+
 //......................................................................................................................................//
 
 
@@ -849,7 +842,7 @@ const getCartPage = async (req, res) => {
 }
 
 const getHomepage = async (req, res) => {
-    await admincontrol.listProduct().then((data) => {
+    await admincontrol.listProduct().then(async(data) => {
         const product = data
         const productdata = product.map((product) => {
             return {
@@ -859,9 +852,16 @@ const getHomepage = async (req, res) => {
                 image: product.imageurl[0].filename
             }
         })
-        console.log(new Date(),"hiiiiiiiii");
-
-        res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
+        const categories=await category.find({})
+        console.log(categories,"doneee");
+        const cagtegoryName=categories.map((category)=>{
+            return{
+                  _id:category._id,
+                  name:category.categoryname
+            }
+        })
+        console.log(cagtegoryName);
+        res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart,cagtegoryName })
     })
 }
 
@@ -896,7 +896,7 @@ const singleProductview = (req, res) => {
         const productdetails = response
         const cartExist = await productExistInCart(req.params.id, req.session.user._id)
         const wishlistExist = await productExistInWishlist(req.params.id, req.session.user._id)
-        console.log(wishlistExist);
+
         res.render("user/productview", { user: req.session.user, usercart: res.usercart, productdetails, cartExist, wishlistExist })
 
     })
@@ -911,7 +911,7 @@ const getCheckoutPage = async (req, res) => {
     const cartdata = await cart.findOne({userId:req.session.user._id})
     const couponSavings=cartdata.cuponsavings
     const allTotal=parseInt(totalAmount-couponSavings)
-    console.log(allTotal);
+
   
     res.render("user/checkout", { user: req.session.user, usercart: res.usercart, userproducts, totalAmount, useraddress ,couponSavings,allTotal})
 }
@@ -1108,7 +1108,6 @@ const getWishlist = async (req, res) => {
 
 const removeWishlistItem = async (req, res) => {
     const details = req.body
-    console.log(details);
     await removefromwishlist(details)
     res.json({ status: true })
 }
@@ -1119,10 +1118,7 @@ const getcoupons=async(req,res)=>{
 }
 
 const userApplyCoupon=async(req,res)=>{
-   
-    console.log(req.body.code);
     const couponcode=req.body.code
-   
     const date= new Date();
     const Coupon=await coupon.findOne({couponCode:couponcode})
     const totalAmount = await totalamount(req.session.user._id)   
@@ -1154,11 +1150,9 @@ const userApplyCoupon=async(req,res)=>{
 }
 
 const categoryFilter=async(req,res)=>{
-    console.log(req.body);
-    const categoryName=req.body.categoryname
-    console.log(categoryName,"pp");
+    const categoryName=req.params.id
+    console.log(categoryName);
     const products =await product.find({ productcategory:categoryName })
-    console.log(products);
     const productdata = products.map((product) => {
         return {
             _id: product._id,
@@ -1167,9 +1161,18 @@ const categoryFilter=async(req,res)=>{
             image: product.imageurl[0].filename
         }
     })
+        const categories=await category.find({})
+
+    const cagtegoryName=categories.map((category)=>{
+        return{
+              _id:category._id,
+              name:category.categoryname
+        }
+    })
     console.log(productdata,"iiiiiii");
-   
-    // res.render("user/home", { user: req.session.user, productdata})
+    res.render("user/categorywise", { user: req.session.user, productdata, usercart: res.usercart })
+    
+    
     
  
 
@@ -1239,7 +1242,6 @@ module.exports = {
     getcoupons,
     listCoupon,
     userApplyCoupon,
-    ApplyCoupon,
     categoryFilter
 }
 

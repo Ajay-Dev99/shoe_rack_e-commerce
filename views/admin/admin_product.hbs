@@ -7,15 +7,6 @@
     <section style="margin-left: 220px;  margin-top: 50px;">
       <div class="container">
         <div class="d-flex justify-content-end my-3">
-
-          {{!-- <nav class="navbar navbar-light">
-            <div class="container-fluid" style="z-index: 900px;">
-              <form class="d-flex">
-                <input class="form-control me-2 admin-search" type="search" placeholder="Search..." aria-label="Search">
-                <i class="fa fa-search searchicon"></i>
-              </form>
-            </div>
-          </nav> --}}
         </div>
         <div class="container">
           <table class="table table-bordered">
@@ -26,7 +17,7 @@
       <th scope="col">Category</th>
       <th scope="col">MRP</th>
       <th scope="col">SRP</th>
-      <th scope="col">Stock</th>
+
       <th scope="col">Images</th>
       <th scope="col">Description</th>
       <th scope="col">Manage</th>
@@ -40,7 +31,6 @@
       <td><b>{{this.productcategory}}</b></td>
       <td><b>  ₹{{this.productMRP}} </b></td>
       <td><b>₹{{this.productSRP}}</b> </td>
-      <td><b> {{this.productstock}}</b></td>
       <td>
         {{#each imageurl }}
         <div class="p-2">
@@ -51,7 +41,7 @@
       <td>{{this.productdescription}}</td>
       <td>
           <div class="d-flex">
-             <div> <a href="/admin/editcategory" class="btn"><i class="fa fa-edit text-primary" style="font-size: 25px;"><p class="text-dark "></p></i></a></div>
+             <div> <a href="/admin/editproduct/{{this._id}}" class="btn"><i class="fa fa-edit text-primary" style="font-size: 25px;"><p class="text-dark "></p></i></a></div>
               <div><a href="#" onclick="disableProduct('{{this._id}}')" class="btn"><i class="fa fa-ban text-danger" style="font-size: 25px;" aria-hidden="true"></i></a></div>
               </div>
       </td>

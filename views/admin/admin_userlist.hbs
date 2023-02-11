@@ -16,8 +16,8 @@
               <tr>
                 <th scope="col">User id</th>
                 <th scope="col">Name</th>
-                <th scope="col">Email</th>
                 <th scope="col">Phone</th>
+                <th scope="col">Email</th>
                 <th scope="col">Manage user</th>
               </tr>
             </thead>
@@ -30,9 +30,12 @@
                 {{/if}}
                 <th>{{this._id}}</th>
                 <td>{{this.name}}</td>
-                <td>{{this.email}}</td>
-             
+             {{#if this.address}}
                 <td>{{this.address.[0].phone}}</td>
+                {{else}}
+                <td class="text-danger text-center">Nill</td>
+                {{/if}}
+                <td>{{this.email}}</td>
                 <td>
                   {{#if this.blocked}}
                   <a href="/admin/unblockuser/{{this._id}}" class="btn btn-success">Unblock</a>

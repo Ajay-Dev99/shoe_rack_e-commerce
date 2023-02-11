@@ -24,6 +24,7 @@ router.get("/singleview/:id", verifyLogin, cartCount,usercontrol.getSingleView)
 router.get("/changepassword", verifyLogin,usercontrol.getChangePasswordPage)
 router.get("/wishlist",verifyLogin,cartCount,usercontrol.getWishlist)
 router.get("/usercoupons",verifyLogin,cartCount,usercontrol.getcoupons)
+router.get("/categoryfilter/:id",cartCount,usercontrol.categoryFilter)
 
   //Post Methods
 router.post("/signup-user", usercontrol.userSignUp)

@@ -64,19 +64,31 @@
                             <th scope="col">Expiry-Date</th>
                             <th scope="col">Max-Discountamonut</th>
                             <th scope="col">Min-Orderamonut</th>
+                            <th scope="col">Manage</th>
                         </tr>
                     </thead>
                     <tbody>
                         {{#each coupons}}
                         <tr class="text-center fs-5">
-
+                           
                             <td>{{this.couponCode}}</td>
                             <td>{{this.disCount}}</td>
                             <td>{{this.expiryDate}}</td>
                             <td>{{this.maxDiscountAmount}}</td>
                             <td>{{this.minOrderAmount}}</td>
+                            <td>
+                                <div class="d-flex">
+                                    <div> <a href="/admin/editcoupon/{{this._id}}" class="btn"><i
+                                                class="fa fa-edit text-primary" style="font-size: 25px;">
+                                                <p class="text-dark "></p>
+                                            </i></a></div>
+                                    <div><a href="#" class="btn"><i
+                                                class="fa fa-ban text-danger" style="font-size: 25px;"
+                                                aria-hidden="true"></i></a></div>
+                                </div>
+                            </td>
                         </tr>
-    {{/each}}
+                        {{/each}}
                     </tbody>
                 </table>
             </div>

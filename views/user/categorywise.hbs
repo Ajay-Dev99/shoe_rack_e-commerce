@@ -3,45 +3,6 @@
 <link rel="stylesheet" href="stylesheets/headerstyle.css">
 {{>userheader}}
 
-<div class="nav-container">
-  <nav class="all-category-nav">
-    <label class="open-menu-all" for="open-menu-all">
-      <input class="input-menu-all" id="open-menu-all" type="checkbox" name="menu-open" />
-      <span class="all-navigator"><i class="fas fa-bars"></i> <span>All category</span> <i
-          class="fas fa-angle-down"></i>
-        <i class="fas fa-angle-up"></i>
-      </span>
-
-      <ul class="all-category-list">
-
-
-        {{#each cagtegoryName}}
-        <li class="all-category-list-item"> <a href="/categoryfilter/{{this.name}}" class="dropdown-item btn my-2">
-            {{this.name}}<i class="fas fa-angle-right"></i></a></li>
-        {{/each}}
-
-
-
-      </ul>
-    </label>
-
-  </nav>
-  <nav class="featured-category">
-    <ul class="nav-row">
-      {{#each cagtegoryName}}
-      <li class="nav-row-list"><a href="/categoryfilter/{{this.name}}" class="nav-row-list-link">{{this.name}}</a></li>
-      {{/each}}
-
-
-    </ul>
-  </nav>
-</div>
-
-
-
-
-
-
 
 
 <div class="product-container">

@@ -16,8 +16,11 @@
           <input type="text" class="form-control" name="categoryname" aria-describedby="emailHelp" value="{{category.categoryname}}" required />
 
         </div>
+        <div>
+          <img src="/images/categoryimage/{{category.imageurl}}" alt="" style="height: 150px; width: 150px;">
+        </div>
         <div class="mb-3">
-          <label for="exampleInputPassword1" class="form-label">Add image</label>
+          <label for="exampleInputPassword1" class="form-label"></label>
           <input class="form-control" type="file" name="image" value="{{category.imageurl}}" required />
         </div>
         <div class="d-flex justify-content-center">
