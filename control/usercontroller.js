@@ -431,12 +431,17 @@ const userdetails = (userId) => {
 
 const placeorder = (userId, order, cartproducts, total) => {
     return new Promise(async (resolve, reject) => {
+
         const userid = new mongoose.Types.ObjectId(userId);
         const addressid = new mongoose.Types.ObjectId(order.address);
         const addressDetails = await user.findOne({ _id: userid }, { address: { $elemMatch: { _id: addressid } } }).lean();
         const products = cartproducts
         const totalAmount = total
         let status = order['payment-method'] === "COD" ? "orderplaced" : "pending"
+        const  monthInNo= new Date().getMonth()+1
+        // const monthName = new Date(2023, monthInNo - 1).toLocaleString('default', { month: 'long' });
+          console.log(monthInNo,"pppppppppp");
+        //   console.log(monthName,"00000");
         const newOrder = new Ordercollection({
             userid: userId,
             address: addressDetails.address[0],
@@ -444,8 +449,14 @@ const placeorder = (userId, order, cartproducts, total) => {
             orderitem: [],
             totalamount: totalAmount,
             status: status,
-            createdAt: new Date()
+            createdAt: new Date(),
+            monthinNO:monthInNo
+          
         });
+      
+        
+        
+
 
         for (let i = 0; i < products.length; i++) {
             const orderitem = {
@@ -848,6 +859,8 @@ const getHomepage = async (req, res) => {
                 image: product.imageurl[0].filename
             }
         })
+        console.log(new Date(),"hiiiiiiiii");
+
         res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart })
     })
 }
@@ -1204,7 +1217,7 @@ module.exports = {
     getAllOrderDetails,
     getSingleView,
     getChangePasswordPage,
-
+ 
     userSignUp,
     otpVerification,
     userLogin,

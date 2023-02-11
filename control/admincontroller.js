@@ -308,6 +308,31 @@ const getadminPage = (req, res) => {
     }
 }
 
+const getOrdersByMonth= () => {
+    return new Promise(async (resolve) => {
+        let orders = await Ordercollection.aggregate([
+       
+            {
+                $group: {
+                    _id: "$monthinNO",
+                    total: { $sum: '$totalamount' }
+                }
+            },
+            {
+                $sort: { _id: 1 }
+            }
+        ])
+        console.log(orders,"ppppppp");
+        let details = [];
+        orders.forEach(element => {
+            details.push(element.total)
+        });
+        console.log(details,"detailsss");
+        resolve(details)
+    })
+}
+
+
 const getAdminDashboard = async(req, res) => {
     const userCount=await user.countDocuments({})
     const productCount=await product.countDocuments({})
@@ -315,8 +340,9 @@ const getAdminDashboard = async(req, res) => {
     const total=await Ordercollection.aggregate([
         { $group: { _id: null, total: { $sum: "$totalamount" } } }
     ])
-    
-    res.render('admin/admin_dashboard', { admin: req.session.adminloggedin ,userCount,productCount,orderCount,total})
+    const monthdetails=await getOrdersByMonth()
+    console.log(monthdetails,"55555555");
+    res.render('admin/admin_dashboard', { admin: req.session.adminloggedin ,userCount,productCount,orderCount,total,monthdetails})
 }
 
 const adminLogout=(req,res)=>{
@@ -430,6 +456,7 @@ const disableProduct=async(req,res)=>{
     res.json({status:true})
 }
 
+
 module.exports = {
 
     doadminLogin,
@@ -467,7 +494,8 @@ module.exports = {
     adminaddcoupon,
     addcoupon,
     listCoupon,
-    disableProduct
+    disableProduct,
+    getOrdersByMonth
     
 
 }
