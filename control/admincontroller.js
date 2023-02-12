@@ -382,6 +382,7 @@ const adminEditCategory=async(req,res)=>{
 
 const listProducts=(req,res)=>{
     listProduct().then((response)=>{
+        console.log(response,"pppp");
      res.render("admin/admin_product",{response})
       })
 }
@@ -448,7 +449,7 @@ const adminaddcoupon=async(req,res)=>{
 
 const disableProduct=async(req,res)=>{
     const productId=req.body.proId
-    await product.findOneAndUpdate({_id:productId},{$set:{status:"disabled"}})
+    await product.findOneAndUpdate({_id:productId},{$set:{status:false}})
     res.json({status:true})
 }
 const editProduct=async(req,res)=>{
@@ -456,7 +457,6 @@ const editProduct=async(req,res)=>{
     const proId=req.params.id
    const products= await product.findOne({_id:proId}).lean()
    const categories=await listCategory()
-   console.log(categories,"9999999");
    console.log(products,"ppp");
     res.render("admin/admin_editproduct",{products,categories})
 }
@@ -476,6 +476,31 @@ const deleteCategory=async(req,res)=>{
     res.json({status:true})
 }
 
+const updateCoupon=async(req,res)=>{
+    console.log(req.body,"55555555555");
+    const couponId=req.body.couponId
+    await coupon.findOneAndUpdate({_id:couponId},{$set:{
+        couponCode:req.body.code,
+        disCount:req.body.discount,
+        expiryDate:req.body.expiryDate,
+        maxDiscountAmount:req.body.maxDiscount,
+        minOrderAmount:req.body.minAmount,
+    }})
+    .then(()=>{
+        res.json({status:true})
+    })
+}
+
+const deleteCoupon=async(req,res)=>{
+    console.log("hoi");
+    console.log(req.body);
+    const couponId=req.body.couponId
+    console.log(couponId,"ooooooo");
+    await coupon.deleteOne({_id:couponId}).then(()=>{
+        res.json({status:true})
+    })
+    
+}
 
 module.exports = {
 
@@ -518,7 +543,9 @@ module.exports = {
     getOrdersByMonth,
     editProduct,
     editCoupon,
-    deleteCategory
+    deleteCategory,
+    updateCoupon,
+    deleteCoupon
     
 
 }

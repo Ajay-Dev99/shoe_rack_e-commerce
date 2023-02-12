@@ -27,11 +27,13 @@ router.get("/editcoupon/:id",verifyLogin,admincontrol.editCoupon)
 
 router.post('/login',admincontrol.adminLogin)
 router.post("/addcategory",verifyLogin,categoryimgupload.single('image'),admincontrol.adminAddCategory)
-router.post("/add_product",categoryimgupload.array('image',4),admincontrol.adminAddProduct)
+router.post("/add_product",verifyLogin,categoryimgupload.array('image',4),admincontrol.adminAddProduct)
 router.post("/changeorderstatus",admincontrol.adminChangeOrderStatus)
 router.post("/addcoupon",verifyLogin,admincontrol.adminaddcoupon)
 router.post("/disableproduct",admincontrol.disableProduct)
 router.post("/deletecategory",verifyLogin,admincontrol.deleteCategory)
+router.post("/updatecoupon",verifyLogin,admincontrol.updateCoupon)
+router.post("/deletecoupon",verifyLogin,admincontrol.deleteCoupon)
 
 
 

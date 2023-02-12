@@ -83,7 +83,7 @@
                                             <div class="form-outline">
                                                 <label class="form-label" for="form3Example1m">Images of product</label>
 
-                                                <input class="form-control" type="file" name="image" multiple id="formFile" required>
+                                                <input class="form-control" type="file" name="image" multiple id="image" required>
                                             </div>
                                         </div>
 
@@ -121,3 +121,30 @@
         </div>
     </section>
 </section>
+
+<script>
+    const fileInput = document.getElementById("image");
+fileInput.addEventListener("change", validatePhoto);
+
+function validatePhoto() {
+  const file = fileInput.files[0];
+  const fileType = file.type;
+  const fileSize = file.size;
+  const allowedTypes = ["image/jpeg", "image/png", "image/gif"]; // add more allowed types if necessary
+
+  if (!allowedTypes.includes(fileType)) {
+    swal("Invalid file type. Please select an image file.");
+    fileInput.value = "";
+    return false;
+  }
+
+  if (fileSize > 5000000) {
+    swal("File size is too large. Please select a file smaller than 5MB.");
+    fileInput.value = "";
+    return false;
+  }
+
+  return true;
+}
+
+</script>

@@ -9,6 +9,49 @@
 
         <div class="vw-100 main px-5 pt-5 content-admin" style="margin-left: 220px;  margin-top: 50px; ">
 
+                        {{#if coupons}}
+            <div class="container table-responsive py-5">
+                <table class="table table-bordered table-hover">
+                    <thead class="thead-dark bg-dark">
+                        <tr class="text-white text-center">
+
+                            <th scope="col">Coupon Code</th>
+                            <th scope="col">Discount</th>
+                            <th scope="col">Expiry-Date</th>
+                            <th scope="col">Max-Discountamonut</th>
+                            <th scope="col">Min-Orderamonut</th>
+                            <th scope="col">Manage</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each coupons}}
+                        <tr class="text-center fs-5">
+                           
+                            <td>{{this.couponCode}}</td>
+                            <td>{{this.disCount}}</td>
+                            <td>{{this.expiryDate}}</td>
+                            <td>{{this.maxDiscountAmount}}</td>
+                            <td>{{this.minOrderAmount}}</td>
+                            <td>
+                                <div class="d-flex">
+                                    <div> <a href="/admin/editcoupon/{{this._id}}" class="btn"><i
+                                                class="fa fa-edit text-primary" style="font-size: 25px;">
+                                                <p class="text-dark "></p>
+                                            </i></a></div>
+                                    <div><a onclick="deleteCoupon('{{this._id}}')" class="btn"><i
+                                                class="fa fa-ban text-danger" style="font-size: 25px;"
+                                                aria-hidden="true"></i></a></div>
+                                </div>
+                            </td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            {{/if}}
+
+
+
             <div class="row container mb-5">
                 <div class="col-md-7 col-12 p-3 m-auto" style="background-color: #193d5652;">
                     <form id="addcoupon" class="p-5">
@@ -53,46 +96,7 @@
                 </div>
             </div>
 
-            {{#if coupons}}
-            <div class="container table-responsive py-5">
-                <table class="table table-bordered table-hover">
-                    <thead class="thead-dark bg-dark">
-                        <tr class="text-white text-center">
 
-                            <th scope="col">Coupon Code</th>
-                            <th scope="col">Discount</th>
-                            <th scope="col">Expiry-Date</th>
-                            <th scope="col">Max-Discountamonut</th>
-                            <th scope="col">Min-Orderamonut</th>
-                            <th scope="col">Manage</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{#each coupons}}
-                        <tr class="text-center fs-5">
-                           
-                            <td>{{this.couponCode}}</td>
-                            <td>{{this.disCount}}</td>
-                            <td>{{this.expiryDate}}</td>
-                            <td>{{this.maxDiscountAmount}}</td>
-                            <td>{{this.minOrderAmount}}</td>
-                            <td>
-                                <div class="d-flex">
-                                    <div> <a href="/admin/editcoupon/{{this._id}}" class="btn"><i
-                                                class="fa fa-edit text-primary" style="font-size: 25px;">
-                                                <p class="text-dark "></p>
-                                            </i></a></div>
-                                    <div><a href="#" class="btn"><i
-                                                class="fa fa-ban text-danger" style="font-size: 25px;"
-                                                aria-hidden="true"></i></a></div>
-                                </div>
-                            </td>
-                        </tr>
-                        {{/each}}
-                    </tbody>
-                </table>
-            </div>
-            {{/if}}
         </div>
 
     </section>
@@ -118,3 +122,41 @@
             })
         })
     </script>
+
+    <script>
+  function deleteCoupon(couponId){
+
+        swal({
+      title: "Are you sure?",
+      text: "This coupon will be deleted!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+      .then((willDelete) => {
+        if (willDelete) {
+    $.ajax({
+      url:"/admin/deletecoupon",
+      method:"post",
+      data:{
+        couponId:couponId
+      },
+      success:(response)=>{
+
+        if(response.status){
+          swal("Coupon deleted!").then(()=>{
+            location.reload()
+          })
+        }
+      }
+    })
+        } else {
+         
+        }
+      }).then(() => {
+      })
+  }
+
+
+  
+</script>

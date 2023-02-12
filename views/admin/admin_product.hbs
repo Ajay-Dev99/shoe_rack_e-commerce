@@ -25,9 +25,7 @@
   </thead>
   {{#each response}}
   <tbody class="bg-white">
-  {{#if (eq status "disabled")}}
-  hiiiiii
-  {{/if}}
+
     <tr id="product{{this._id}}">
     
       <td><b>{{this.productname}}</b></td>
@@ -72,7 +70,7 @@
         proId:productId
       },
       success:(response)=>{
-       document.getElementById("product"+productId).addClass("bg-danger")
+       {{!-- document.getElementById("product"+productId).addClass("bg-danger") --}}
         swal("Product disabled")
 
      

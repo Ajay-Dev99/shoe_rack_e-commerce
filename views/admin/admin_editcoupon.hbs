@@ -11,7 +11,7 @@
 
             <div class="row container mb-5">
                 <div class="col-md-7 col-12 p-3 m-auto" style="background-color: #193d5652;">
-                    <form id="addcoupon" class="p-5">
+                    <form id="editcoupon" class="p-5">
                         <h2 class="text-center mb-3">Edit Coupon</h2>
 
                         <div class="form-group mb-3">
@@ -24,6 +24,11 @@
                             <label for="discount">Discount (%) :</label>
                             <input type="number" id="discount" name="discount" class="form-control"
                                 onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons.disCount}}"  required>
+                        </div>
+                        <div class="form-group mb-3 d-none">
+                            <label for="discount">Discount (%) :</label>
+                            <input type="text"  name="couponId" class="form-control"
+                                onblur="javascript:value=value.replace(/\s/g,'');" value="{{coupons._id}}"  required>
                         </div>
 
                         <div class="form-group mb-3">
@@ -61,16 +66,16 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script>
 
-        $("#addcoupon").submit((e) => {
+        $("#editcoupon").submit((e) => {
             e.preventDefault()
             $.ajax({
-                url: "/admin/addcoupon",
+                url: "/admin/updatecoupon",
                 method: "post",
-                data: $('#addcoupon').serialize(),
+                data: $('#editcoupon').serialize(),
                 success: (response) => {
                     if (response) {
-                        swal("Coupon added!").then(() => {
-                            location.reload()
+                        swal("Coupon Updated!").then(() => {
+                            location.href="/admin/addcoupon"
                         })
                     }
                 }
