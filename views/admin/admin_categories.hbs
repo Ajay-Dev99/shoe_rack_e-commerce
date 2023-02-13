@@ -27,7 +27,8 @@
                 <div> <a href="/admin/editcategory/{{this._id}}" class="btn"><i class="fa fa-edit text-primary">
                       <p class="text-dark">edit</p>
                     </i></a></div>
-                <div><a href="#" onclick="deleteCategory('{{this._id}}')" class="btn"><i class="fa fa-trash text-danger">
+                <div><a href="#" onclick="deleteCategory('{{this._id}}')" class="btn"><i
+                      class="fa fa-trash text-danger">
                       <p class="text-dark">delete</p>
                     </i></a></div>
               </div>
@@ -106,7 +107,7 @@
     const image = $("#image")[0].files[0];
     const category = $("#category").val();
     formData.append("categoryname", category);
-    console.log("formData",formData)
+    console.log("formData", formData)
     formData.append("image", image);
 
     $.ajax({
@@ -131,9 +132,9 @@
 </script>
 
 <script>
-  function deleteCategory(categoryId){
+  function deleteCategory(categoryId) {
 
-        swal({
+    swal({
       title: "Are you sure?",
       text: "This category will be deleted!",
       icon: "warning",
@@ -142,28 +143,25 @@
     })
       .then((willDelete) => {
         if (willDelete) {
-    $.ajax({
-      url:"/admin/deletecategory",
-      method:"post",
-      data:{
-        categoryId:categoryId
-      },
-      success:(response)=>{
+          $.ajax({
+            url: "/admin/deletecategory",
+            method: "post",
+            data: {
+              categoryId: categoryId
+            },
+            success: (response) => {
 
-        if(response.status){
-          swal("Category deleted!").then(()=>{
-            location.reload()
+              if (response.status) {
+                swal("Category deleted!").then(() => {
+                  location.reload()
+                })
+              }
+            }
           })
-        }
-      }
-    })
         } else {
-         
+
         }
       }).then(() => {
       })
   }
-
-
-  
 </script>

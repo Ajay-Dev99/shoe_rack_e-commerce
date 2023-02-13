@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
   })
   
   //Upload Setting
-  const upload = multer({
+  const categoryimgupload = multer({
     storage: storage,
     fileFilter:(req, file, cb)=>{
      if(
@@ -29,4 +29,25 @@ const storage = multer.diskStorage({
     }
   })
 
-module.exports = upload;
+  const updateProduct=multer({
+    storage:storage,
+    fileFilter:(req, file, cb)=>{
+        if(
+            file.mimetype == 'image/jpeg' ||
+            file.mimetype == 'image/jpg' ||
+            file.mimetype == 'image/png' ||
+            file.mimetype == 'image/gif' ||
+            file.mimetype == 'image/webp'
+     
+        ){
+            cb(null, true)
+        }
+        else{
+            cb(null, false);
+            cb(new Error('Only jpeg,  jpg , png, and gif Image allow'))
+        }
+       }
+
+  })
+
+module.exports ={ categoryimgupload,updateProduct};

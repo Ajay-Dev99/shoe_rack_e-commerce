@@ -4,7 +4,7 @@
 {{>userheader}}
 
 
-
+{{#if productdata}}
 <div class="product-container">
   {{#each productdata}}
   <a href="/productview/{{this._id}}" class="text-decoration-none text-dark">
@@ -26,11 +26,42 @@
     </a>
 
   </div>
+
+    {{#if this.status}}
+  {{else}}
+  <p class="text-danger"> * This Product is currently not availble</p>
+  {{/if}}
 </div>
 
 {{/each}}
 </div>
+{{else}}
+<div class="container-fluid  mt-5">
+  <div class="row">
 
+    <div class="col-md-12">
+
+      <div class="card">
+      
+        <div class="card-body cart">
+          <div class="col-sm-12 empty-cart-cls text-center">
+            <img src="/images/categoryimage/productempty.jpg" width="300" height="300" class="img-fluid mb-4 mr-3">
+            <h3><strong>Products will arrive soon</strong></h3>
+            {{!-- <h4>Add something to make me happy :)</h4> --}}
+            <a href="/" class="btn btn-primary cart-btn-transform m-3" data-abc="true">continue shopping</a>
+
+
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+
+</div>
+{{/if}}
 {{>userfooter}}
 
 

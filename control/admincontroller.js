@@ -115,7 +115,6 @@ const addCategory = (categoryDetails, img) => {
 //editcategory
 
 const editCategory = (catergoryId) => {
-
     return new Promise((resolve, reject) => {
         const category = categorycollection.findOne({ _id: catergoryId }).lean()
         resolve(category)
@@ -148,7 +147,6 @@ const addproduct = (productDetails, img) => {
                 productcategory: productDetails.productcategory,
                 productMRP: productDetails.productMRP,
                 productSRP: productDetails.productSRP,
-                productstock: productDetails.productstock,
                 imageurl: img,
                 productdescription: productDetails.productdescription
             })
@@ -382,7 +380,6 @@ const adminEditCategory=async(req,res)=>{
 
 const listProducts=(req,res)=>{
     listProduct().then((response)=>{
-        console.log(response,"pppp");
      res.render("admin/admin_product",{response})
       })
 }
@@ -415,20 +412,15 @@ const adminLogin=(req,res)=>{
 }
 
 const adminAddCategory=(req,res)=>{
-    console.log("hiiii");
-    console.log(req.body,"00000000000000");
-    console.log(req.file,"kkkkkkkkkkkkkkk");
+
     addCategory(req.body,req.file).then((data)=>{ 
-        console.log("hvhgkhjgkgk");
         res.json({status:true})
       })
 }
 
 const adminAddProduct=async(req,res)=>{
-    console.log(res.erromessage,">>>>>>>>>>>>>>>>>");
-    console.log(req.files,"<<<<<<<<<<<<<<");
   await addproduct(req.body,req.files).then((data)=>{  
-    res.redirect("/admin/addproduct")
+    res.redirect("/admin/listproducts")
   })
 }
 
@@ -452,32 +444,34 @@ const disableProduct=async(req,res)=>{
     await product.findOneAndUpdate({_id:productId},{$set:{status:false}})
     res.json({status:true})
 }
+
+const enableProduct=async(req,res)=>{
+    const productId=req.body.proId
+    await product.findOneAndUpdate({_id:productId},{$set:{status:true}})
+    res.json({status:true})
+}
+
 const editProduct=async(req,res)=>{
   
     const proId=req.params.id
    const products= await product.findOne({_id:proId}).lean()
    const categories=await listCategory()
-   console.log(products,"ppp");
     res.render("admin/admin_editproduct",{products,categories})
 }
 
 const editCoupon=async(req,res)=>{
-    console.log(req.params.id,"kooooooooooooi");
     const couponId=req.params.id
     const coupons=await coupon.findOne({_id:couponId}).lean()
-    console.log(coupons,"pppppp");
     res.render("admin/admin_editcoupon",{coupons})
 }
 
 const deleteCategory=async(req,res)=>{
     const categoryId=req.body.categoryId
-    console.log(categoryId,"--------");
     await categorycollection.deleteOne({_id:categoryId})
     res.json({status:true})
 }
 
 const updateCoupon=async(req,res)=>{
-    console.log(req.body,"55555555555");
     const couponId=req.body.couponId
     await coupon.findOneAndUpdate({_id:couponId},{$set:{
         couponCode:req.body.code,
@@ -492,14 +486,89 @@ const updateCoupon=async(req,res)=>{
 }
 
 const deleteCoupon=async(req,res)=>{
-    console.log("hoi");
-    console.log(req.body);
     const couponId=req.body.couponId
-    console.log(couponId,"ooooooo");
     await coupon.deleteOne({_id:couponId}).then(()=>{
         res.json({status:true})
     })
     
+}
+
+const updateCategory=async(req,res)=>{
+    const categoryId=req.body.categoryid
+    if(req.file){
+        await categorycollection.findOneAndUpdate({_id:categoryId},{$set:{
+            categoryname: req.body.categoryname,
+            imageurl: req.file.filename
+        }}).then(()=>{
+            res.redirect("/admin/categories")
+        })
+    }else{
+        await categorycollection.findOneAndUpdate({_id:categoryId},{$set:{
+            categoryname: req.body.categoryname,
+          
+        }}).then(()=>{
+            res.redirect("/admin/categories")
+        }) 
+    }
+
+}
+
+const updateProduct=async(req,res)=>{
+
+    const productId=req.body.productid
+    const products=await product.findOne({_id:productId})
+  
+
+    const images=[];
+    
+    if(req.files){
+        if(!req.files.image0){
+            images.push(products.imageurl[0])
+        }else{
+            images.push(req.files.image0[0])
+        }
+        if(!req.files.image1){
+            images.push(products.imageurl[1])
+        }else{
+            images.push(req.files.image1[0])
+
+        }
+        if(!req.files.image2){
+            images.push(products.imageurl[2])
+        }else{
+            images.push(req.files.image2[0])
+
+        }
+        if(!req.files.image3){
+            images.push(products.imageurl[3])
+        }else{
+            images.push(req.files.image3[0])
+
+        }
+
+        await product.findOneAndUpdate({_id:productId},{$set:{
+                imageurl:images
+        }})
+
+
+    }
+    
+    
+    if(req.body.image){
+
+    }else{
+        await product.findOneAndUpdate({_id:productId},{$set:{
+            productname:req.body.productname,
+            productcategory:req.body.productcategory,
+            productMRP:req.body.productMRP,
+            productSRP:req.body.productSRP,
+            productdescription:req.body.productdescription,
+        }}).then(()=>{
+            res.redirect("/admin/listproducts")
+        })
+       
+    }
+
 }
 
 module.exports = {
@@ -540,12 +609,15 @@ module.exports = {
     addcoupon,
     listCoupon,
     disableProduct,
+    enableProduct,
     getOrdersByMonth,
     editProduct,
     editCoupon,
     deleteCategory,
     updateCoupon,
-    deleteCoupon
+    deleteCoupon,
+    updateCategory,
+    updateProduct
     
 
 }

@@ -652,12 +652,19 @@ const changeStatus = (orderId) => {
 //Edit user details
 
 const editUserdetails = (userId, userdata) => {
+    console.log(userdata,"oooo");
     return new Promise((resolve, reject) => {
 
         user.findOneAndUpdate({ _id: userId }, {
             $set: {
                 name: userdata.name,
                 email: userdata.email,
+                address:[{
+                    house:userdata.house,
+                    city:userdata.city,
+                    postal:userdata.postal,
+                    phone:userdata.phone
+            }]
             }
         }).then((data) => {
             resolve(data)
@@ -849,18 +856,17 @@ const getHomepage = async (req, res) => {
                 _id: product._id,
                 name: product.productname,
                 price: product.productSRP,
+                status:product.status,
                 image: product.imageurl[0].filename
             }
         })
         const categories=await category.find({})
-        console.log(categories,"doneee");
         const cagtegoryName=categories.map((category)=>{
             return{
                   _id:category._id,
                   name:category.categoryname
             }
         })
-        console.log(cagtegoryName);
         res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart,cagtegoryName })
     })
 }
@@ -920,8 +926,11 @@ const addAnotherAddress = (req, res) => {
     res.render("user/address", { user: req.session.user, usercart: res.usercart })
 }
 
-const getUserProfile = (req, res) => {
-    res.render("user/userprofile", { user: req.session.user, usercart: res.usercart })
+const getUserProfile = async(req, res) => {
+    const userdata=await user.findOne({_id:req.session.user._id}).lean()
+    console.log(userdata,"888888888");
+    
+    res.render("user/userprofile", { userdata, usercart: res.usercart })
 }
 
 const displayOrderSuccessPage = async (req, res) => {
@@ -1151,11 +1160,11 @@ const userApplyCoupon=async(req,res)=>{
 
 const categoryFilter=async(req,res)=>{
     const categoryName=req.params.id
-    console.log(categoryName);
     const products =await product.find({ productcategory:categoryName })
     const productdata = products.map((product) => {
         return {
             _id: product._id,
+            status:product.status,
             name: product.productname,
             price: product.productSRP,
             image: product.imageurl[0].filename
@@ -1169,7 +1178,6 @@ const categoryFilter=async(req,res)=>{
               name:category.categoryname
         }
     })
-    console.log(productdata,"iiiiiii");
     res.render("user/categorywise", { user: req.session.user, productdata, usercart: res.usercart })
     
     

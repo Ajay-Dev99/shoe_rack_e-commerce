@@ -13,7 +13,7 @@
                             <div class="col-xl-6">
                                 <div class="card-body p-md-5 text-black">
                                     <h3 class="mb-4 text-uppercase"><u> Edit Product </u></h3>
-                                    <form action="/admin/add_product" method="post" enctype="multipart/form-data">
+                                    <form action="/admin/updateproduct" method="post" enctype="multipart/form-data">
                                         <div class="row">
                                             <div class="col-md-12 mb-4">
                                                 <div class="form-outline">
@@ -23,6 +23,14 @@
                                                         value="{{products.productname}}" required />
                                                 </div>
                                             </div>
+                                            <div class="col-md-12 mb-4 d-none">
+                                                <div class="form-outline">
+                                                    <label class="form-label" for="form3Example1m">Product id</label>
+                                                    <input type="text" id="form3Example1m" name="productid"
+                                                        class="form-control form-control-lg" value="{{products._id}}"
+                                                        required />
+                                                </div>
+                                            </div>
                                         </div>
                                         <div class="form-outline mb-4">
                                             <label class="form-label" for="form3Example8">Product category</label>
@@ -30,12 +38,14 @@
                                                 <div class="col-md-12">
 
                                                     <select class="select p-2" name="productcategory"
-                                                        style="width: 100%;" required>
-                                                        <option value="">{{products.productcategory}} </option>
+                                                        style="width: 100%;">
+                                                        <option value="{{products.productcategory}}">
+                                                            {{products.productcategory}} </option>
 
-                                                                                                           {{#each categories}}
-                                                    <option value="{{this.categoryname}}">{{this.categoryname}}</option>
-                                                    {{/each}}
+                                                        {{#each categories}}
+                                                        <option value="{{this.categoryname}}">{{this.categoryname}}
+                                                        </option>
+                                                        {{/each}}
                                                         </option>
 
                                                     </select>
@@ -77,18 +87,22 @@
                                                 <div class="form-outline">
                                                     <label class="form-label" for="form3Example1m">Images of
                                                         product</label>
-                                                    <div class="d-flex justify-content-between mb-3">
-                                                     {{#each products.imageurl}}
-                                                    <div class="border">
-                                                    <img src="/images/categoryimage/{{filename}}" alt="" style="height: 120px;width: 120px;" >
+                                                    <div class="d-flex justify-content-between flex-column  mb-3">
+                                                        {{#each products.imageurl}}
+                                                        <div class="border my-2">
+                                                            <img src="/images/categoryimage/{{filename}}" alt=""
+                                                                style="height: 120px;width: 120px;">
+                                                        </div>
+                                                        <input class="form-control" type="file" name="image{{@index}}" multiple
+                                                            id="image">
+                                                        {{/each}}
+
                                                     </div>
-                                                      {{/each}}
-                                                      </div>
-                                                    <input class="form-control" type="file" name="image" multiple
-                                                        id="formFile" required>
+
                                                 </div>
                                             </div>
                                         </div>
+
                                         <div class="row">
                                             <div class="col-md-12 mb-4">
                                                 <div class="form-outline">
@@ -118,3 +132,30 @@
         </div>
     </section>
 </section>
+
+<script>
+    const fileInput = document.getElementById("image");
+    fileInput.addEventListener("change", validatePhoto);
+
+    function validatePhoto() {
+        const file = fileInput.files[0];
+        const fileType = file.type;
+        const fileSize = file.size;
+        const allowedTypes = ["image/jpeg", "image/png", "image/gif"]; // add more allowed types if necessary
+
+        if (!allowedTypes.includes(fileType)) {
+            swal("Invalid file type. Please select an image file.");
+            fileInput.value = "";
+            return false;
+        }
+
+        if (fileSize > 5000000) {
+            swal("File size is too large. Please select a file smaller than 5MB.");
+            fileInput.value = "";
+            return false;
+        }
+
+        return true;
+    }
+
+</script>

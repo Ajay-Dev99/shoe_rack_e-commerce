@@ -3,82 +3,171 @@
 <main class="mb-3 d-flex justify-content-center p-4" style="width: 100%;">
     <section class="checkout-form">
         <div class="d-flex justify-content-end mb-5">
-    <a href="/checkout"><i class="fa fa-arrow-left me-1"></i><u>Checkout</u></a>
-    </div>
-    <form action="/checkoutform" method="post">
-        <h6>Contact information</h6>
-        <div class="form-control">
-            <label for="checkout-email">E-mail</label>
-            <div>
-                <span class="fa fa-envelope"></span>
-                <input type="email" id="checkout-email" name="email" placeholder="Enter your email..." required>
-            </div>
+            <a href="/checkout"><i class="fa fa-arrow-left me-1"></i><u>Checkout</u></a>
         </div>
-        <div class="form-control">
-            <label for="checkout-phone">Phone</label>
-            <div>
-                <span class="fa fa-phone"></span>
-                <input type="tel" name="phone" id="checkout-phone" placeholder="Enter you phone..." required>
-            </div>
-        </div>
-        <br>
-        <h6>Shipping address</h6>
-        <div class="form-control">
-            <label for="checkout-name">Full name</label>
-            <div>
-                <span class="fa fa-user-circle"></span>
-                <input type="text" id="checkout-name" name="name" placeholder="Enter you name..." required>
-            </div>
-        </div>
-        <div class="form-control">
-            <label for="checkout-address">Address</label>
-            <div>
-                <span class="fa fa-home"></span>
-                <input type="text" name="address" id="checkout-address" placeholder="Your address..." required>
-            </div>
-        </div>
-        <div class="form-control">
-            <label for="checkout-city">City</label>
-            <div>
-                <span class="fa fa-building"></span>
-                <input type="text" name="city" id="checkout-city" placeholder="Your city..." required>
-            </div>
-        </div>
-        <div class="form-group">
+        <form action="/checkoutform" id="address" method="post">
+            <h6>Contact information</h6>
             <div class="form-control">
-                <label for="checkout-country">Country</label>
+                <small>
+                    <p id="mail" style="display: none;" class="text-danger"></p>
+                </small>
+                <label for="checkout-email">E-mail</label>
                 <div>
-                    <span class="fa fa-globe"></span>
-                    <input type="text" name="country" id="checkout-country" placeholder="Your country..."
-                        list="country-list" required>
-                    {{!-- <datalist id="country-list">
-                        <option value="India"></option>
-                        <option value="USA"></option>
-                        <option value="Russia"></option>
-                        <option value="Japan"></option>
-                        <option value="Egypt"></option>
-                    </datalist> --}}
+                    <span class="fa fa-envelope"></span>
+                    <input type="email" id="checkout-email" name="email" placeholder="Enter your email...">
                 </div>
             </div>
             <div class="form-control">
-                <label for="checkout-postal">Postal code</label>
+                <small>
+                    <p id="phone" style="display: none;" class="text-danger"></p>
+                </small>
+                <label for="checkout-phone">Phone</label>
                 <div>
-                    <span class="fa fa-archive"></span>
-                    <input type="numeric" name="postal" id="checkout-postal" placeholder="Your postal code..." required>
+                    <span class="fa fa-phone"></span>
+                    <input type="tel" name="phone" id="checkout-phone" placeholder="Enter you phone...">
                 </div>
             </div>
-        </div>
+            <br>
+            <h6>Shipping address</h6>
+            <div class="form-control">
+                <small>
+                    <p id="name" style="display: none;" class="text-danger"></p>
+                </small>
+                <label for="checkout-name">Full name</label>
+                <div>
+                    <span class="fa fa-user-circle"></span>
+                    <input type="text" id="checkout-name" name="name" placeholder="Enter you name...">
+                </div>
+            </div>
+            <div class="form-control">
+                <small>
+                    <p id="address" style="display: none;" class="text-danger"></p>
+                </small>
+                <label for="checkout-address">Address</label>
+                <div>
+                    <span class="fa fa-home"></span>
+                    <input type="text" name="address" id="checkout-address" placeholder="Your address...">
+                </div>
+            </div>
+            <div class="form-control">
+                <small>
+                    <p id="city" style="display: none;" class="text-danger"></p>
+                </small>
+                <label for="checkout-city">City</label>
+                <div>
+                    <span class="fa fa-building"></span>
+                    <input type="text" name="city" id="checkout-city" placeholder="Your city...">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="form-control">
+                    <small>
+                        <p id="country" style="display: none;" class="text-danger"></p>
+                    </small>
+                    <label for="checkout-country">Country</label>
+                    <div>
+                        <span class="fa fa-globe"></span>
+                        <input type="text" name="country" id="checkout-country" placeholder="Your country..."
+                            list="country-list">
+                        {{!-- <datalist id="country-list">
+                            <option value="India"></option>
+                            <option value="USA"></option>
+                            <option value="Russia"></option>
+                            <option value="Japan"></option>
+                            <option value="Egypt"></option>
+                        </datalist> --}}
+                    </div>
+                </div>
+                <div class="form-control">
+                    <small>
+                        <p id="postal" style="display: none;" class="text-danger"></p>
+                    </small>
+                    <label for="checkout-postal">Postal code</label>
+                    <div>
+                        <span class="fa fa-archive"></span>
+                        <input type="numeric" name="postal" id="checkout-postal" placeholder="Your postal code...">
+                    </div>
+                </div>
+            </div>
 
-        <div class="form-control-btn my-3">
-            <button type="submit" class=" w-100">Submit</button>
-        </div>
-    </form>
+            <div class="form-control-btn my-3">
+                <button type="submit" class=" w-100">Submit</button>
+            </div>
+        </form>
 
-</section>
+    </section>
 </main>
 {{>userfooter}}
 <style>
-	body{
-		width: 100%;
-	}
+    body {
+        width: 100%;
+    }
 </style>
+
+
+<script>
+    const form = document.getElementById("address")
+    form.addEventListener("submit", validateForm)
+    function validateForm(e) {
+         e.preventDefault();
+        
+
+       
+        const email = document.getElementById("checkout-email").value
+        const phone = document.getElementById("checkout-phone").value
+        const name = document.getElementById("checkout-name").value
+        const address = document.getElementById("checkout-address").value
+        const city = document.getElementById("checkout-city").value
+        const country = document.getElementById("checkout-country").value
+        const postal = document.getElementById("checkout-postal").value
+
+        const emailRegax = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+        if (!emailRegax.test(email)) {
+            document.getElementById("mail").innerText = "invalid email address"
+            document.getElementById("mail").style.display = "block"
+                 return false
+        }
+        if (email === "") {
+            document.getElementById("mail").innerText = "* email address required"
+            document.getElementById("mail").style.display = "block"
+                 return false
+        }
+        if (phone === "") {
+            document.getElementById("phone").innerText = "* Phone Number required"
+            document.getElementById("phone").style.display = "block"
+                 return false
+        }
+        if (isNaN(phone)){
+                        document.getElementById("phone").innerText = "* Enter a valid phone number"
+            document.getElementById("phone").style.display = "block"
+                 return false
+        }
+        if (name === "") {
+            document.getElementById("name").innerText = "* required"
+            document.getElementById("name").style.display = "block"
+                 return false
+        }
+        {{!-- if (address === "") {
+            document.getElementById("address").innerText = "* address required"
+            document.getElementById("address").style.display = "block"
+                 return false
+        } --}}
+        if (city === "") {
+            document.getElementById("city").innerText = "*city required"
+            document.getElementById("city").style.display = "block"
+                 return false
+        }
+        if (country === "") {
+            document.getElementById("country").innerText = "*country required"
+            document.getElementById("country").style.display = "block"
+                 return false
+        }
+        if (postal === "") {
+            document.getElementById("postal").innerText = "*postal required"
+            document.getElementById("postal").style.display = "block"
+                 return false
+        }
+
+       form.submit()
+    }
+</script>

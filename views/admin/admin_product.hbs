@@ -10,47 +10,64 @@
         </div>
         <div class="container">
           <table class="table table-bordered">
-  <thead class="text-white bg-dark">
-    <tr>
-      {{!-- <th scope="col">Product id</th> --}}
-      <th scope="col">Product name</th>
-      <th scope="col">Category</th>
-      <th scope="col">MRP</th>
-      <th scope="col">SRP</th>
+            <thead class="text-white bg-dark">
+              <tr>
+                {{!-- <th scope="col">Product id</th> --}}
+                <th scope="col">Product name</th>
+                <th scope="col">Category</th>
+                <th scope="col">MRP</th>
+                <th scope="col">SRP</th>
 
-      <th scope="col">Images</th>
-      <th scope="col">Description</th>
-      <th scope="col">Manage</th>
-    </tr>
-  </thead>
-  {{#each response}}
-  <tbody class="bg-white">
+                <th scope="col">Images</th>
+                <th scope="col">Description</th>
+                <th scope="col">Manage</th>
+              </tr>
+            </thead>
+            {{#each response}}
+            <tbody class="bg-white">
 
-    <tr id="product{{this._id}}">
-    
-      <td><b>{{this.productname}}</b></td>
-      <td><b>{{this.productcategory}}</b></td>
-      <td><b>  ₹{{this.productMRP}} </b></td>
-      <td><b>₹{{this.productSRP}}</b> </td>
-      <td>
-        {{#each imageurl }}
-        <div class="p-2">
-        <img src="/images/categoryimage/{{filename}}" alt="" height="50px" width="50px">
-        </div>
-        {{/each}}
-        </td>
-      <td>{{this.productdescription}}</td>
-      <td>
-          <div class="d-flex">
-             <div> <a href="/admin/editproduct/{{this._id}}" class="btn"><i class="fa fa-edit text-primary" style="font-size: 25px;"><p class="text-dark "></p></i></a></div>
-              <div><a href="#" onclick="disableProduct('{{this._id}}')" class="btn"><i class="fa fa-ban text-danger" style="font-size: 25px;" aria-hidden="true"></i></a></div>
-              </div>
-      </td>
-    </tr>
-    
-  </tbody>
-  {{/each}}
-</table>
+
+              {{#if this.status}}
+              <tr id="product{{this._id}}" class="p-3">
+                {{else}}
+              <tr id="product{{this._id}}" class="table-danger p-5">
+                {{/if}}
+                <td><b>{{this.productname}}</b></td>
+                <td><b>{{this.productcategory}}</b></td>
+                <td><b> ₹{{this.productMRP}} </b></td>
+                <td><b>₹{{this.productSRP}}</b> </td>
+                <td>
+                  
+                  {{#each imageurl }}
+                  {{#if @first}}
+                  <div class="p-2">
+                    <img src="/images/categoryimage/{{filename}}" alt="" height="100px" width="100px">
+                  </div>
+                  {{/if}}
+                  {{/each}}
+                </td>
+                <td>{{this.productdescription}}</td>
+                <td>
+                  <div class="d-flex">
+                    <div> <a href="/admin/editproduct/{{this._id}}" class="btn"><i class="fa fa-edit text-primary"
+                          style="font-size: 25px;">
+                          <p class="text-dark "></p>
+                        </i></a></div>
+                    {{#if this.status}}
+                    <div><a href="#" onclick="disableProduct('{{this._id}}')" class="btn"><i
+                          class="fa fa-ban text-danger" style="font-size: 25px;" aria-hidden="true"></i></a></div>
+                    {{else}}
+                    <div><a href="#" onclick="enableProduct('{{this._id}}')" class="btn"><i
+                          class="fa fa-toggle-off text-success" style="font-size: 25px;" aria-hidden="true"></i></a>
+                    </div>
+                    {{/if}}
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+            {{/each}}
+          </table>
         </div>
       </div>
     </section>
@@ -58,22 +75,68 @@
 </section>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
 <script>
-  function disableProduct(productId){
-    alert(productId)
-    $.ajax({
-      url:"/admin/disableproduct",
-      method:"post",
-      data:{
-        proId:productId
-      },
-      success:(response)=>{
-       {{!-- document.getElementById("product"+productId).addClass("bg-danger") --}}
-        swal("Product disabled")
+  function disableProduct(productId) {
 
-     
+    swal({
+      title: "Are you sure?",
+      text: "This product will be disabled!",
+      icon: "warning",
+      buttons: true,
+      dangerMode: true,
+    })
+      .then((willDelete) => {
+        if (willDelete) {
+
+          $.ajax({
+            url: "/admin/disableproduct",
+            method: "post",
+            data: {
+              proId: productId
+            },
+            success: (response) => {
+
+              swal("Product disabled").then(() => {
+                location.reload()
+              })
+
+
+            }
+          })
+
+        } else {
+
+        }
+      }).then(() => {
+      })
+
+
+
+
+
+
+  }
+</script>
+
+
+<script>
+  function enableProduct(productId) {
+
+    $.ajax({
+      url: "/admin/enableProduct",
+      method: "post",
+      data: {
+        proId: productId
+      },
+      success: (response) => {
+
+        swal("Product enabled").then(() => {
+          location.reload()
+        })
+
+
       }
     })
 

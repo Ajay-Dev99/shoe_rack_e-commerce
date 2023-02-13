@@ -12,24 +12,24 @@
                 border=".5px">
                 <thead>
                     <tr style="background:#efefef">
-                        <th scope="col" width="30%" style="text-align:left;border:1px solid #eee">Product</th>
-                        <th scope="col" width="20%" style="text-align:right;border:1px solid #eee">images</th>
-                        <th scope="col" width="15%" style="text-align:right;border:1px solid #eee">Quantity</th>
-                        <th scope="col" width="20%" style="text-align:right;border:1px solid #eee">price</th>
-                        <th scope="col" width="20%" style="text-align:right;border:1px solid #eee">Ordered At</th>
-                        <th scope="col" width="20%" style="text-align:right;border:1px solid #eee"></th>
+                        <th scope="col" width="30%" style="text-align:center;border:1px solid #eee">Product</th>
+                        <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">images</th>
+                        <th scope="col" width="15%" style="text-align:center;border:1px solid #eee">Quantity</th>
+                        <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">price</th>
+                        <th scope="col" width="20%" style="text-align:center;border:1px solid #eee">Ordered At</th>
+                        <th scope="col" width="20%" style="text-align:center;border:1px solid #eee"></th>
                     </tr>
                 </thead>
                 <tbody class="orderdetails">
 
                     {{#each orderdetails}}
-                    <tr width="100%">
+                    <tr width="100%" >
                         <td width="30%"
-                            style="text-align:left;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0;word-wrap:break-word">
+                            style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0;word-wrap:break-word">
                             {{orderedproducts.productname}}
                         </td>
                         <td width="15%"
-                            style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0">
+                            style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:0;border-top:0">
 
                             {{#each orderedproducts.imageurl}}
                             {{#if @first}}
@@ -38,20 +38,20 @@
                             {{/each}}
                         </td>
                         <td width="20%"
-                            style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                            style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
                             {{this.Productquantity}}
                             <span></span>
                         </td>
                         <td width="20%"
-                            style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                            style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
                             <span>Rs.{{this.producttotal}}</span>
                         </td>
                         <td width="20%"
-                            style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                            style="text-align:center;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
                             <span>{{this.OrdercreatedAt}}</span>
                         </td>
-                        <td width="20%"
-                            style="text-align:right;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
+                        <td width="20%" class="p-5"
+                            style="text-align:ricenterght;vertical-align:middle;border-left:1px solid #eee;border-bottom:1px solid #eee;border-right:1px solid #eee;border-top:0">
                             <a href="/singleview/{{this._id}}"><span>more...</span></a>
                         </td>
 

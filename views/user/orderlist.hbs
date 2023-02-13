@@ -21,8 +21,13 @@
                     <h5>MRP:{{productprice}}</h5>
                     <h5>Total:{{producttotal}}</h5>
                     <h5>Order placed at:{{ OrdercreatedAt}} </h5>
-                    <div class=""><i class="fa fa-check main-content__checkmark text-success" id="checkmark"></i>
+                    {{#if ../delivered}}
+                    <div class="">
+                       <span class="text-danger"> {{status}}</span></div>
+                         {{else}}
+                          <div class=""><i class="fa fa-check main-content__checkmark text-success" id="checkmark"></i>
                         {{status}}</div>
+                          {{/if}}
                 </div>
             </div>
         </div>

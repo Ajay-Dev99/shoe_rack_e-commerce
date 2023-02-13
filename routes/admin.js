@@ -2,7 +2,8 @@ const express = require('express');
 const { response } = require('../app');
 const router = express.Router();
 const admincontrol = require("../control/admincontroller")
-const categoryimgupload= require("../utilities/imageUpload")
+const {categoryimgupload,updateProduct}= require("../utilities/imageUpload")
+
 const multer = require('multer');
 const { compareSync } = require('bcrypt');
 const verifyLogin=require("../middlewares/adminMiddlewares")
@@ -30,11 +31,13 @@ router.post("/addcategory",verifyLogin,categoryimgupload.single('image'),adminco
 router.post("/add_product",verifyLogin,categoryimgupload.array('image',4),admincontrol.adminAddProduct)
 router.post("/changeorderstatus",admincontrol.adminChangeOrderStatus)
 router.post("/addcoupon",verifyLogin,admincontrol.adminaddcoupon)
-router.post("/disableproduct",admincontrol.disableProduct)
+router.post("/disableproduct",verifyLogin,admincontrol.disableProduct)
+router.post("/enableProduct",verifyLogin,admincontrol.enableProduct)
 router.post("/deletecategory",verifyLogin,admincontrol.deleteCategory)
 router.post("/updatecoupon",verifyLogin,admincontrol.updateCoupon)
 router.post("/deletecoupon",verifyLogin,admincontrol.deleteCoupon)
-
+router.post("/updatecategory",verifyLogin,categoryimgupload.single('image'),admincontrol.updateCategory)
+router.post("/updateproduct",verifyLogin,updateProduct.fields([{name:"image0",maxCount:1},{name:"image1",maxCount:1},{name:"image2",maxCount:1},{name:"image3",maxCount:1}]),admincontrol.updateProduct)
 
 
 

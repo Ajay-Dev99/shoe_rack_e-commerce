@@ -21,9 +21,9 @@
               <div class="card-body text-center">
                 <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp" alt="avatar"
                   class="rounded-circle img-fluid" style="width: 150px;">
-                <h5 class="my-3">{{user.name}}</h5>
-                <p class="text-muted mb-1">{{user.email}}</p>
-                <p class="text-muted mb-4">{{user.address.[0].phone}}</p>
+                <h5 class="my-3">{{userdata.name}}</h5>
+                <p class="text-muted mb-1">{{userdata.email}}</p>
+                <p class="text-muted mb-4">{{userdata.address.[0].phone}}</p>
 
               </div>
             </div>
@@ -45,7 +45,7 @@
                     <p class="mb-0">Full Name</p>
                   </div>
                   <div class="col-sm-9">
-                    <p class="text-muted mb-0">{{user.name}}</p>
+                    <p class="text-muted mb-0">{{userdata.name}}</p>
                   </div>
                 </div>
                 <hr>
@@ -54,7 +54,7 @@
                     <p class="mb-0">Email</p>
                   </div>
                   <div class="col-sm-9">
-                    <p class="text-muted mb-0">{{user.email}}</p>
+                    <p class="text-muted mb-0">{{userdata.email}}</p>
                   </div>
                 </div>
                 <hr>
@@ -65,7 +65,7 @@
                     <p class="mb-0">Mobile</p>
                   </div>
                   <div class="col-sm-9">
-                    <p class="text-muted mb-0">+91 {{user.address.[0].phone}}</p>
+                    <p class="text-muted mb-0">+91 {{userdata.address.[0].phone}}</p>
                   </div>
                 </div>
                 <hr>
@@ -74,7 +74,7 @@
                     <p class="mb-0">Address</p>
                   </div>
                   <div class="col-sm-9">
-                    <p class="text-muted mb-0">{{user.address.[0].house}},{{user.address.[0].city}}</p>
+                    <p class="text-muted mb-0">{{userdata.address.[0].house}},{{user.address.[0].city}}</p>
                   </div>
                 </div>
                 <hr>
@@ -83,7 +83,7 @@
                     <p class="mb-0">Postal Code</p>
                   </div>
                   <div class="col-sm-9">
-                    <p class="text-muted mb-0">{{user.address.[0].postal}}</p>
+                    <p class="text-muted mb-0">{{userdata.address.[0].postal}}</p>
                   </div>
                 </div>
               </div>

@@ -46,6 +46,7 @@
 
 <div class="product-container">
   {{#each productdata}}
+  
   <a href="/productview/{{this._id}}" class="text-decoration-none text-dark">
     <div class="product-card p-2 mt-5">
       <img src="/images/categoryimage/{{this.image}}" alt="Product Name" class="product-image">
@@ -65,6 +66,10 @@
     </a>
 
   </div>
+  {{#if this.status}}
+  {{else}}
+  <p class="text-danger"> * This Product is currently not availble</p>
+  {{/if}}
 </div>
 
 {{/each}}
