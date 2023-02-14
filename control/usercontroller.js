@@ -675,14 +675,13 @@ const changeStatus = (orderId) => {
 //Edit user details
 
 const editUserdetails = (userId, userdata) => {
-    console.log(userdata,"oooo");
-    return new Promise((resolve, reject) => {
-
+    return new Promise(async(resolve, reject) => {
         user.findOneAndUpdate({ _id: userId }, {
             $set: {
                 name: userdata.name,
                 email: userdata.email,
                 address:[{
+                    name: userdata.name,
                     house:userdata.house,
                     city:userdata.city,
                     postal:userdata.postal,
@@ -953,7 +952,7 @@ const getUserProfile = async(req, res) => {
     const userdata=await user.findOne({_id:req.session.user._id}).lean()
     console.log(userdata,"888888888");
     
-    res.render("user/userprofile", { userdata, usercart: res.usercart })
+    res.render("user/userprofile", { userdata, usercart: res.usercart ,user:req.session.user})
 }
 
 const displayOrderSuccessPage = async (req, res) => {
@@ -1106,6 +1105,7 @@ const verifyOnlineypayment = async (req, res) => {
 }
 
 const editUserProfile = async (req, res) => {
+    console.log("one");
     const updation = await editUserdetails(req.session.user._id, req.body)
     res.redirect("/account")
 }

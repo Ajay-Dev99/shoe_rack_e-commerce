@@ -406,7 +406,8 @@ const listProducts=(req,res)=>{
 
 const adminListorders=async(req,res)=>{
     const orders=await listOrders()
-    res.render("admin/admin_orderlist",{orders,})
+    console.log(orders,"ottotoo");
+    res.render("admin/admin_orderlist",{orders})
 }
 
 const adminOrderDetails=async(req,res)=>{
