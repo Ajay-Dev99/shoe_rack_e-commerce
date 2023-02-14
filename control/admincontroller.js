@@ -92,21 +92,31 @@ const unblockUser = (userId) => {
 //add category
 const addCategory = (categoryDetails, img) => {
     return new Promise(async (resolve, reject) => {
-
-        try {
-            const newCategory = new categorycollection({
-                categoryname: categoryDetails.categoryname,
-                imageurl: img.filename
-            })
-            return await newCategory.save()
-                .then((data) => {
-                    resolve(data)
-                }).catch((error) => {
-                    throw error;
+        console.log(categoryDetails,"ooooooooooooooooi");
+        const catergoryName=categoryDetails.categoryname
+        console.log(catergoryName,"popppokoppokopk");
+        const alreadyexist=await categorycollection.findOne({categoryname:catergoryName})
+        console.log(alreadyexist,"ooo");
+        if(alreadyexist){
+            resolve({alreadyexist:true})
+        }else{
+            try {
+                const newCategory = new categorycollection({
+                    categoryname: categoryDetails.categoryname,
+                    imageurl: img.filename
                 })
-        } catch (error) {
-            throw error
+                return await newCategory.save()
+                    .then((data) => {
+                        resolve(data)
+                    }).catch((error) => {
+                        throw error;
+                    })
+            } catch (error) {
+                throw error
+            }
         }
+
+    
 
 
     })
@@ -139,14 +149,16 @@ const listCategory = () => {
 
 //add product
 const addproduct = (productDetails, img) => {
-
+    
     return new Promise(async (resolve, reject) => {
         try {
+
             const newProduct = new product({
                 productname: productDetails.productname,
                 productcategory: productDetails.productcategory,
                 productMRP: productDetails.productMRP,
                 productSRP: productDetails.productSRP,
+                productstock:productDetails.productstock,
                 imageurl: img,
                 productdescription: productDetails.productdescription
             })
@@ -274,15 +286,23 @@ const changeOrderstatus = (data) => {
 
 const addcoupon=(couponDetials)=>{
         return new Promise(async(resolve,reject)=>{
-            const newCoupon=new coupon({
-                couponCode:couponDetials.code,
-                disCount: couponDetials.discount,
-                expiryDate:couponDetials.expiryDate ,
-                maxDiscountAmount:couponDetials.maxDiscount,
-                minOrderAmount:couponDetials.minAmount
-            })
-                await newCoupon.save()
-                resolve()
+            console.log(couponDetials,"ooooo");
+            const couponname=couponDetials.code
+            const alreadyexist=await coupon.findOne({couponCode:couponname})
+            if(alreadyexist){
+                console.log("already exist");
+                resolve({alreadyexist:true})
+            }else{
+                const newCoupon=new coupon({
+                    couponCode:couponDetials.code,
+                    disCount: couponDetials.discount,
+                    expiryDate:couponDetials.expiryDate ,
+                    maxDiscountAmount:couponDetials.maxDiscount,
+                    minOrderAmount:couponDetials.minAmount
+                })
+                    await newCoupon.save()
+                    resolve({status:true})
+            }
         })
 }
 
@@ -414,7 +434,12 @@ const adminLogin=(req,res)=>{
 const adminAddCategory=(req,res)=>{
 
     addCategory(req.body,req.file).then((data)=>{ 
-        res.json({status:true})
+        if(data.alreadyexist){
+            res.json({alreadyexist:true})
+        }else{
+
+            res.json({status:true})
+        }
       })
 }
 
@@ -435,8 +460,14 @@ const adminCouponMangement=async(req,res)=>{
 }
 
 const adminaddcoupon=async(req,res)=>{
-   await addcoupon(req.body)
-   res.json({status:true})
+   await addcoupon(req.body).then((response)=>{
+   
+    if(response.alreadyexist){
+        res.json({alreadyexist:true})
+    }else{
+        res.json({status:true})
+    }
+   })
 }
 
 const disableProduct=async(req,res)=>{
@@ -562,6 +593,7 @@ const updateProduct=async(req,res)=>{
             productcategory:req.body.productcategory,
             productMRP:req.body.productMRP,
             productSRP:req.body.productSRP,
+            productstock:req.body.productstock,
             productdescription:req.body.productdescription,
         }}).then(()=>{
             res.redirect("/admin/listproducts")

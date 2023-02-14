@@ -247,10 +247,17 @@ const getcartitems = (userId) => {
 //addproduct quantity
 
 const changeproductquantity = async (details) => {
-    const quantity = details.quantity;
+    const quantity = parseInt(details.quantity);
     const cartid = new mongoose.Types.ObjectId(details.cart)
     const productId = new mongoose.Types.ObjectId(details.product)
+    const productdata=await product.findOne({_id:productId}).lean()
+    const productStock=parseInt(productdata.productstock)
     const count = parseInt(details.count)
+    const totalquantity=quantity+count
+    console.log(totalquantity,"totalquantity");
+    if(count>productStock){
+        console.log("greater...");
+    }
     return new Promise(async (resolve, reject) => {
         if (quantity == 1 && count == -1) {
             await cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, {
@@ -260,10 +267,21 @@ const changeproductquantity = async (details) => {
                 resolve({ removeProduct: true });
             })
 
-        } else {
+        } else if(totalquantity>productStock){
+            resolve({exceedstatus:true})
+        }
+        else {
+            
 
             await cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, { $inc: { "products.$.quantity": count } }).then((response) => {
-                resolve(response)
+
+                // if(totalcount>=productStock){
+                //     console.log("greater...");
+                //     resolve({exceedstatus:true,productStock})
+                // }
+                
+                         resolve(response)
+                
             })
         }
     })
@@ -453,11 +471,17 @@ const placeorder = (userId, order, cartproducts, total) => {
             monthinNO:monthInNo
           
         });
+
+        for(let i=0;i<products.length;i++){
+            const productid=products[i].cartproduct._id
+            const quantity=products[i].quantity
+            const Stock=await product.findOne({_id:productid},{productstock:1,_id:0}).lean()
+            const totalstock=Stock.productstock
+            const stock=parseInt(totalstock-quantity)
+            await product.findOneAndUpdate({_id:productid},{$set:{productstock:stock}})
+        }
+
       
-        
-        
-
-
         for (let i = 0; i < products.length; i++) {
             const orderitem = {
                 product: products[i].cartproduct._id,
@@ -465,7 +489,6 @@ const placeorder = (userId, order, cartproducts, total) => {
                 productprice: products[i].cartproduct.productSRP,
                 totalamount: products[i].subtotal
             };
-
             newOrder.orderitem.push(orderitem);
         }
         await newOrder.save().then((response) => {
@@ -1027,7 +1050,14 @@ const userLogin = (req, res) => {
 
 const changeCartProductQuantity = (req, res) => {
     changeproductquantity(req.body).then((response) => {
-        res.json(response)
+        console.log(response,"response from function");
+        if(response.exceedstatus){
+            console.log("false he");
+            res.json({exceedstatus:true})
+        }else{
+
+            res.json(response)
+        }
     })
 }
 

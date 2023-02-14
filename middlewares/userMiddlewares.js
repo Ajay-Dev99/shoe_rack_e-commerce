@@ -1,11 +1,20 @@
 const usercontrol=require("../control/usercontroller")
+const user=require("../models/usermodel")
+const verifyLogin = async(req, res, next) => {
 
-const verifyLogin = (req, res, next) => {
     if (req.session.loggedIn) {
-      next()
+      const blocked=await user.findOne({_id:req.session.user._id,blocked:true})
+      console.log(blocked,"o");
+      if(blocked){
+        req.session.loggedIn=false
+        res.redirect("/login")
+      }else{
+        next()
+      }
+
     } else {
       res.redirect("/login")
-      res.json({ loggedin: false })
+      // res.json({ loggedin: false })
     }
   }
   

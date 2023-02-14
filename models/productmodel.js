@@ -30,6 +30,10 @@ const productSchema=new mongoose.Schema({
     status:{
         type:Boolean,
         default:true
+    },
+    productstock:{
+        type:Number,
+        required:true
     }
 })
 

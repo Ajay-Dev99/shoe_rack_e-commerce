@@ -120,12 +120,17 @@
       },
       method: 'post',
       success: (response) => {
-        if (response.removeProduct) {
+        if(response.exceedstatus){
+          swal("product Quantity exceeded!")
+          
+        }
+        else if (response.removeProduct) {
           swal("Product removed from the cart").then(() => {
             location.reload()
           })
 
-        } else {
+        }
+         else {
           document.getElementById(proId).innerHTML = quantity + count
           const amount=parseInt(document.getElementById(proId+"total").innerHTML)
           document.getElementById(proId+"count").innerHTML=amount*(quantity+count)
