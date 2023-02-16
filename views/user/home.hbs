@@ -132,7 +132,7 @@
 <script>
   function searchProduct(){
     const data=document.getElementById("searchinput").value 
-    console.log(data)
+   
     $.ajax({
       url:"/searchproduct",
       method:"post",
@@ -140,10 +140,7 @@
         key:data
       },
       success:(response)=>{
-        alert(response)
-        
         const data=response.productdata
-        console.log(data)
         document.getElementById("searchresult").classList.remove("d-none");
         document.getElementById("searchresult").classList.add("d-block");
        
