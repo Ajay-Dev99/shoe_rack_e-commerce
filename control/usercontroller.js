@@ -254,9 +254,7 @@ const changeproductquantity = async (details) => {
     const productStock=parseInt(productdata.productstock)
     const count = parseInt(details.count)
     const totalquantity=quantity+count
-    console.log(totalquantity,"totalquantity");
     if(count>productStock){
-        console.log("greater...");
     }
     return new Promise(async (resolve, reject) => {
         if (quantity == 1 && count == -1) {
@@ -274,14 +272,7 @@ const changeproductquantity = async (details) => {
             
 
             await cart.findOneAndUpdate({ _id: cartid, products: { $elemMatch: { productId: productId } } }, { $inc: { "products.$.quantity": count } }).then((response) => {
-
-                // if(totalcount>=productStock){
-                //     console.log("greater...");
-                //     resolve({exceedstatus:true,productStock})
-                // }
-                
-                         resolve(response)
-                
+            resolve(response)        
             })
         }
     })
@@ -860,17 +851,27 @@ const listCoupon=async()=>{
 
 
 const getSignupPage = (req, res) => {
+    try {
     res.render("user/user_signup", { existed: req.session.existed })
     req.session.existed = false
+    }catch (error) {
+        throw new Error(error)
+    }
 }
 const getCartPage = async (req, res) => {
+    try {
     const userProducts = await getcartitems(req.session.user._id)
     const userproducts = userProducts.productdetails
     const totalAmount = await totalamount(req.session.user._id)
     res.render("user/usercart", { userproducts, user: req.session.user, usercart: res.usercart, totalAmount })
+    } catch (error) {
+        throw new Error(error)
+    }
 }
 
 const getHomepage = async (req, res) => {
+
+    try {
     await admincontrol.listProduct().then(async(data) => {
         const product = data
         const productdata = product.map((product) => {
@@ -891,9 +892,13 @@ const getHomepage = async (req, res) => {
         })
         res.render("user/home", { user: req.session.user, productdata, usercart: res.usercart,cagtegoryName })
     })
+} catch (error) {
+      throw new Error(error)  
+}
 }
 
 const getLoginpage = (req, res) => {
+    try {
     if (req.session.loggedIn) {
         res.redirect("/")
     } else {
@@ -902,14 +907,22 @@ const getLoginpage = (req, res) => {
         req.session.passErr = false
         req.session.blocked = false
     }
+} catch (error) {
+       throw new Error(error) 
+}
 }
 
 const logout = (req, res) => {
+    try{
     req.session.destroy()
     res.redirect("/")
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const addTOCart = (req, res) => {
+    try{
     addtoCart(req.params.id, req.session.user._id).then((data) => {
         if (data.status) {
             res.json({ status: true })
@@ -917,21 +930,27 @@ const addTOCart = (req, res) => {
             res.json({ alredyincart: true })
         }
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const singleProductview = (req, res) => {
+    try{
     productView(req.params.id).then(async (response) => {
         const productdetails = response
         const cartExist = await productExistInCart(req.params.id, req.session.user._id)
         const wishlistExist = await productExistInWishlist(req.params.id, req.session.user._id)
-
         res.render("user/productview", { user: req.session.user, usercart: res.usercart, productdetails, cartExist, wishlistExist })
-
     })
+}catch (error) {
+    throw new Error(error) 
+}
 
 }
 
 const getCheckoutPage = async (req, res) => {
+    try{
     let useraddress = await showAddress(req.session.user._id)
     const userproduct = await getcartitems(req.session.user._id)
     const userproducts = userproduct.productdetails
@@ -939,38 +958,58 @@ const getCheckoutPage = async (req, res) => {
     const cartdata = await cart.findOne({userId:req.session.user._id})
     const couponSavings=cartdata.cuponsavings
     const allTotal=parseInt(totalAmount-couponSavings)
-
-  
     res.render("user/checkout", { user: req.session.user, usercart: res.usercart, userproducts, totalAmount, useraddress ,couponSavings,allTotal})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const addAnotherAddress = (req, res) => {
+    try{
     res.render("user/address", { user: req.session.user, usercart: res.usercart })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const getUserProfile = async(req, res) => {
-    const userdata=await user.findOne({_id:req.session.user._id}).lean()
-    console.log(userdata,"888888888");
-    
+    try{
+    const userdata=await user.findOne({_id:req.session.user._id}).lean() 
     res.render("user/userprofile", { userdata, usercart: res.usercart ,user:req.session.user})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const displayOrderSuccessPage = async (req, res) => {
+    try{
     await deleteCart(req.session.user._id)
     res.render("user/ordersuccess", { user: req.session.user, usercart: res.usercart })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const getOrderDetails = async (req, res) => {
+    try{
     const orderdetails = await viewOrderdetails(req.session.orderId)
     res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const getAllOrderDetails = async (req, res) => {
+    try{
     const orderdetails = await viewallOrderdetails(req.session.user._id)
     res.render("user/allorderlist", { orderdetails, user: req.session.user, usercart: res.usercart })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const getSingleView = async (req, res) => {
+    try{
     const orderdetails = await viewOrderdetails(req.params.id)
     const orderstatus = orderdetails[0].status
     let delivered;
@@ -980,14 +1019,22 @@ const getSingleView = async (req, res) => {
         delivered = false
     }
     res.render("user/orderlist", { orderdetails, user: req.session.user, usercart: res.usercart, delivered })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const getChangePasswordPage = (req, res) => {
+    try{
     res.render("user/changepassword", { passErr: req.session.passErr })
     req.session.passErr = false
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const userSignUp = (req, res) => {
+    try{
     doSingup(req.body).then((data) => {
         req.session.clientid = data.data._id
         if (data.exist) {
@@ -999,9 +1046,13 @@ const userSignUp = (req, res) => {
             res.render("user/otpverification")
         }
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const otpVerification = (req, res) => {
+    try{
     const otp = parseInt(req.session.otp)
     const userOtp = parseInt(req.body.otp)
     verifyOtp(userOtp, otp).then(async (response) => {
@@ -1015,9 +1066,13 @@ const otpVerification = (req, res) => {
             res.json({ status: false })
         }
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const userLogin = (req, res) => {
+    try{
     doLogin(req.body).then((response) => {
         if (response.usernotfound) {
 
@@ -1043,35 +1098,48 @@ const userLogin = (req, res) => {
                 res.redirect('/login')
             }
         }
-
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const changeCartProductQuantity = (req, res) => {
+    try{
     changeproductquantity(req.body).then((response) => {
-        console.log(response,"response from function");
         if(response.exceedstatus){
-            console.log("false he");
             res.json({exceedstatus:true})
         }else{
 
             res.json(response)
         }
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const removeUserCartitem = (req, res) => {
+    try{
     removeCartitem(req.body).then((response) => {
         res.json(response)
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const userCheckout = (req, res) => {
+    try{
     addAddress(req.session.user._id, req.body)
     res.redirect("/checkout")
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const userPlaceOrder = async (req, res) => {
+    try{
     const cartproducts = await getcartitems(req.session.user._id)
     const cartproduct = await cartproducts.productdetails
     const totalAmount = await totalamount(req.session.user._id)
@@ -1091,26 +1159,36 @@ const userPlaceOrder = async (req, res) => {
             })
         }
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const verifyOnlineypayment = async (req, res) => {
+    try{
     await verifypayment(req.body).then(() => {
         changeStatus(req.body['order[receipt]']).then(() => {
-            // req.session.orderId=req.body['order[receipt]']
             res.json({ paymentsuccess: true })
         })
     }).catch((err) => {
         res.json({ paymentsuccess: false })
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const editUserProfile = async (req, res) => {
-    console.log("one");
+    try {
     const updation = await editUserdetails(req.session.user._id, req.body)
     res.redirect("/account")
+    } catch (error) {
+       throw new Error(error) 
+    }
 }
 
 const resetPassword = async (req, res) => {
+    try {   
     const data = await changePassword(req.body, req.session.user._id)
     if (data.status) {
 
@@ -1119,22 +1197,34 @@ const resetPassword = async (req, res) => {
         req.session.passErr = true
         res.json({ status: false })
     }
+} catch (error) {
+     throw new Error(error)   
+}
 }
 
 const userCancelOrder = async (req, res) => {
+    try {
     const orderId = req.body.orderid;
     const cancel = await cancelOrder(orderId)
     res.json({ status: true })
+    } catch (error) {
+       throw new Error(error) 
+    }
 }
 
 const addTowishlist = async (req, res) => {
+    try {
     const productId = req.body.ProductId
     await addtowishlist(productId, req.session.user._id)
     res.json({ status: true })
+    } catch (error) {
+        throw new Error(error)
+    }
 
 }
 
 const getWishlist = async (req, res) => {
+    try {
     const products = await getwishListitems(req.session.user._id)
     let wishlistExist;
     if (products.wishlistExist == true) {
@@ -1143,20 +1233,32 @@ const getWishlist = async (req, res) => {
         wishlistExist = false
     }
     res.render("user/wishlist", { user: req.session.user, products, usercart: res.usercart, wishlistExist })
+}catch (error) {
+        throw new Error(error)
+}
 }
 
 const removeWishlistItem = async (req, res) => {
+    try {
     const details = req.body
     await removefromwishlist(details)
     res.json({ status: true })
+    }catch (error) {
+        throw new Error(error)
+    }
 }
 
 const getcoupons=async(req,res)=>{
+    try {
     const coupons=await listCoupon()
     res.render("user/usercoupons",{user:req.session.user,usercart: res.usercart,coupons})
+    } catch (error) {
+        throw new Error(error)
+    }
 }
 
 const userApplyCoupon=async(req,res)=>{
+    try {   
     const couponcode=req.body.code
     const date= new Date();
     const Coupon=await coupon.findOne({couponCode:couponcode})
@@ -1184,11 +1286,14 @@ const userApplyCoupon=async(req,res)=>{
     }else {
         res.json({ status: false })
     }
-  
+} catch (error) {
+      throw new Error(error)  
+}
 
 }
 
 const categoryFilter=async(req,res)=>{
+    try { 
     const categoryName=req.params.id
     const products =await product.find({ productcategory:categoryName })
     const productdata = products.map((product) => {
@@ -1201,20 +1306,35 @@ const categoryFilter=async(req,res)=>{
         }
     })
         const categories=await category.find({})
-
-    const cagtegoryName=categories.map((category)=>{
-        return{
-              _id:category._id,
-              name:category.categoryname
-        }
-    })
     res.render("user/categorywise", { user: req.session.user, productdata, usercart: res.usercart })
-    
-    
-    
- 
+} catch (error) {
+        throw new Error(error)
+}
+}
+
+const searchProduct=async(req,res)=>{
+    try {
+        
+        const searchKey=req.body.key
+         const products=await product.find({productname:{$regex: new RegExp(searchKey, "i")}})
+                 const productdata = products.map((product) => {
+                 return {
+                     _id: product._id,
+                     name: product.productname,
+                     price: product.productSRP,
+                     status:product.status,
+                     image: product.imageurl[0].filename
+                 }
+             })
+                     const categories=await category.find({})
+             res.json({productdata})
+    } catch (error) {
+     throw new Error(error)   
+    }
+       
 
 }
+
 
 module.exports = {
 
@@ -1280,7 +1400,9 @@ module.exports = {
     getcoupons,
     listCoupon,
     userApplyCoupon,
-    categoryFilter
+    categoryFilter,
+    searchProduct,
+    
 }
 
 

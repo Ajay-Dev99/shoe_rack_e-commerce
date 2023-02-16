@@ -26,6 +26,7 @@ router.get("/wishlist",verifyLogin,cartCount,usercontrol.getWishlist)
 router.get("/usercoupons",verifyLogin,cartCount,usercontrol.getcoupons)
 router.get("/categoryfilter/:id",cartCount,usercontrol.categoryFilter)
 
+
   //Post Methods
 router.post("/signup-user", usercontrol.userSignUp)
 router.post("/otpverification",usercontrol.otpVerification)
@@ -42,6 +43,7 @@ router.post("/addtowishlist",verifyLogin,usercontrol.addTowishlist)
 router.post("/removefromwishlist",verifyLogin,usercontrol.removeWishlistItem)
 router.post("/applycoupon",usercontrol.userApplyCoupon)
 router.post("/categoryfilter",usercontrol.categoryFilter)
+router.post("/searchproduct",usercontrol.searchProduct)
 
 
  

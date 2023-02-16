@@ -36,17 +36,28 @@
     </ul>
   </nav>
 </div>
+   {{!-- search.... --}}
+<div id="searcbox">
+  
+  <div class="d-flex justify-content-center my-5 me-3">
+    <input type="text" id="searchinput" class="border p-2 searchinput smphone" placeholder="What are you searching for...?">
+    <button class="px-5 searchbutton" onclick="searchProduct()"><i class="fa fa-search"></i></button>
+  </div>
+
+</div>
 
 <div id="carouselExampleControls" class="carousel slide container mt-2" data-bs-ride="carousel">
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="https://i.pinimg.com/originals/ff/be/28/ffbe283fbedc1dcbc49f06702f61ea92.jpg" class="d-block w-100" alt="...">
+      <img src="https://i.pinimg.com/originals/ff/be/28/ffbe283fbedc1dcbc49f06702f61ea92.jpg" class="d-block w-100"
+        alt="...">
+    </div>
+    <div class="carousel-item">
+      <img src="https://i.pinimg.com/originals/ff/be/28/ffbe283fbedc1dcbc49f06702f61ea92.jpg" class="d-block w-100"
+        alt="...">
     </div>
     <div class="carousel-item">
       <img src="https://i.pinimg.com/originals/ff/be/28/ffbe283fbedc1dcbc49f06702f61ea92.jpg" class="d-block w-100" alt="...">
-    </div>
-    <div class="carousel-item">
-      <img src="..." class="d-block w-100" alt="...">
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -68,7 +79,7 @@
 
 <div class="product-container">
   {{#each productdata}}
-  
+
   <a href="/productview/{{this._id}}" class="text-decoration-none text-dark">
     <div class="product-card p-2 mt-5">
       <img src="/images/categoryimage/{{this.image}}" alt="Product Name" class="product-image">
@@ -114,6 +125,29 @@
 
       }
 
+    })
+  }
+</script>
+
+<script>
+  function searchProduct(){
+    const data=document.getElementById("searchinput").value 
+    console.log(data)
+    $.ajax({
+      url:"/searchproduct",
+      method:"post",
+      data:{
+        key:data
+      },
+      success:(response)=>{
+        alert(response)
+        
+        const data=response.productdata
+        console.log(data)
+        document.getElementById("searchresult").classList.remove("d-none");
+        document.getElementById("searchresult").classList.add("d-block");
+       
+      }
     })
   }
 </script>

@@ -92,11 +92,8 @@ const unblockUser = (userId) => {
 //add category
 const addCategory = (categoryDetails, img) => {
     return new Promise(async (resolve, reject) => {
-        console.log(categoryDetails,"ooooooooooooooooi");
         const catergoryName=categoryDetails.categoryname
-        console.log(catergoryName,"popppokoppokopk");
         const alreadyexist=await categorycollection.findOne({categoryname:catergoryName})
-        console.log(alreadyexist,"ooo");
         if(alreadyexist){
             resolve({alreadyexist:true})
         }else{
@@ -286,11 +283,9 @@ const changeOrderstatus = (data) => {
 
 const addcoupon=(couponDetials)=>{
         return new Promise(async(resolve,reject)=>{
-            console.log(couponDetials,"ooooo");
             const couponname=couponDetials.code
             const alreadyexist=await coupon.findOne({couponCode:couponname})
             if(alreadyexist){
-                console.log("already exist");
                 resolve({alreadyexist:true})
             }else{
                 const newCoupon=new coupon({
@@ -307,13 +302,18 @@ const addcoupon=(couponDetials)=>{
 }
 
 const listCoupon=async()=>{
+    try{
     const coupons=await coupon.find({}).lean()
     return coupons
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 //.............................................................................................................................................//
 
 const getadminPage = (req, res) => {
+    try{
     if (req.session.adminloggedin) {
         res.redirect("/admin/home")
     } else {
@@ -321,6 +321,9 @@ const getadminPage = (req, res) => {
         req.session.notfound = false
         req.session.passwordErr = false
     }
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const getOrdersByMonth= () => {
@@ -347,6 +350,7 @@ const getOrdersByMonth= () => {
 
 
 const getAdminDashboard = async(req, res) => {
+    try{
     const userCount=await user.countDocuments({})
     const productCount=await product.countDocuments({})
     const orderCount=await Ordercollection.countDocuments({})
@@ -355,67 +359,114 @@ const getAdminDashboard = async(req, res) => {
     ])
     const monthdetails=await getOrdersByMonth()
     res.render('admin/admin_dashboard', { admin: req.session.adminloggedin ,userCount,productCount,orderCount,total,monthdetails})
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const adminLogout=(req,res)=>{
+    try{
     res.redirect("/admin")
     req.session.destroy()
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const getUserlist=(req,res)=>{
+    try{
     listUsers().then((response)=>{
         res.render("admin/admin_userlist",{usersData:response})
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const adminBlockUser=(req,res)=>{
+    try{
     blockUser(req.params.id).then((data)=>{
         res.redirect("/admin/listusers")
       })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminUnblockUser=(req,res)=>{
+    try{
     unblockUser(req.params.id).then((data)=>{
         res.redirect("/admin/listusers")
       })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminAddproduct=(req,res)=>{
+    try{
     listCategory().then((categories)=>{
         res.render("admin/admin_addproduct",{categories}) 
       })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminCategoryManagement=(req,res)=>{
+    try{
         listCategory().then((categories)=>{
         res.render("admin/admin_categories",{categories})
       })
-     
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminEditCategory=async(req,res)=>{
+    try{
     const category=await editCategory(req.params.id)
     res.render("admin/admin_editcategory",{category})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const listProducts=(req,res)=>{
+    try{
     listProduct().then((response)=>{
      res.render("admin/admin_product",{response})
       })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminListorders=async(req,res)=>{
+    try{
     const orders=await listOrders()
-    console.log(orders,"ottotoo");
     res.render("admin/admin_orderlist",{orders})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminOrderDetails=async(req,res)=>{
+    try{
     const orderdetails= await viewOrderdetails(req.params.id)
+      if(orderdetails[0].status ==="Order cancelled"){
+         const ordercancelled=true
+  res.render("admin/orderstatuschange",{orderdetails,ordercancelled})
+      }else{
   res.render("admin/orderstatuschange",{orderdetails})
+      }
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminLogin=(req,res)=>{
+    try{
     doadminLogin(req.body).then((response) => {
         if (response.usernotfound) {
           req.session.notfound = true
@@ -430,10 +481,13 @@ const adminLogin=(req,res)=>{
           }
         }
       })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminAddCategory=(req,res)=>{
-
+ try{
     addCategory(req.body,req.file).then((data)=>{ 
         if(data.alreadyexist){
             res.json({alreadyexist:true})
@@ -442,25 +496,41 @@ const adminAddCategory=(req,res)=>{
             res.json({status:true})
         }
       })
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminAddProduct=async(req,res)=>{
+    try{
   await addproduct(req.body,req.files).then((data)=>{  
     res.redirect("/admin/listproducts")
   })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const adminChangeOrderStatus=(req,res)=>{
+    try{
     changeOrderstatus(req.body)
     res.json({status:true})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminCouponMangement=async(req,res)=>{
+    try{
     const coupons=await listCoupon()
     res.render("admin/admin_addcoupon",{coupons})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const adminaddcoupon=async(req,res)=>{
+    try{
    await addcoupon(req.body).then((response)=>{
    
     if(response.alreadyexist){
@@ -469,41 +539,64 @@ const adminaddcoupon=async(req,res)=>{
         res.json({status:true})
     }
    })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const disableProduct=async(req,res)=>{
+    try{
     const productId=req.body.proId
     await product.findOneAndUpdate({_id:productId},{$set:{status:false}})
     res.json({status:true})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const enableProduct=async(req,res)=>{
+    try{
     const productId=req.body.proId
     await product.findOneAndUpdate({_id:productId},{$set:{status:true}})
     res.json({status:true})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const editProduct=async(req,res)=>{
-  
+  try{
     const proId=req.params.id
    const products= await product.findOne({_id:proId}).lean()
    const categories=await listCategory()
     res.render("admin/admin_editproduct",{products,categories})
+  }catch (error) {
+    throw new Error(error) 
+}
 }
 
 const editCoupon=async(req,res)=>{
+    try{
     const couponId=req.params.id
     const coupons=await coupon.findOne({_id:couponId}).lean()
     res.render("admin/admin_editcoupon",{coupons})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const deleteCategory=async(req,res)=>{
+    try{
     const categoryId=req.body.categoryId
     await categorycollection.deleteOne({_id:categoryId})
     res.json({status:true})
+    }catch (error) {
+        throw new Error(error) 
+ }
 }
 
 const updateCoupon=async(req,res)=>{
+    try{
     const couponId=req.body.couponId
     await coupon.findOneAndUpdate({_id:couponId},{$set:{
         couponCode:req.body.code,
@@ -515,17 +608,25 @@ const updateCoupon=async(req,res)=>{
     .then(()=>{
         res.json({status:true})
     })
+}catch (error) {
+    throw new Error(error) 
+}
 }
 
 const deleteCoupon=async(req,res)=>{
+    try{
     const couponId=req.body.couponId
     await coupon.deleteOne({_id:couponId}).then(()=>{
         res.json({status:true})
     })
+}catch (error) {
+    throw new Error(error) 
+}
     
 }
 
 const updateCategory=async(req,res)=>{
+    try{
     const categoryId=req.body.categoryid
     if(req.file){
         await categorycollection.findOneAndUpdate({_id:categoryId},{$set:{
@@ -542,11 +643,14 @@ const updateCategory=async(req,res)=>{
             res.redirect("/admin/categories")
         }) 
     }
+}catch (error) {
+    throw new Error(error) 
+}
 
 }
 
 const updateProduct=async(req,res)=>{
-
+try{
     const productId=req.body.productid
     const products=await product.findOne({_id:productId})
   
@@ -601,6 +705,9 @@ const updateProduct=async(req,res)=>{
         })
        
     }
+}catch (error) {
+    throw new Error(error) 
+}
 
 }
 

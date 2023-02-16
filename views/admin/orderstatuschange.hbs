@@ -24,6 +24,9 @@
                                 <p>House: {{userdata.address.[0].house}}</p>
                                 <p>City: {{userdata.address.[0].city}}</p>
                                 <p>Postal: {{userdata.address.[0].postal}}</p>
+                                {{#if ../ordercancelled}}
+                             <p class="text-danger text-center">Order Cancelled</p>
+                                {{else}}
                                 <div class="dropdown show d-flex justify-content-start">
                                    Status: <a class="btn btn-secondary dropdown-toggle ms-2" href="#" role="button"
                                         id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true"
@@ -40,6 +43,7 @@
 
                                     </div>
                                 </div>
+                                {{/if}}
                             </div>
                         </div>
                         {{/if}}
