@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const usercontrol = require("../control/usercontroller")
 const e = require('express');
-const {verifyLogin,cartCount}=require("../Middlewares/userMiddlewares");
+const {verifyLogin,cartCount}=require("../middlewares/userMiddlewares");
 const admin = require('../models/admin');
 
 
