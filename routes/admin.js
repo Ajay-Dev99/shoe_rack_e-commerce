@@ -24,6 +24,7 @@ router.get("/orderaction/:id",verifyLogin,admincontrol.adminOrderDetails)
 router.get("/addcoupon",verifyLogin,admincontrol.adminCouponMangement)
 router.get("/editproduct/:id",verifyLogin,admincontrol.editProduct)
 router.get("/editcoupon/:id",verifyLogin,admincontrol.editCoupon)
+router.get("/getsalesreport",verifyLogin,admincontrol.getSalesreport)
 
 
 router.post('/login',admincontrol.adminLogin)
@@ -38,6 +39,7 @@ router.post("/updatecoupon",verifyLogin,admincontrol.updateCoupon)
 router.post("/deletecoupon",verifyLogin,admincontrol.deleteCoupon)
 router.post("/updatecategory",verifyLogin,categoryimgupload.single('image'),admincontrol.updateCategory)
 router.post("/updateproduct",verifyLogin,updateProduct.fields([{name:"image0",maxCount:1},{name:"image1",maxCount:1},{name:"image2",maxCount:1},{name:"image3",maxCount:1}]),admincontrol.updateProduct)
+router.post("/sales-report",admincontrol.salesReport)
 
 
 

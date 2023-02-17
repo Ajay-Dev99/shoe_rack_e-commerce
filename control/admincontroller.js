@@ -7,8 +7,8 @@ const bcrypt = require("bcrypt")
 const e = require("express")
 const { response } = require("../app")
 const Ordercollection = require("../models/ordermodel")
-const coupon=require("../models/couponmodel")
-
+const coupon = require("../models/couponmodel")
+const salesreport = require("../utilities/pdfgenerator")
 
 
 //adminlogin
@@ -92,11 +92,11 @@ const unblockUser = (userId) => {
 //add category
 const addCategory = (categoryDetails, img) => {
     return new Promise(async (resolve, reject) => {
-        const catergoryName=categoryDetails.categoryname
-        const alreadyexist=await categorycollection.findOne({categoryname:catergoryName})
-        if(alreadyexist){
-            resolve({alreadyexist:true})
-        }else{
+        const catergoryName = categoryDetails.categoryname
+        const alreadyexist = await categorycollection.findOne({ categoryname: catergoryName })
+        if (alreadyexist) {
+            resolve({ alreadyexist: true })
+        } else {
             try {
                 const newCategory = new categorycollection({
                     categoryname: categoryDetails.categoryname,
@@ -113,7 +113,7 @@ const addCategory = (categoryDetails, img) => {
             }
         }
 
-    
+
 
 
     })
@@ -146,7 +146,7 @@ const listCategory = () => {
 
 //add product
 const addproduct = (productDetails, img) => {
-    
+
     return new Promise(async (resolve, reject) => {
         try {
 
@@ -155,7 +155,7 @@ const addproduct = (productDetails, img) => {
                 productcategory: productDetails.productcategory,
                 productMRP: productDetails.productMRP,
                 productSRP: productDetails.productSRP,
-                productstock:productDetails.productstock,
+                productstock: productDetails.productstock,
                 imageurl: img,
                 productdescription: productDetails.productdescription
             })
@@ -281,55 +281,55 @@ const changeOrderstatus = (data) => {
     })
 }
 
-const addcoupon=(couponDetials)=>{
-        return new Promise(async(resolve,reject)=>{
-            const couponname=couponDetials.code
-            const alreadyexist=await coupon.findOne({couponCode:couponname})
-            if(alreadyexist){
-                resolve({alreadyexist:true})
-            }else{
-                const newCoupon=new coupon({
-                    couponCode:couponDetials.code,
-                    disCount: couponDetials.discount,
-                    expiryDate:couponDetials.expiryDate ,
-                    maxDiscountAmount:couponDetials.maxDiscount,
-                    minOrderAmount:couponDetials.minAmount
-                })
-                    await newCoupon.save()
-                    resolve({status:true})
-            }
-        })
+const addcoupon = (couponDetials) => {
+    return new Promise(async (resolve, reject) => {
+        const couponname = couponDetials.code
+        const alreadyexist = await coupon.findOne({ couponCode: couponname })
+        if (alreadyexist) {
+            resolve({ alreadyexist: true })
+        } else {
+            const newCoupon = new coupon({
+                couponCode: couponDetials.code,
+                disCount: couponDetials.discount,
+                expiryDate: couponDetials.expiryDate,
+                maxDiscountAmount: couponDetials.maxDiscount,
+                minOrderAmount: couponDetials.minAmount
+            })
+            await newCoupon.save()
+            resolve({ status: true })
+        }
+    })
 }
 
-const listCoupon=async()=>{
-    try{
-    const coupons=await coupon.find({}).lean()
-    return coupons
-    }catch (error) {
-        throw new Error(error) 
- }
+const listCoupon = async () => {
+    try {
+        const coupons = await coupon.find({}).lean()
+        return coupons
+    } catch (error) {
+        throw new Error(error)
+    }
 }
 
 //.............................................................................................................................................//
 
 const getadminPage = (req, res) => {
-    try{
-    if (req.session.adminloggedin) {
-        res.redirect("/admin/home")
-    } else {
-        res.render('admin/admin_login', { notfound: req.session.notfound, passErr: req.session.passwordErr });
-        req.session.notfound = false
-        req.session.passwordErr = false
+    try {
+        if (req.session.adminloggedin) {
+            res.redirect("/admin/home")
+        } else {
+            res.render('admin/admin_login', { notfound: req.session.notfound, passErr: req.session.passwordErr });
+            req.session.notfound = false
+            req.session.passwordErr = false
+        }
+    } catch (error) {
+        throw new Error(error)
     }
-}catch (error) {
-    throw new Error(error) 
-}
 }
 
-const getOrdersByMonth= () => {
+const getOrdersByMonth = () => {
     return new Promise(async (resolve) => {
         let orders = await Ordercollection.aggregate([
-       
+
             {
                 $group: {
                     _id: "$monthinNO",
@@ -349,367 +349,428 @@ const getOrdersByMonth= () => {
 }
 
 
-const getAdminDashboard = async(req, res) => {
-    try{
-    const userCount=await user.countDocuments({})
-    const productCount=await product.countDocuments({})
-    const orderCount=await Ordercollection.countDocuments({})
-    const total=await Ordercollection.aggregate([
-        { $group: { _id: null, total: { $sum: "$totalamount" } } }
-    ])
-    const monthdetails=await getOrdersByMonth()
-    res.render('admin/admin_dashboard', { admin: req.session.adminloggedin ,userCount,productCount,orderCount,total,monthdetails})
-}catch (error) {
-    throw new Error(error) 
-}
-}
+const getAdminDashboard = async (req, res) => {
+    try {
+        const userCount = await user.countDocuments({})
+        const productCount = await product.countDocuments({})
+        const orderCount = await Ordercollection.countDocuments({})
+        const total = await Ordercollection.aggregate([
+            { $group: { _id: null, total: { $sum: "$totalamount" } } }
+        ])
+        const monthdetails = await getOrdersByMonth()
 
-const adminLogout=(req,res)=>{
-    try{
-    res.redirect("/admin")
-    req.session.destroy()
-    }catch (error) {
-        throw new Error(error) 
- }
-}
 
-const getUserlist=(req,res)=>{
-    try{
-    listUsers().then((response)=>{
-        res.render("admin/admin_userlist",{usersData:response})
-    })
-}catch (error) {
-    throw new Error(error) 
-}
-}
 
-const adminBlockUser=(req,res)=>{
-    try{
-    blockUser(req.params.id).then((data)=>{
-        res.redirect("/admin/listusers")
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
 
-const adminUnblockUser=(req,res)=>{
-    try{
-    unblockUser(req.params.id).then((data)=>{
-        res.redirect("/admin/listusers")
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminAddproduct=(req,res)=>{
-    try{
-    listCategory().then((categories)=>{
-        res.render("admin/admin_addproduct",{categories}) 
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminCategoryManagement=(req,res)=>{
-    try{
-        listCategory().then((categories)=>{
-        res.render("admin/admin_categories",{categories})
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminEditCategory=async(req,res)=>{
-    try{
-    const category=await editCategory(req.params.id)
-    res.render("admin/admin_editcategory",{category})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const listProducts=(req,res)=>{
-    try{
-    listProduct().then((response)=>{
-     res.render("admin/admin_product",{response})
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminListorders=async(req,res)=>{
-    try{
-    const orders=await listOrders()
-    res.render("admin/admin_orderlist",{orders})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminOrderDetails=async(req,res)=>{
-    try{
-    const orderdetails= await viewOrderdetails(req.params.id)
-      if(orderdetails[0].status ==="Order cancelled"){
-         const ordercancelled=true
-  res.render("admin/orderstatuschange",{orderdetails,ordercancelled})
-      }else{
-  res.render("admin/orderstatuschange",{orderdetails})
-      }
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminLogin=(req,res)=>{
-    try{
-    doadminLogin(req.body).then((response) => {
-        if (response.usernotfound) {
-          req.session.notfound = true
-          res.redirect("/admin")
-        } else {
-          if (response.login) {
-            req.session.adminloggedin = true
-            res.redirect("/admin/home")
-          } else {
-            req.session.passwordErr = true
-            res.redirect("/admin")
-          }
-        }
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminAddCategory=(req,res)=>{
- try{
-    addCategory(req.body,req.file).then((data)=>{ 
-        if(data.alreadyexist){
-            res.json({alreadyexist:true})
-        }else{
-
-            res.json({status:true})
-        }
-      })
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminAddProduct=async(req,res)=>{
-    try{
-  await addproduct(req.body,req.files).then((data)=>{  
-    res.redirect("/admin/listproducts")
-  })
-}catch (error) {
-    throw new Error(error) 
-}
-}
-
-const adminChangeOrderStatus=(req,res)=>{
-    try{
-    changeOrderstatus(req.body)
-    res.json({status:true})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminCouponMangement=async(req,res)=>{
-    try{
-    const coupons=await listCoupon()
-    res.render("admin/admin_addcoupon",{coupons})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const adminaddcoupon=async(req,res)=>{
-    try{
-   await addcoupon(req.body).then((response)=>{
-   
-    if(response.alreadyexist){
-        res.json({alreadyexist:true})
-    }else{
-        res.json({status:true})
+        res.render('admin/admin_dashboard', { admin: req.session.adminloggedin, userCount, productCount, orderCount, total, monthdetails })
+    } catch (error) {
+        throw new Error(error)
     }
-   })
-}catch (error) {
-    throw new Error(error) 
-}
 }
 
-const disableProduct=async(req,res)=>{
-    try{
-    const productId=req.body.proId
-    await product.findOneAndUpdate({_id:productId},{$set:{status:false}})
-    res.json({status:true})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const enableProduct=async(req,res)=>{
-    try{
-    const productId=req.body.proId
-    await product.findOneAndUpdate({_id:productId},{$set:{status:true}})
-    res.json({status:true})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const editProduct=async(req,res)=>{
-  try{
-    const proId=req.params.id
-   const products= await product.findOne({_id:proId}).lean()
-   const categories=await listCategory()
-    res.render("admin/admin_editproduct",{products,categories})
-  }catch (error) {
-    throw new Error(error) 
-}
-}
-
-const editCoupon=async(req,res)=>{
-    try{
-    const couponId=req.params.id
-    const coupons=await coupon.findOne({_id:couponId}).lean()
-    res.render("admin/admin_editcoupon",{coupons})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const deleteCategory=async(req,res)=>{
-    try{
-    const categoryId=req.body.categoryId
-    await categorycollection.deleteOne({_id:categoryId})
-    res.json({status:true})
-    }catch (error) {
-        throw new Error(error) 
- }
-}
-
-const updateCoupon=async(req,res)=>{
-    try{
-    const couponId=req.body.couponId
-    await coupon.findOneAndUpdate({_id:couponId},{$set:{
-        couponCode:req.body.code,
-        disCount:req.body.discount,
-        expiryDate:req.body.expiryDate,
-        maxDiscountAmount:req.body.maxDiscount,
-        minOrderAmount:req.body.minAmount,
-    }})
-    .then(()=>{
-        res.json({status:true})
+const getSalesreport = (req, res) => {
+    console.log("hoiii");
+    const stream = res.writeHead(200, {
+        'Content-Type': 'application/pdf',
+        'Content-Dispositon': 'attachement;filename=invoice.pdf'
     })
-}catch (error) {
-    throw new Error(error) 
-}
+
+    pdfservice.buildPDF(
+        (chunk) => stream.write(chunk),
+        () => stream.end()
+    )
 }
 
-const deleteCoupon=async(req,res)=>{
-    try{
-    const couponId=req.body.couponId
-    await coupon.deleteOne({_id:couponId}).then(()=>{
-        res.json({status:true})
-    })
-}catch (error) {
-    throw new Error(error) 
-}
-    
+const adminLogout = (req, res) => {
+    try {
+        res.redirect("/admin")
+        req.session.destroy()
+    } catch (error) {
+        throw new Error(error)
+    }
 }
 
-const updateCategory=async(req,res)=>{
-    try{
-    const categoryId=req.body.categoryid
-    if(req.file){
-        await categorycollection.findOneAndUpdate({_id:categoryId},{$set:{
-            categoryname: req.body.categoryname,
-            imageurl: req.file.filename
-        }}).then(()=>{
-            res.redirect("/admin/categories")
+const getUserlist = (req, res) => {
+    try {
+        listUsers().then((response) => {
+            res.render("admin/admin_userlist", { usersData: response })
         })
-    }else{
-        await categorycollection.findOneAndUpdate({_id:categoryId},{$set:{
-            categoryname: req.body.categoryname,
-          
-        }}).then(()=>{
-            res.redirect("/admin/categories")
-        }) 
+    } catch (error) {
+        throw new Error(error)
     }
-}catch (error) {
-    throw new Error(error) 
 }
 
+const adminBlockUser = (req, res) => {
+    try {
+        blockUser(req.params.id).then((data) => {
+            res.redirect("/admin/listusers")
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
 }
 
-const updateProduct=async(req,res)=>{
-try{
-    const productId=req.body.productid
-    const products=await product.findOne({_id:productId})
-  
-
-    const images=[];
-    
-    if(req.files){
-        if(!req.files.image0){
-            images.push(products.imageurl[0])
-        }else{
-            images.push(req.files.image0[0])
-        }
-        if(!req.files.image1){
-            images.push(products.imageurl[1])
-        }else{
-            images.push(req.files.image1[0])
-
-        }
-        if(!req.files.image2){
-            images.push(products.imageurl[2])
-        }else{
-            images.push(req.files.image2[0])
-
-        }
-        if(!req.files.image3){
-            images.push(products.imageurl[3])
-        }else{
-            images.push(req.files.image3[0])
-
-        }
-
-        await product.findOneAndUpdate({_id:productId},{$set:{
-                imageurl:images
-        }})
-
-
+const adminUnblockUser = (req, res) => {
+    try {
+        unblockUser(req.params.id).then((data) => {
+            res.redirect("/admin/listusers")
+        })
+    } catch (error) {
+        throw new Error(error)
     }
-    
-    
-    if(req.body.image){
+}
 
-    }else{
-        await product.findOneAndUpdate({_id:productId},{$set:{
-            productname:req.body.productname,
-            productcategory:req.body.productcategory,
-            productMRP:req.body.productMRP,
-            productSRP:req.body.productSRP,
-            productstock:req.body.productstock,
-            productdescription:req.body.productdescription,
-        }}).then(()=>{
+const adminAddproduct = (req, res) => {
+    try {
+        listCategory().then((categories) => {
+            res.render("admin/admin_addproduct", { categories })
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminCategoryManagement = (req, res) => {
+    try {
+        listCategory().then((categories) => {
+            res.render("admin/admin_categories", { categories })
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminEditCategory = async (req, res) => {
+    try {
+        const category = await editCategory(req.params.id)
+        res.render("admin/admin_editcategory", { category })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const listProducts = (req, res) => {
+    try {
+        listProduct().then((response) => {
+            res.render("admin/admin_product", { response })
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminListorders = async (req, res) => {
+    try {
+        const orders = await listOrders()
+        res.render("admin/admin_orderlist", { orders })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminOrderDetails = async (req, res) => {
+    try {
+        const orderdetails = await viewOrderdetails(req.params.id)
+        if (orderdetails[0].status === "Order cancelled") {
+            const ordercancelled = true
+            res.render("admin/orderstatuschange", { orderdetails, ordercancelled })
+        } else {
+            res.render("admin/orderstatuschange", { orderdetails })
+        }
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminLogin = (req, res) => {
+    try {
+        doadminLogin(req.body).then((response) => {
+            if (response.usernotfound) {
+                req.session.notfound = true
+                res.redirect("/admin")
+            } else {
+                if (response.login) {
+                    req.session.adminloggedin = true
+                    res.redirect("/admin/home")
+                } else {
+                    req.session.passwordErr = true
+                    res.redirect("/admin")
+                }
+            }
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminAddCategory = (req, res) => {
+    try {
+        addCategory(req.body, req.file).then((data) => {
+            if (data.alreadyexist) {
+                res.json({ alreadyexist: true })
+            } else {
+
+                res.json({ status: true })
+            }
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminAddProduct = async (req, res) => {
+    try {
+        await addproduct(req.body, req.files).then((data) => {
             res.redirect("/admin/listproducts")
         })
-       
+    } catch (error) {
+        throw new Error(error)
     }
-}catch (error) {
-    throw new Error(error) 
 }
 
+const adminChangeOrderStatus = (req, res) => {
+    try {
+        changeOrderstatus(req.body)
+        res.json({ status: true })
+    } catch (error) {
+        throw new Error(error)
+    }
 }
+
+const adminCouponMangement = async (req, res) => {
+    try {
+        const coupons = await listCoupon()
+        res.render("admin/admin_addcoupon", { coupons })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const adminaddcoupon = async (req, res) => {
+    try {
+        await addcoupon(req.body).then((response) => {
+
+            if (response.alreadyexist) {
+                res.json({ alreadyexist: true })
+            } else {
+                res.json({ status: true })
+            }
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const disableProduct = async (req, res) => {
+    try {
+        const productId = req.body.proId
+        await product.findOneAndUpdate({ _id: productId }, { $set: { status: false } })
+        res.json({ status: true })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const enableProduct = async (req, res) => {
+    try {
+        const productId = req.body.proId
+        await product.findOneAndUpdate({ _id: productId }, { $set: { status: true } })
+        res.json({ status: true })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const editProduct = async (req, res) => {
+    try {
+        const proId = req.params.id
+        const products = await product.findOne({ _id: proId }).lean()
+        const categories = await listCategory()
+        res.render("admin/admin_editproduct", { products, categories })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const editCoupon = async (req, res) => {
+    try {
+        const couponId = req.params.id
+        const coupons = await coupon.findOne({ _id: couponId }).lean()
+        res.render("admin/admin_editcoupon", { coupons })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const deleteCategory = async (req, res) => {
+    try {
+        const categoryId = req.body.categoryId
+        await categorycollection.deleteOne({ _id: categoryId })
+        res.json({ status: true })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const updateCoupon = async (req, res) => {
+    try {
+        const couponId = req.body.couponId
+        await coupon.findOneAndUpdate({ _id: couponId }, {
+            $set: {
+                couponCode: req.body.code,
+                disCount: req.body.discount,
+                expiryDate: req.body.expiryDate,
+                maxDiscountAmount: req.body.maxDiscount,
+                minOrderAmount: req.body.minAmount,
+            }
+        })
+            .then(() => {
+                res.json({ status: true })
+            })
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
+const deleteCoupon = async (req, res) => {
+    try {
+        const couponId = req.body.couponId
+        await coupon.deleteOne({ _id: couponId }).then(() => {
+            res.json({ status: true })
+        })
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+const updateCategory = async (req, res) => {
+    try {
+        const categoryId = req.body.categoryid
+        if (req.file) {
+            await categorycollection.findOneAndUpdate({ _id: categoryId }, {
+                $set: {
+                    categoryname: req.body.categoryname,
+                    imageurl: req.file.filename
+                }
+            }).then(() => {
+                res.redirect("/admin/categories")
+            })
+        } else {
+            await categorycollection.findOneAndUpdate({ _id: categoryId }, {
+                $set: {
+                    categoryname: req.body.categoryname,
+
+                }
+            }).then(() => {
+                res.redirect("/admin/categories")
+            })
+        }
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+const updateProduct = async (req, res) => {
+    try {
+        const productId = req.body.productid
+        const products = await product.findOne({ _id: productId })
+
+
+        const images = [];
+
+        if (req.files) {
+            if (!req.files.image0) {
+                images.push(products.imageurl[0])
+            } else {
+                images.push(req.files.image0[0])
+            }
+            if (!req.files.image1) {
+                images.push(products.imageurl[1])
+            } else {
+                images.push(req.files.image1[0])
+
+            }
+            if (!req.files.image2) {
+                images.push(products.imageurl[2])
+            } else {
+                images.push(req.files.image2[0])
+
+            }
+            if (!req.files.image3) {
+                images.push(products.imageurl[3])
+            } else {
+                images.push(req.files.image3[0])
+
+            }
+
+            await product.findOneAndUpdate({ _id: productId }, {
+                $set: {
+                    imageurl: images
+                }
+            })
+
+
+        }
+
+
+        if (req.body.image) {
+
+        } else {
+            await product.findOneAndUpdate({ _id: productId }, {
+                $set: {
+                    productname: req.body.productname,
+                    productcategory: req.body.productcategory,
+                    productMRP: req.body.productMRP,
+                    productSRP: req.body.productSRP,
+                    productstock: req.body.productstock,
+                    productdescription: req.body.productdescription,
+                }
+            }).then(() => {
+                res.redirect("/admin/listproducts")
+            })
+
+        }
+    } catch (error) {
+        throw new Error(error)
+    }
+
+}
+
+const salesReport = (req, res) => {
+    console.log(req.body);
+    const details = req.body
+    return new Promise(async (resolve, reject) => {
+        if (new Date(details.fromdate) < new Date() && new Date(details.todate) < new Date()) {
+            console.log("entered to if");
+            let data = await Ordercollection.aggregate([
+                {
+                    $match: { status: "Delivered"}
+                },
+                {
+                    $group: {
+                        _id: "$_id",
+                        total: { $sum: '$totalamount' },
+                        orderCount: { $sum: 1 },
+
+                    }
+                },
+
+            ])
+            console.log(data, "llllll");
+            salesreport(data).then(() => {
+                res.json({status:true})
+            })
+        }
+        else {
+            console.log("entered to else");
+            res.json({status:false})
+        }
+    })
+}
+
+
 
 module.exports = {
 
@@ -739,7 +800,7 @@ module.exports = {
     listProducts,
     adminListorders,
     adminOrderDetails,
-    
+
     adminLogin,
     adminAddCategory,
     adminAddProduct,
@@ -757,7 +818,9 @@ module.exports = {
     updateCoupon,
     deleteCoupon,
     updateCategory,
-    updateProduct
-    
+    updateProduct,
+    getSalesreport,
+    salesReport
+
 
 }
