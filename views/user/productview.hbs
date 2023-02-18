@@ -2,34 +2,103 @@
 
 
 {{>userheader}}
+
 <body style="background-color: #eaefff;">
-    
 
-<div class="container mt-5 mb-5">
-    <div class="row d-flex justify-content-center">
-        <div class="col-md-12">
-            <div class="card" style="margin-top: 50px;">
-                <div class="row">
-                    <div class="col-md-6 col-12" style="background-color: #e1e1e1;">
-                        <div class="images p-3">
-                            {{#each productdetails.imageurl}}
-                            {{#if @first}}
-                            <div class="text-center p-4"> <img id="main-image" src="/images/categoryimage/{{filename}}"
-                                    width="250" height="250" /> </div>
-                            {{/if}}
-                            {{/each}}
-                            <div class="d-flex justify-content-center">
+
+    <div class="container mt-5 mb-5">
+        <div class="row d-flex justify-content-center">
+            <div class="col-md-12">
+                <div class="card" style="margin-top: 50px;">
+                    <div class="row">
+                        <div class="col-md-6 col-12" style="background-color: #e1e1e1;">
+                            <div class="images p-3">
                                 {{#each productdetails.imageurl}}
-                                <div class="thumbnail text-center m-1"> <img onclick="change_image(this)"
-                                        src="/images/categoryimage/{{filename}}" width="70" height="70"> </div>
+                                {{#if @first}}
+                                <div class="text-center p-4"> <img id="main-image"
+                                        src="/images/categoryimage/{{filename}}" width="250" height="250" /> </div>
+                                {{/if}}
                                 {{/each}}
+                                <div class="d-flex justify-content-center">
+                                    {{#each productdetails.imageurl}}
+                                    <div class="thumbnail text-center m-1"> <img onclick="change_image(this)"
+                                            src="/images/categoryimage/{{filename}}" width="70" height="70"> </div>
+                                    {{/each}}
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-6  p-0">
-                        <div class="product p-4 h-100">
-                        {{#if productdetails.status}}
-                                                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="col-md-6  p-0">
+                            <div class="product p-4 h-100">
+                                {{#if productdetails.status}}
+                                <div class="d-flex justify-content-between align-items-center">
+                                    {{!-- <div class="d-flex align-items-center"> <i class="fa fa-curve-arrow-left"></i>
+                                        <a href="/"><span class="ml-1">Home</span> </div> </a> --}}
+                                </div>
+                                <div class="mt-4 mb-3">
+                                    <h5 class="text-uppercase text-white">{{productdetails.productname}}</h5>
+                                    <div class="price d-flex flex-row align-items-center"> <span
+                                            class="act-price">₹{{productdetails.productSRP}}</span>
+                                        <div class="ms-2"> <small
+                                                class="dis-price">₹{{productdetails.productMRP}}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="about">{{productdetails.productdescription}}</p>
+                                {{!-- <div class="sizes mt-5">
+                                    <h6 class="text-uppercase">Size</h6> <label class="radio"> <input type="radio"
+                                            name="size" value="S" checked> <span>S</span> </label> <label class="radio">
+                                        <input type="radio" name="size" value="M"> <span>M</span> </label> <label
+                                        class="radio"> <input type="radio" name="size" value="L"> <span>L</span>
+                                    </label>
+                                    <label class="radio"> <input type="radio" name="size" value="XL"> <span>XL</span>
+                                    </label> <label class="radio"> <input type="radio" name="size" value="XXL">
+                                        <span>XXL</span> </label>
+                                </div> --}}
+                                <div class="d-flex justify-content-evenly">
+                                    {{#if cartExist}}
+
+                                    <div class="cart mt-4 align-items-center">
+                                        <a href="/cart"> <button class="btn btn-danger text-uppercase mr-2 px-4">Go to
+                                                cart</button> </a>
+                                    </div>
+
+                                    {{else}}
+
+                                    <div class="cart mt-4 align-items-center" id="addtoCart">
+                                        <button onclick="addTocart('{{productdetails._id}}')"
+                                            class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button>
+                                    </div>
+                                    <div class="cart mt-4 align-items-center d-none" id="gotoCart">
+                                        <a href="/cart"> <button class="btn btn-danger text-uppercase mr-2 px-4">Go to
+                                                cart</button> </a>
+                                    </div>
+
+
+                                    {{/if}}
+
+                                    {{#if wishlistExist}}
+
+                                    <div class="cart mt-4 align-items-center ms-2 ">
+                                        <a href="/wishlist"><button id="Gotowishlist"
+                                                class="btn btn-danger text-uppercase mr-2 px-4">Go to
+                                                Wishlist</button></a>
+                                    </div>
+                                    {{else}}
+                                    <div class="cart mt-4 align-items-center ms-2" id="addtoWishlist">
+                                        <button id="addtowishlist" class="btn btn-danger text-uppercase mr-2 px-4"
+                                            onclick="addtoWishlist('{{productdetails._id}}')">Add to Wishlist</button>
+                                    </div>
+                                   <div class="cart mt-4 align-items-center ms-2 d-none" id="gotoWishlist">
+                                        <a href="/wishlist"><button id="Gotowishlist"
+                                                class="btn btn-danger text-uppercase mr-2 px-4">Go to
+                                                Wishlist</button></a>
+                                    </div>
+                                    {{/if}}
+                                </div>
+                            </div>
+                            {{else}}
+                            <p class="text-danger">* This product is currently not available</p>
+                            <div class="d-flex justify-content-between align-items-center">
                                 {{!-- <div class="d-flex align-items-center"> <i class="fa fa-curve-arrow-left"></i> <a
                                         href="/"><span class="ml-1">Home</span> </div> </a> --}}
                             </div>
@@ -52,70 +121,10 @@
                                     <span>XXL</span> </label>
                             </div> --}}
                             <div class="d-flex justify-content-evenly">
-                                {{#if cartExist}}
 
                                 <div class="cart mt-4 align-items-center">
-                                    <a href="/cart"> <button class="btn btn-danger text-uppercase mr-2 px-4">Go to
-                                            cart</button> </a>
-                                    {{!-- <i class="fa fa-heart text-muted"></i> <i
-                                        class="fa fa-share-alt text-muted"></i> --}}
-                                </div>
-
-                                {{else}}
-
-                                <div class="cart mt-4 align-items-center">
-                                    <button onclick="addTocart('{{productdetails._id}}')"
-                                        class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button>
-                                    {{!-- <i class="fa fa-heart text-muted"></i> <i
-                                        class="fa fa-share-alt text-muted"></i> --}}
-                                </div>
-
-
-                                {{/if}}
-
-                                {{#if wishlistExist}}
-
-                                <div class="cart mt-4 align-items-center ms-2 ">
-                                    <a href="/wishlist"><button id="Gotowishlist"
-                                            class="btn btn-danger text-uppercase mr-2 px-4">Go to Wishlist</button></a>
-                                </div>
-                                {{else}}
-                                <div class="cart mt-4 align-items-center ms-2">
-                                    <button id="addtowishlist" class="btn btn-danger text-uppercase mr-2 px-4"
-                                        onclick="addtoWishlist('{{productdetails._id}}')">Add to Wishlist</button>
-                                </div>
-                                {{/if}}
-                            </div>
-                        </div>
-                        {{else}}
-                        <p class="text-danger">* This product is currently not available</p>
-                                                    <div class="d-flex justify-content-between align-items-center">
-                                {{!-- <div class="d-flex align-items-center"> <i class="fa fa-curve-arrow-left"></i> <a
-                                        href="/"><span class="ml-1">Home</span> </div> </a> --}}
-                            </div>
-                            <div class="mt-4 mb-3">
-                                <h5 class="text-uppercase text-white">{{productdetails.productname}}</h5>
-                                <div class="price d-flex flex-row align-items-center"> <span
-                                        class="act-price">₹{{productdetails.productSRP}}</span>
-                                    <div class="ms-2"> <small class="dis-price">₹{{productdetails.productMRP}}</small>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="about">{{productdetails.productdescription}}</p>
-                            {{!-- <div class="sizes mt-5">
-                                <h6 class="text-uppercase">Size</h6> <label class="radio"> <input type="radio"
-                                        name="size" value="S" checked> <span>S</span> </label> <label class="radio">
-                                    <input type="radio" name="size" value="M"> <span>M</span> </label> <label
-                                    class="radio"> <input type="radio" name="size" value="L"> <span>L</span> </label>
-                                <label class="radio"> <input type="radio" name="size" value="XL"> <span>XL</span>
-                                </label> <label class="radio"> <input type="radio" name="size" value="XXL">
-                                    <span>XXL</span> </label>
-                            </div> --}}
-                            <div class="d-flex justify-content-evenly">
-    
-                                <div class="cart mt-4 align-items-center">
-                                    <button onclick="wrongmessage()"
-                                        class="btn btn-danger text-uppercase mr-2 px-4">Add to cart</button>
+                                    <button onclick="wrongmessage()" class="btn btn-danger text-uppercase mr-2 px-4">Add
+                                        to cart</button>
                                     {{!-- <i class="fa fa-heart text-muted"></i> <i
                                         class="fa fa-share-alt text-muted"></i> --}}
                                 </div>
@@ -123,7 +132,7 @@
                                     <button id="addtowishlist" class="btn btn-danger text-uppercase mr-2 px-4"
                                         onclick="wrongmessage()">Add to Wishlist</button>
                                 </div>
-                        
+
                             </div>
                         </div>
                         {{/if}}
@@ -133,7 +142,7 @@
             </div>
         </div>
     </div>
-</div>
+    </div>
 </body>
 
 {{>userfooter}}
@@ -164,7 +173,9 @@
                     count = parseInt(count) + 1
                     document.getElementById("cart-count").innerHTML = count
                     swal("product added to cart!", "success!", "success").then(() => {
-                        location.reload()
+                       document.getElementById("gotoCart").classList.remove("d-none")
+                       document.getElementById("gotoCart").classList.add("d-block")
+                       document.getElementById("addtoCart").classList.add("d-none")
                     })
 
                 }
@@ -186,8 +197,10 @@
 
                 if (response.status) {
                     swal("product added to Wishlist!", "success!", "success").then(() => {
-
-                        location.reload()
+                       document.getElementById("gotoWishlist").classList.remove("d-none")
+                       document.getElementById("gotoWishlist").classList.add("d-block")
+                       document.getElementById("addtoWishlist").classList.add("d-none")
+                   
                     })
                 }
             }
@@ -196,7 +209,7 @@
 </script>
 
 <script>
-    function wrongmessage(){
+    function wrongmessage() {
         swal("Sorry this product is currently not available!")
     }
 </script>
