@@ -36,13 +36,18 @@
     </ul>
   </nav>
 </div>
-   {{!-- search.... --}}
-<div id="searcbox">
-  
+{{!-- search.... --}}
+<div>
+
   <div class="d-flex justify-content-center my-5 me-3">
-    <input type="text" id="searchinput" class="border p-2 searchinput smphone" placeholder="What are you searching for...?">
-    <button class="px-5 searchbutton" onclick="searchProduct()"><i class="fa fa-search"></i></button>
+    <input type="text" id="searchinput" class="border p-2 searchinput smphone"
+      placeholder="What are you searching for...?" onkeyup="sendData(this)">
+    <button class="px-5 searchbutton"><i class="fa fa-search"></i></button>
   </div>
+  <section class=" container d-flex justify-content-start my-5 me-3 flex-column" id="searchResults"
+    style="background-color: #f8f8f8; color: blue; max-width: 1160px;">
+
+  </section>
 
 </div>
 
@@ -57,7 +62,8 @@
         alt="...">
     </div>
     <div class="carousel-item">
-      <img src="https://i.pinimg.com/originals/ff/be/28/ffbe283fbedc1dcbc49f06702f61ea92.jpg" class="d-block w-100" alt="...">
+      <img src="https://i.pinimg.com/originals/ff/be/28/ffbe283fbedc1dcbc49f06702f61ea92.jpg" class="d-block w-100"
+        alt="...">
     </div>
   </div>
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev">
@@ -129,22 +135,41 @@
   }
 </script>
 
+
+
 <script>
-  function searchProduct(){
-    const data=document.getElementById("searchinput").value 
-   
-    $.ajax({
-      url:"/searchproduct",
-      method:"post",
-      data:{
-        key:data
-      },
-      success:(response)=>{
-        const data=response.productdata
-        document.getElementById("searchresult").classList.remove("d-none");
-        document.getElementById("searchresult").classList.add("d-block");
-       
-      }
-    })
+
+  function sendData(e) {
+    let match = e.value.match(/^[a-zA-z ]*/);
+    let match2 = e.value.match(/\s*/);
+    if (match2[0] === e.value) {
+      searchResults.innerHTML = "";
+      return;
+    }
+    if (match[0] === e.value) {
+
+      const searchResults = document.getElementById("searchResults")
+      fetch('getProducts', {
+        method: 'post',
+        headers: { 'content-Type': 'application/json' },
+        body: JSON.stringify({ payload: e.value })
+      }).then(res => res.json()).then((data) => {
+        let payload = data.payload
+
+        searchResults.innerHTML = '';
+        if (payload.length < 1) {
+          searchResults.innerHTML = '<p>Sorry..Nothing Found</p>'
+          return;
+        }
+        payload.forEach((item, index) => {
+
+          if (index > 0) searchResults.innerHTML += '<hr>';
+          searchResults.innerHTML += `<a href="/productview/${item._id}">${item.productname}</a>`
+        })
+      })
+        return;
+    }
+    searchResults.innerHTML='';
   }
+
 </script>

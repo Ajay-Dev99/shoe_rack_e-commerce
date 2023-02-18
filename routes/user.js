@@ -43,7 +43,8 @@ router.post("/addtowishlist",verifyLogin,usercontrol.addTowishlist)
 router.post("/removefromwishlist",verifyLogin,usercontrol.removeWishlistItem)
 router.post("/applycoupon",usercontrol.userApplyCoupon)
 router.post("/categoryfilter",usercontrol.categoryFilter)
-router.post("/searchproduct",usercontrol.searchProduct)
+
+router.post("/getProducts",usercontrol.searchProduct)
 
 
  

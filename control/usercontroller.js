@@ -1322,24 +1322,13 @@ const categoryFilter = async (req, res) => {
 }
 
 const searchProduct = async (req, res) => {
-    try {
 
-        const searchKey = req.body.key
-        const products = await product.find({ productname: { $regex: new RegExp(searchKey, "i") } })
-        const productdata = products.map((product) => {
-            return {
-                _id: product._id,
-                name: product.productname,
-                price: product.productSRP,
-                status: product.status,
-                image: product.imageurl[0].filename
-            }
-        })
-        const categories = await category.find({})
-        res.json({ productdata })
-    } catch (error) {
-        throw new Error(error)
-    }
+        let payload=req.body.payload.trim();
+        let search=await product.find({productname:{$regex: new RegExp('^'+payload+'.*','i')}}).exec();
+        //Limit Search Results to 10
+        search=search.slice(0,10);
+        res.send({payload:search})
+     
 
 
 }
